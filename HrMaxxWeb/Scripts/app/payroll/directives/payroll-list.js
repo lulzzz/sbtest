@@ -400,11 +400,11 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version','$q
 												d.priority = d.employeeDeduction.priority;
                                                 d.limit = d.employeeDeduction.limit;
                                                 d.employerRate = d.employeeDeduction.employerRate;
-												d.employeeWithheld = empDed.employeeWithheld ? empDed.employeeWithheld : 0;
-												d.employerWithheld = empDed.employerWithheld ? empDed.employerWithheld : 0;
+												d.employeeWithheld = empDed && empDed.employeeWithheld ? empDed.employeeWithheld : 0;
+												d.employerWithheld = empDed && empDed.employerWithheld ? empDed.employerWithheld : 0;
 												
-												d.startDate = empDed.startDate;
-												d.endDate = empDed.endDate;
+												d.startDate = empDed ? empDed.startDate : null;
+												d.endDate = empDed ? empDed.endDate : null;
                                             });
 										} else {
 											$.each(employee.compensations, function(index2, comp) {
@@ -432,10 +432,10 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version','$q
 													agencyId: ded.agencyId,
 													limit: ded.limit,
                                                     priority: ded.priority,
-													employeeWithheld: ded.employeeWithheld ? ded.employeeWithheld : 0,
-													employerWithheld: ded.employerWithheld ? ded.employerWithheld : 0,
-													startDate: ded.startDate,
-													endDate: ded.endDate
+													employeeWithheld: ded && ded.employeeWithheld ? ded.employeeWithheld : 0,
+													employerWithheld: ded && ded.employerWithheld ? ded.employerWithheld : 0,
+													startDate: ded ? ded.startDate : null,
+													endDate: ded ? ded.endDate : null
 												});
 											});
 										}

@@ -188,6 +188,12 @@
     <Compile Include="DataModel\MinWageYear.cs">
       <DependentUpon>USTaxTablesModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="DataModel\MTSITExemptionConstantTable.cs">
+      <DependentUpon>USTaxTablesModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="DataModel\MTSITTaxTable.cs">
+      <DependentUpon>USTaxTablesModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="DataModel\PayCheckExtract.cs">
       <DependentUpon>OnlinePayrollModel.tt</DependentUpon>
     </Compile>
@@ -281,6 +287,7 @@
     <Compile Include="JsonDataModel\CompanyPayrollCube.cs" />
     <Compile Include="JsonDataModel\EmployeeJson.cs" />
     <Compile Include="JsonDataModel\ExtractInvoicePaymentJson.cs" />
+    <Compile Include="JsonDataModel\Host.cs" />
     <Compile Include="JsonDataModel\Journal.cs" />
     <Compile Include="JsonDataModel\JournalPayeeJson.cs" />
     <Compile Include="JsonDataModel\KeyValueResult.cs" />
@@ -300,8 +307,10 @@
     <Compile Include="ProfitStars.cs" />
     <Compile Include="SchedulePayroll.cs" />
     <Compile Include="StaffDashboard.cs" />
+    <Compile Include="USTaxModels\MTSITTaxTableRow.cs" />
     <Compile Include="USTaxModels\FITW4TaxTableRow.cs" />
     <Compile Include="USTaxModels\FITAlienAdjustmentTableRow.cs" />
+    <Compile Include="USTaxModels\MTSITExemptionConstantTableRow.cs" />
     <Compile Include="USTaxModels\MinWageYearRow.cs" />
     <Compile Include="ViewObjects.cs" />
     <Compile Include="Invoice.cs" />

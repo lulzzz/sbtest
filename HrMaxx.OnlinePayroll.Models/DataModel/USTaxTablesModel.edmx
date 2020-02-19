@@ -106,6 +106,28 @@
           <Property Name="TippedMinWage" Type="decimal" Precision="18" Scale="2" Nullable="false" />
           <Property Name="MaxTipCredit" Type="decimal" Precision="18" Scale="2" Nullable="false" />
         </EntityType>
+        <EntityType Name="MTSITExemptionConstantTable">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="PayrollPeriodID" Type="int" />
+          <Property Name="Amount" Type="decimal" Precision="18" Scale="2" />
+          <Property Name="Year" Type="int" />
+        </EntityType>
+        <EntityType Name="MTSITTaxTable">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="PayrollPeriodID" Type="int" />
+          <Property Name="StartRange" Type="decimal" Precision="18" Scale="2" />
+          <Property Name="EndRange" Type="decimal" Precision="18" Scale="2" />
+          <Property Name="FlatRate" Type="decimal" Precision="18" Scale="2" />
+          <Property Name="AdditionalPercentage" Type="decimal" Precision="18" Scale="2" />
+          <Property Name="ExcessOvrAmt" Type="decimal" Precision="18" Scale="2" />
+          <Property Name="Year" Type="int" />
+        </EntityType>
         <EntityType Name="SITLowIncomeTaxTable">
           <Key>
             <PropertyRef Name="Id" />
@@ -160,6 +182,8 @@
           <EntitySet Name="HISITTaxTable" EntityType="Self.HISITTaxTable" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="HISITWithholdingAllowanceTable" EntityType="Self.HISITWithholdingAllowanceTable" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="MinWageYear" EntityType="Self.MinWageYear" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="MTSITExemptionConstantTable" EntityType="Self.MTSITExemptionConstantTable" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="MTSITTaxTable" EntityType="Self.MTSITTaxTable" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="SITLowIncomeTaxTable" EntityType="Self.SITLowIncomeTaxTable" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="SITTaxTable" EntityType="Self.SITTaxTable" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="StandardDeductionTable" EntityType="Self.StandardDeductionTable" Schema="dbo" store:Type="Tables" />
@@ -183,6 +207,8 @@
           <EntitySet Name="FITW4Table" EntityType="USTaxTablesModel.FITW4Table" />
           <EntitySet Name="FITAlienAdjustmentTables" EntityType="USTaxTablesModel.FITAlienAdjustmentTable" />
           <EntitySet Name="MinWageYears" EntityType="USTaxTablesModel.MinWageYear" />
+          <EntitySet Name="MTSITExemptionConstantTables" EntityType="USTaxTablesModel.MTSITExemptionConstantTable" />
+          <EntitySet Name="MTSITTaxTables" EntityType="USTaxTablesModel.MTSITTaxTable" />
         </EntityContainer>
         <EntityType Name="TaxDeductionPrecedence">
           <Key>
@@ -328,6 +354,28 @@
           <Property Name="MinWage" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
           <Property Name="TippedMinWage" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
           <Property Name="MaxTipCredit" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
+        </EntityType>
+        <EntityType Name="MTSITExemptionConstantTable">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="PayrollPeriodID" Type="Int32" />
+          <Property Name="Amount" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="Year" Type="Int32" />
+        </EntityType>
+        <EntityType Name="MTSITTaxTable">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="PayrollPeriodID" Type="Int32" />
+          <Property Name="StartRange" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="EndRange" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="FlatRate" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="AdditionalPercentage" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="ExcessOvrAmt" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="Year" Type="Int32" />
         </EntityType>
       </Schema>
     </edmx:ConceptualModels>
@@ -488,6 +536,30 @@
                 <ScalarProperty Name="MinWage" ColumnName="MinWage" />
                 <ScalarProperty Name="StateId" ColumnName="StateId" />
                 <ScalarProperty Name="Year" ColumnName="Year" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="MTSITExemptionConstantTables">
+            <EntityTypeMapping TypeName="USTaxTablesModel.MTSITExemptionConstantTable">
+              <MappingFragment StoreEntitySet="MTSITExemptionConstantTable">
+                <ScalarProperty Name="Year" ColumnName="Year" />
+                <ScalarProperty Name="Amount" ColumnName="Amount" />
+                <ScalarProperty Name="PayrollPeriodID" ColumnName="PayrollPeriodID" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="MTSITTaxTables">
+            <EntityTypeMapping TypeName="USTaxTablesModel.MTSITTaxTable">
+              <MappingFragment StoreEntitySet="MTSITTaxTable">
+                <ScalarProperty Name="Year" ColumnName="Year" />
+                <ScalarProperty Name="ExcessOvrAmt" ColumnName="ExcessOvrAmt" />
+                <ScalarProperty Name="AdditionalPercentage" ColumnName="AdditionalPercentage" />
+                <ScalarProperty Name="FlatRate" ColumnName="FlatRate" />
+                <ScalarProperty Name="EndRange" ColumnName="EndRange" />
+                <ScalarProperty Name="StartRange" ColumnName="StartRange" />
+                <ScalarProperty Name="PayrollPeriodID" ColumnName="PayrollPeriodID" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>

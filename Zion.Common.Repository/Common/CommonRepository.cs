@@ -145,11 +145,8 @@ namespace HrMaxx.Common.Repository.Common
 
 		public IList<T> GetEntityRelationList<T>(object source, object target, Guid sourceId)
 		{
-			var relation = _dbContext.EntityRelations.FirstOrDefault(er => er.SourceEntityTypeId == (int)source
-																														&& er.TargetEntityTypeId == (int)target
-																														&& er.SourceEntityId == sourceId
-																											);
-			//var relation = QueryObject<EntityRelation>("select top(1) * from EntityRelation where SourceEntityTypeId=@SourceEntityTypeId and SourceEntityId=@SourceEntityId and TargetEntityTypeId=@TargetEntityTypeId", new { TargetEntityTypeId = (int)target, SourceEntityId = sourceId, SourceEntityTypeId=source });
+			//var relation = _dbContext.EntityRelations.FirstOrDefault(er => er.SourceEntityTypeId == (int)source);
+			var relation = QueryObject<EntityRelation>("select top(1) * from EntityRelation where SourceEntityTypeId=@SourceEntityTypeId and SourceEntityId=@SourceEntityId and TargetEntityTypeId=@TargetEntityTypeId", new { TargetEntityTypeId = (int)target, SourceEntityId = sourceId, SourceEntityTypeId=source });
 			return relation == null ? new List<T>() : JsonConvert.DeserializeObject<List<T>>(relation.TargetObject);
 
 		}

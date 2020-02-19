@@ -343,7 +343,9 @@ common.controller('copyCompanyCtrl', function ($scope, $uibModalInstance, $filte
 	$scope.showCopy = $scope.mainData.hasClaim(ClaimTypes.CompanyCopy, 1);
 	$scope.showCopyPayroll = $scope.mainData.hasClaim(ClaimTypes.CompanyCopyPayrolls, 1);
 	$scope.showCopyEmployees = $scope.mainData.hasClaim(ClaimTypes.EmployeeCopy, 1);
-	
+	var dataSvc = { selectedCompanyTarget: null };
+	$scope.data = dataSvc;
+
 	$scope.loadPayrolls = function() {
 		if (!$scope.payrollsLoaded) {
 			payrollRepository.getCompanyPayrollListForRelocation($scope.company.id).then(function (result) {
@@ -389,7 +391,7 @@ common.controller('copyCompanyCtrl', function ($scope, $uibModalInstance, $filte
 		}
 		payrollRepository.moveCopyPayrolls({
 			source: $scope.company.id,
-			target: $scope.selectedCompanyTarget.id,
+			target: dataSvc.selectedCompanyTarget.id,
 			option: $scope.mcPayrollsOption,
 			payrollOption: $scope.asPayrollsOption === 1,
 			asHistory: $scope.ashistory,

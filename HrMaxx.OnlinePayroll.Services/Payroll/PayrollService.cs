@@ -87,6 +87,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				//Log.Info("PayTypes " + DateTime.Now.ToString("hh:mm:ss:fff") + " - " + payroll.Company.DescriptiveName);
 				var employeeAccumulations = _readerService.GetAccumulations(company: payroll.Company.Id,
 						startdate: new DateTime(payroll.PayDay.Year, 1, 1), enddate: payroll.PayDay, ssns: payroll.PayChecks.Where(pc => pc.Included).Select(pc => pc.Employee.SSN).Aggregate(string.Empty, (current, m) => current + Crypto.Encrypt(m) + ","));
+				var host = _hostService.GetHost(payroll.Company.HostId);
 				//Log.Info("Employee Accumulations " + DateTime.Now.ToString("hh:mm:ss:fff") + " - " + payroll.PayChecks.Count(pc => pc.Included));
 				if (payroll.Company.IsLocation)
 				{
@@ -128,7 +129,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 						paycheck.Accumulations = ProcessAccumulations(paycheck, payroll, employeeAccumulation);
 						grossWage = Math.Round(grossWage + paycheck.CompensationTaxableAmount, 2, MidpointRounding.AwayFromZero);
 
-						var host = _hostService.GetHost(payroll.Company.HostId);
+						
 						paycheck.Deductions.ForEach(d=>d.Amount = d.Method==DeductionMethod.Amount ? d.Rate : d.Rate*grossWage/100);
 						
 						paycheck.Taxes = _taxationService.ProcessTaxes(payroll.Company, paycheck, paycheck.PayDay, grossWage, host.Company, employeeAccumulation);

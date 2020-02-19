@@ -26,8 +26,15 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 				.ForMember(dest => dest.ExcessOverAmoutt, opt => opt.MapFrom(src => src.ExcessOvrAmt))
 				.ForMember(dest => dest.FilingStatus,
 					opt => opt.MapFrom(src => HrMaaxxSecurity.GetEnumFromDbName<USFederalFilingStatus>(src.FilingStatus.Trim())));
+			
+			CreateMap<Models.DataModel.MTSITTaxTable, MTSITTaxTableRow>()
+				.ForMember(dest => dest.HasChanged, opt => opt.MapFrom(src => false))
+				.ForMember(dest => dest.PayrollSchedule, opt => opt.MapFrom(src => src.PayrollPeriodID))
+				.ForMember(dest => dest.RangeStart, opt => opt.MapFrom(src => src.StartRange))
+				.ForMember(dest => dest.RangeEnd, opt => opt.MapFrom(src => src.EndRange))
+				.ForMember(dest => dest.ExcessOverAmoutt, opt => opt.MapFrom(src => src.ExcessOvrAmt));
 
-            CreateMap<Models.DataModel.HISITTaxTable, FITTaxTableRow>()
+			CreateMap<Models.DataModel.HISITTaxTable, FITTaxTableRow>()
                 .ForMember(dest => dest.HasChanged, opt => opt.MapFrom(src => false))
 				.ForMember(dest => dest.ForMultiJobs, opt => opt.Ignore())
 				.ForMember(dest => dest.PayrollSchedule, opt => opt.MapFrom(src => src.PayrollPeriodID))
@@ -44,7 +51,13 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 				.ForMember(dest => dest.ExcessOvrAmt, opt => opt.MapFrom(src => src.ExcessOverAmoutt))
 				.ForMember(dest => dest.FilingStatus,
 					opt => opt.MapFrom(src => src.FilingStatus.GetDbName()));
-            CreateMap<FITTaxTableRow, Models.DataModel.HISITTaxTable>()
+			CreateMap<MTSITTaxTableRow, Models.DataModel.MTSITTaxTable>()
+				.ForMember(dest => dest.PayrollPeriodID, opt => opt.MapFrom(src => src.PayrollSchedule))
+				.ForMember(dest => dest.StartRange, opt => opt.MapFrom(src => src.RangeStart))
+				.ForMember(dest => dest.EndRange, opt => opt.MapFrom(src => src.RangeEnd))
+				.ForMember(dest => dest.ExcessOvrAmt, opt => opt.MapFrom(src => src.ExcessOverAmoutt));
+
+			CreateMap<FITTaxTableRow, Models.DataModel.HISITTaxTable>()
                 .ForMember(dest => dest.PayrollPeriodID, opt => opt.MapFrom(src => src.PayrollSchedule))
                 .ForMember(dest => dest.StartRange, opt => opt.MapFrom(src => src.RangeStart))
                 .ForMember(dest => dest.EndRange, opt => opt.MapFrom(src => src.RangeEnd))
@@ -60,6 +73,15 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 			CreateMap<FITWithholdingAllowanceTableRow, Models.DataModel.FITWithholdingAllowanceTable>()
 				.ForMember(dest => dest.PayrollPeriodID, opt => opt.MapFrom(src => src.PayrollSchedule))
 				.ForMember(dest => dest.AmtForOneWithholdingAllow, opt => opt.MapFrom(src => src.AmoutForOneWithholdingAllowance));
+
+			CreateMap<Models.DataModel.MTSITExemptionConstantTable, MTSITExemptionConstantTableRow>()
+			   .ForMember(dest => dest.HasChanged, opt => opt.MapFrom(src => false))
+			   .ForMember(dest => dest.PayrollSchedule, opt => opt.MapFrom(src => src.PayrollPeriodID))
+			   .ForMember(dest => dest.Amount, opt => opt.MapFrom(src => src.Amount));
+
+			CreateMap<MTSITExemptionConstantTableRow, Models.DataModel.MTSITExemptionConstantTable>()
+				.ForMember(dest => dest.PayrollPeriodID, opt => opt.MapFrom(src => src.PayrollSchedule))
+				.ForMember(dest => dest.Amount, opt => opt.MapFrom(src => src.Amount));
 
 			CreateMap<Models.DataModel.FITAlienAdjustmentTable, FITAlienAdjustmentTableRow>()
 				.ForMember(dest => dest.HasChanged, opt => opt.MapFrom(src => false))

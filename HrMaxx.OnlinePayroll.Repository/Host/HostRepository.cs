@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data.Common;
 using System.Data.Entity.Core.Metadata.Edm;
 using System.Linq;
+using System.Xml.Serialization;
 using HrMaxx.Infrastructure.Mapping;
 using HrMaxx.Infrastructure.Repository;
 using HrMaxx.OnlinePayroll.Models;
@@ -26,19 +27,19 @@ namespace HrMaxx.OnlinePayroll.Repository.Host
 		public IList<Models.Host> GetHostList(Guid host)
 		{
 			//var hosts = _dbContext.Hosts.AsQueryable();
-			var hosts = Query<Models.DataModel.Host>("select * from Host");
+			var hosts = QueryXmlList<List<Models.JsonDataModel.Host>>("select * from Host, Company where Host.CompanyId=Company.Id for xml auto, elements, type, root('HostList')", rootAttribute: new XmlRootAttribute("HostList"));
 			if (host != Guid.Empty)
 				hosts = hosts.Where(h => h.Id == host).ToList();
-			return _mapper.Map<List<Models.DataModel.Host>, List<Models.Host>>(hosts);
+			return _mapper.Map<List<Models.JsonDataModel.Host>, List<Models.Host>>(hosts);
 		}
 
 		public Models.Host GetHost(Guid cpaId)
 		{
-			var cpa = _dbContext.Hosts.FirstOrDefault(c => c.Id.Equals(cpaId));
-			//var cpa = QueryObject<Models.DataModel.Host>("select * from Host where Id=@Id", new { Id=cpaId});
-			if(cpa==null)
+			//var cpa = _dbContext.Hosts.FirstOrDefault(c => c.Id.Equals(cpaId));
+			var hosts = QueryXmlList<List<Models.JsonDataModel.Host>>("select * from Host, Company where Host.CompanyId=Company.Id and Host.Id=@Id for xml auto, elements, type, root('HostList')", new { Id=cpaId}, rootAttribute: new XmlRootAttribute("HostList"));
+			if (hosts==null || !hosts.Any())
 				return new Models.Host();
-			return _mapper.Map<Models.DataModel.Host, Models.Host>(cpa);
+			return _mapper.Map<Models.JsonDataModel.Host, Models.Host>(hosts.First());
 		}
 
 		public Models.Host Save(Models.Host cpa)
