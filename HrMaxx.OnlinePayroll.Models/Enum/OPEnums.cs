@@ -541,7 +541,8 @@ namespace HrMaxx.OnlinePayroll.Models.Enum
 		TXSuta=7,
         HISIT=8,
         HIUI = 9,
-		NA=0
+		MTUI = 10,
+		NA =0
 	}
 
 	public enum ACHTransactionType

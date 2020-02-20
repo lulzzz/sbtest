@@ -792,7 +792,14 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version','$q
 					$scope.voidPayroll = function (event, payroll) {
 						event.stopPropagation();
 						$scope.cancel();
-						$scope.mainData.confirmDialog('Void all checks in this Payroll', 'warning', function () {
+						var message = 'Void all checks in this Payroll.';
+						var type = 'warning'
+						var efts = payroll.payChecks.length - $filter('filter')(payroll.payChecks, { paymentMethod: 1 }).length;
+						if (efts) {
+							type = 'danger';
+							message += ' Contains ' + efts + ' EFT checks!';
+						}
+						$scope.mainData.confirmDialog(message, type, function () {
 							payrollRepository.voidPayroll(payroll).then(function (data) {
 								if (data) {
 									$scope.list.splice($scope.list.indexOf(payroll), 1);

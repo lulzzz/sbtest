@@ -13,5 +13,7 @@ namespace HrMaxx.Common.Contracts.Services
 		FileDto GetTimesheetImportTemplate(Guid companyId, List<string> payTypes);
 		FileDto GetCaliforniaEDDExport();
 		List<ExcelRead> ImportWithMap(FileInfo file, ImportMap importMap, string fileName, bool allowmultiplesheets = false);
+		FileDto GetExcelFile(string name, List<string> columns, List<List<string>> rows, bool hasSampleRows = false);
+
 	}
 }

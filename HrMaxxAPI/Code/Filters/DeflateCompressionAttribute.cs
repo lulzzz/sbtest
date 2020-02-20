@@ -13,7 +13,7 @@ namespace HrMaxxAPI.Code.Filters
 
 		public override void OnActionExecuted(HttpActionExecutedContext actContext)
 		{
-			if (!actContext.Response.IsSuccessStatusCode)
+			if (actContext.Response==null || !actContext.Response.IsSuccessStatusCode)
 			{
 				base.OnActionExecuted(actContext);
 				return;

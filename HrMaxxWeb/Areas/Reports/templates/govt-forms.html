@@ -263,7 +263,7 @@
 				<div class="row">
 					<h4><u>California State Forms</u></h4>
 				</div>
-				
+
 				<div class="row">
 					<div class="col-sm-12">
 						<h5><i class=" fa fa-file-pdf-o fa-lg" /><span class="m-l-10"><em>California Quarterly Wage and Withholding Report - Form DE9C and DE9</em></span></h5>
@@ -307,247 +307,364 @@
 
 				</div>
 			</div>
-        <div class="col-sm-6" ng-if="hasState(42)">
-            <div class="row">
-                <h4><u>Texas State Forms</u></h4>
-            </div>
+			<div class="col-sm-6" ng-if="hasState(42)">
+				<div class="row">
+					<h4><u>Texas State Forms</u></h4>
+				</div>
 
-            <div class="row">
-                <div class="col-sm-12">
-                    <h5><i class=" fa fa-file-pdf-o fa-lg" /><span class="m-l-10"><em>Texas Quarterly Unemployment Report</em></span></h5>
-                </div>
-                <div class="col-sm-12">
-                    <div class="col-sm-3">
-                        <select name="yearde9" ng-model="data.filterTxSuta.year" class="form-control" convert-to-number ng-options="year for year in data.filter.years track by year">
-                            <option value=""> select year</option>
-                        </select>
-                    </div>
-                    <div class="col-sm-3">
-                        <select name="quarterde9" ng-model="data.filterTxSuta.quarter" class="form-control" convert-to-number>
-                            <option value="0"> select quarter</option>
-                            <option value="1"> First Quarter</option>
-                            <option value="2"> Second Quarter</option>
-                            <option value="3"> Third Quarter</option>
-                            <option value="4"> Fourth Quarter</option>
-                        </select>
-                    </div>
-                    <div class="col-sm-2 form-group">
+				<div class="row">
+					<div class="col-sm-12">
+						<h5><i class=" fa fa-file-pdf-o fa-lg" /><span class="m-l-10"><em>Texas Quarterly Unemployment Report</em></span></h5>
+					</div>
+					<div class="col-sm-12">
+						<div class="col-sm-3">
+							<select name="yearde9" ng-model="data.filterTxSuta.year" class="form-control" convert-to-number ng-options="year for year in data.filter.years track by year">
+								<option value=""> select year</option>
+							</select>
+						</div>
+						<div class="col-sm-3">
+							<select name="quarterde9" ng-model="data.filterTxSuta.quarter" class="form-control" convert-to-number>
+								<option value="0"> select quarter</option>
+								<option value="1"> First Quarter</option>
+								<option value="2"> Second Quarter</option>
+								<option value="3"> Third Quarter</option>
+								<option value="4"> Fourth Quarter</option>
+							</select>
+						</div>
+						<div class="col-sm-2 form-group">
 
-                        <label for="txsutahistory" class="switch">
-                            History?
-                            <input id="txsutahistory" type="checkbox" ng-model="data.filterTxSuta.includeHistory" /><i></i>
-                        </label>
+							<label for="txsutahistory" class="switch">
+								History?
+								<input id="txsutahistory" type="checkbox" ng-model="data.filterTxSuta.includeHistory" /><i></i>
+							</label>
 
-                    </div>
-                    <div class="col-sm-2 form-group" ng-if="showincludeclients">
+						</div>
+						<div class="col-sm-2 form-group" ng-if="showincludeclients">
 
-                        <label for="txsutaclients" class="switch">
-                            Clients/locations?
-                            <input id="txsutaclients" type="checkbox" ng-model="data.filterTxSuta.includeClients" /><i></i>
-                        </label>
+							<label for="txsutaclients" class="switch">
+								Clients/locations?
+								<input id="txsutaclients" type="checkbox" ng-model="data.filterTxSuta.includeClients" /><i></i>
+							</label>
 
-                    </div>
-                    <div class="col-sm-2">
-                        <button class="btn btn-sm btn-primary" ng-click="getReportTXSuta()" ng-disabled="!data.filterTxSuta.year || !data.filterTxSuta.quarter">Report</button>
-                    </div>
+						</div>
+						<div class="col-sm-2">
+							<button class="btn btn-sm btn-primary" ng-click="getReportTXSuta()" ng-disabled="!data.filterTxSuta.year || !data.filterTxSuta.quarter">Report</button>
+						</div>
 
-                </div>
+					</div>
 
-            </div>
-        </div>
-        <div class="col-sm-6" ng-if="hasState(10)">
-            <div class="row">
-                <h4><u>Hawaii State Tax Payment Extracts</u></h4>
-            </div>
-            <div class="row">
-                <div class="col-sm-12">
-                    <h5><i class=" fa fa-file-pdf-o fa-lg" /><span class="m-l-10"><em>Hawaii SIT {{data.filterHIPIT.depositSchedule===1 ? '( Semi-Weekly )' : data.filterHIPIT.depositSchedule===2 ? '( Monthly )' : data.filterHIPIT.depositSchedule===3 ?'( Quarterly)' : ''}} - Form VP 1</em></span></h5>
-                </div>
-                <div class="col-sm-12">
-                    <div class="col-sm-3 form-group">
-                        <label>Year</label>
-                        <select ng-model="data.filterHIPIT.year" ng-change="fillHIPITPayPeriods()" ng-disabled="!data.filterHIPIT.depositSchedule" class="form-control" convert-to-number ng-options="year for year in data.filter.years | orderBy:'year':true track by year">
-                            <option value=""> select year</option>
-                        </select>
-                    </div>
+				</div>
+			</div>
+			<div class="col-sm-6" ng-if="hasState(25)">
+				<div class="row">
+					<h4><u>Montana State Tax Payment Extracts</u></h4>
+				</div>
+				<div class="row">
+					<div class="col-sm-12">
+						<h5><i class=" fa fa-file-pdf-o fa-lg" /><span class="m-l-10"><em>Montana SIT {{data.filterMTSIT.depositSchedule===1 ? '( Semi-Weekly )' : data.filterMTSIT.depositSchedule===2 ? '( Monthly )' : data.filterMTSIT.depositSchedule===3 ?'( Quarterly)' : ''}} - Form MW-1</em></span></h5>
+					</div>
+					<div class="col-sm-12">
+						<div class="col-sm-3 form-group">
+							<label>Year</label>
+							<select ng-model="data.filterMTSIT.year" ng-change="fillMTSITPayPeriods()" ng-disabled="!data.filterMTSIT.depositSchedule" class="form-control" convert-to-number ng-options="year for year in data.filter.years">
+								<option value=""> select year</option>
+							</select>
+						</div>
 
-                    <div class="col-sm-3 form-group">
-                        <label>Pay Period</label>
-                        <select ng-if="data.filterHIPIT.depositSchedule===1" ng-model="data.filterHIPIT.payPeriod" ng-disabled="!data.filterHIPIT.year" class="form-control" ng-options="payperiod.val for payperiod in data.filterHIPIT.payPeriods track by payperiod.val">
-                            <option value=""> Please select</option>
+						<div class="col-sm-3 form-group">
+							<label>Pay Period</label>
+							<select ng-if="data.filterMTSIT.depositSchedule===1" ng-model="data.filterMTSIT.payPeriod" ng-disabled="!data.filterMTSIT.year" class="form-control" ng-options="payperiod.val for payperiod in data.filterMTSIT.payPeriods track by payperiod.val">
+								<option value=""> Please select</option>
 
-                        </select>
-                        <select ng-model="data.filterHIPIT.month" class="form-control" convert-to-number ng-if="data.filterHIPIT.depositSchedule===2">
-                            <option value=""> select month</option>
-                            <option value="1"> January</option>
-                            <option value="2"> February</option>
-                            <option value="3"> March</option>
-                            <option value="4"> April</option>
-                            <option value="5"> May</option>
-                            <option value="6"> June</option>
-                            <option value="7"> July</option>
-                            <option value="8"> August</option>
-                            <option value="9"> September</option>
-                            <option value="10"> October</option>
-                            <option value="11"> November</option>
-                            <option value="12"> December</option>
-                        </select>
-                        <select ng-if="data.filterHIPIT.depositSchedule===3" ng-model="data.filterHIPIT.quarter" class="form-control" convert-to-number>
-                            <option value=""> select quarter</option>
-                            <option value="1"> First Quarter</option>
-                            <option value="2"> Second Quarter</option>
-                            <option value="3"> Third Quarter</option>
-                            <option value="4"> Fourth Quarter</option>
-                        </select>
-                    </div>
+							</select>
+							<select ng-model="data.filterMTSIT.month" class="form-control" convert-to-number ng-if="data.filterMTSIT.depositSchedule===2">
+								<option value=""> select month</option>
+								<option value="1"> January</option>
+								<option value="2"> February</option>
+								<option value="3"> March</option>
+								<option value="4"> April</option>
+								<option value="5"> May</option>
+								<option value="6"> June</option>
+								<option value="7"> July</option>
+								<option value="8"> August</option>
+								<option value="9"> September</option>
+								<option value="10"> October</option>
+								<option value="11"> November</option>
+								<option value="12"> December</option>
+							</select>
+							<select ng-if="data.filterMTSIT.depositSchedule===3" ng-model="data.filterMTSIT.quarter" class="form-control" convert-to-number>
+								<option value=""> select quarter</option>
+								<option value="1"> First Quarter</option>
+								<option value="2"> Second Quarter</option>
+								<option value="3"> Third Quarter</option>
+								<option value="4"> Fourth Quarter</option>
+							</select>
+						</div>
 
-                    <div class="col-sm-2 form-group">
-                        <label></label>
-                        <div>
-                            <label for="hipithistory" class="switch">
-                                History?
-                                <input id="hipithistory" type="checkbox" ng-model="data.filterHIPIT.includeHistory" /><i></i>
-                            </label>
-                        </div>
-                    </div>
-                    <div class="col-sm-2 form-group" ng-if="showincludeclients">
+						<div class="col-sm-2 form-group">
+							<label></label>
+							<div>
+								<label for="mtsithistory" class="switch">
+									History?
+									<input id="mtsithistory" type="checkbox" ng-model="data.filterMTSIT.includeHistory" /><i></i>
+								</label>
+							</div>
+						</div>
+						<div class="col-sm-2 form-group" ng-if="showincludeclients">
 
-                        <label for="hisutaclients" class="switch">
-                            Clients/locations?
-                            <input id="hisutaclients" type="checkbox" ng-model="data.filterHIPIT.includeClients" /><i></i>
-                        </label>
+							<label for="hisutaclients" class="switch">
+								Clients/locations?
+								<input id="hisutaclients" type="checkbox" ng-model="data.filterMTSIT.includeClients" /><i></i>
+							</label>
 
-                    </div>
-                    <div class="col-sm-2 form-group">
-                        <br />
-                        <button class="btn btn-sm btn-primary" ng-click="getReportHIPIT()" ng-disabled="!isHIPITValid()">Display VP1</button>
+						</div>
+						<div class="col-sm-2 form-group">
+							<br />
+							<button class="btn btn-sm btn-primary" ng-click="getReportMTSIT()" ng-disabled="!isMTSITValid()">Display MW-1</button>
 
-                    </div>
+						</div>
 
-                </div>
+					</div>
 
-            </div>
-            <div class="row">
-                <div class="col-sm-12">
-                    <h5><i class=" fa fa-file-pdf-o fa-lg" /><span class="m-l-10"><em>Hawaii Withholding Tax Return - Form HW 14 </em></span></h5>
-                </div>
-                <div class="col-sm-12">
-                    <div class="col-sm-3">
-                        <select name="yearde9" ng-model="data.filterhi14.year" class="form-control" convert-to-number ng-options="year for year in data.filter.years track by year">
-                            <option value=""> select year</option>
-                        </select>
-                    </div>
-                    <div class="col-sm-3">
-                        <select name="quarterhw14" ng-model="data.filterhi14.quarter" class="form-control" convert-to-number>
-                            <option value="0"> select quarter</option>
-                            <option value="1"> First Quarter</option>
-                            <option value="2"> Second Quarter</option>
-                            <option value="3"> Third Quarter</option>
-                            <option value="4"> Fourth Quarter</option>
-                        </select>
-                    </div>
-                    <div class="col-sm-2 form-group">
+				</div>
+				<div class="row">
+					<div class="col-sm-12">
+						<h5><i class=" fa fa-file-pdf-o fa-lg" /><span class="m-l-10"><em>Montana Unemployment Insurance - Form UI-5 </em></span></h5>
+					</div>
+					<div class="col-sm-12">
+						<div class="col-sm-3">
+							<select name="yearui5" ng-model="data.filterMTUI.year" class="form-control" convert-to-number ng-options="year for year in data.filter.years track by year">
+								<option value=""> select year</option>
+							</select>
+						</div>
+						<div class="col-sm-3">
+							<select name="quarterhw14" ng-model="data.filterMTUI.quarter" class="form-control" convert-to-number>
+								<option value="0"> select quarter</option>
+								<option value="1"> First Quarter</option>
+								<option value="2"> Second Quarter</option>
+								<option value="3"> Third Quarter</option>
+								<option value="4"> Fourth Quarter</option>
+							</select>
+						</div>
+						<div class="col-sm-2 form-group">
 
-                        <label for="de9history" class="switch">
-                            History?
-                            <input id="de9history" type="checkbox" ng-model="data.filterhi14.includeHistory" /><i></i>
-                        </label>
+							<label for="de9history" class="switch">
+								History?
+								<input id="de9history" type="checkbox" ng-model="data.filterMTUI.includeHistory" /><i></i>
+							</label>
 
-                    </div>
-                    <div class="col-sm-2 form-group" ng-if="showincludeclients">
+						</div>
+						<div class="col-sm-2 form-group" ng-if="showincludeclients">
 
-                        <label for="hi14clients" class="switch">
-                            Clients/locations?
-                            <input id="hi14clients" type="checkbox" ng-model="data.filterhi14.includeClients" /><i></i>
-                        </label>
+							<label for="hi14clients" class="switch">
+								Clients/locations?
+								<input id="hi14clients" type="checkbox" ng-model="data.filterMTUI.includeClients" /><i></i>
+							</label>
 
-                    </div>
-                    <div class="col-sm-2">
-                        <button class="btn btn-sm btn-primary" ng-click="getReportHW14()" ng-disabled="!data.filterhi14.year || !data.filterhi14.quarter">Display HW-14</button>
-                    </div>
+						</div>
+						<div class="col-sm-2">
+							<button class="btn btn-sm btn-primary" ng-click="getReportUI5()" ng-disabled="!data.filterMTUI.year || !data.filterMTUI.quarter">Display UI-5</button>
+							<button class="btn btn-sm btn-primary" ng-click="getReportUI9()" ng-disabled="!data.filterMTUI.year || !data.filterMTUI.quarter">Display UI-9</button>
 
-                </div>
+						</div>
 
-            </div>
-            <div class="row">
-                <div class="col-sm-12">
-                    <h5><i class=" fa fa-file-pdf-o fa-lg" /><span class="m-l-10"><em>Annual Withholding Return and Reconciliation – Form HW3</em></span></h5>
-                </div>
-                <div class="col-sm-12">
-                    <div class="col-sm-3">
-                        <select name="yearw3" ng-model="data.filterHW3.year" class="form-control" convert-to-number ng-options="year for year in data.filter.years track by year">
-                            <option value=""> select year</option>
-                        </select>
-                    </div>
-                    <div class="col-sm-3"></div>
-                    <div class="col-sm-2 form-group">
+					</div>
 
-                        <label for="hw3history" class="switch">
-                            History?
-                            <input id="hw3history" type="checkbox" ng-model="data.filterHW3.includeHistory" /><i></i>
-                        </label>
+				</div>
+				
+			</div>
+			<div class="col-sm-6" ng-if="hasState(10)">
+				<div class="row">
+					<h4><u>Hawaii State Tax Payment Extracts</u></h4>
+				</div>
+				<div class="row">
+					<div class="col-sm-12">
+						<h5><i class=" fa fa-file-pdf-o fa-lg" /><span class="m-l-10"><em>Hawaii SIT {{data.filterHIPIT.depositSchedule===1 ? '( Semi-Weekly )' : data.filterHIPIT.depositSchedule===2 ? '( Monthly )' : data.filterHIPIT.depositSchedule===3 ?'( Quarterly)' : ''}} - Form VP 1</em></span></h5>
+					</div>
+					<div class="col-sm-12">
+						<div class="col-sm-3 form-group">
+							<label>Year</label>
+							<select ng-model="data.filterHIPIT.year" ng-change="fillHIPITPayPeriods()" ng-disabled="!data.filterHIPIT.depositSchedule" class="form-control" convert-to-number ng-options="year for year in data.filter.years | orderBy:'year':true track by year">
+								<option value=""> select year</option>
+							</select>
+						</div>
 
-                    </div>
-                    <div class="col-sm-2 form-group" ng-if="showincludeclients">
+						<div class="col-sm-3 form-group">
+							<label>Pay Period</label>
+							<select ng-if="data.filterHIPIT.depositSchedule===1" ng-model="data.filterHIPIT.payPeriod" ng-disabled="!data.filterHIPIT.year" class="form-control" ng-options="payperiod.val for payperiod in data.filterHIPIT.payPeriods track by payperiod.val">
+								<option value=""> Please select</option>
 
-                        <label for="hw3clients" class="switch">
-                            Clients/locations?
-                            <input id="hw3clients" type="checkbox" ng-model="data.filterHW3.includeClients" /><i></i>
-                        </label>
+							</select>
+							<select ng-model="data.filterHIPIT.month" class="form-control" convert-to-number ng-if="data.filterHIPIT.depositSchedule===2">
+								<option value=""> select month</option>
+								<option value="1"> January</option>
+								<option value="2"> February</option>
+								<option value="3"> March</option>
+								<option value="4"> April</option>
+								<option value="5"> May</option>
+								<option value="6"> June</option>
+								<option value="7"> July</option>
+								<option value="8"> August</option>
+								<option value="9"> September</option>
+								<option value="10"> October</option>
+								<option value="11"> November</option>
+								<option value="12"> December</option>
+							</select>
+							<select ng-if="data.filterHIPIT.depositSchedule===3" ng-model="data.filterHIPIT.quarter" class="form-control" convert-to-number>
+								<option value=""> select quarter</option>
+								<option value="1"> First Quarter</option>
+								<option value="2"> Second Quarter</option>
+								<option value="3"> Third Quarter</option>
+								<option value="4"> Fourth Quarter</option>
+							</select>
+						</div>
 
-                    </div>
-                    <div class="col-sm-2">
-                        <button class="btn btn-sm btn-primary" ng-click="getReportHW3()" ng-disabled="!data.filterHW3.year">Display HW3</button>
-                    </div>
+						<div class="col-sm-2 form-group">
+							<label></label>
+							<div>
+								<label for="hipithistory" class="switch">
+									History?
+									<input id="hipithistory" type="checkbox" ng-model="data.filterHIPIT.includeHistory" /><i></i>
+								</label>
+							</div>
+						</div>
+						<div class="col-sm-2 form-group" ng-if="showincludeclients">
 
-                </div>
+							<label for="hisutaclients" class="switch">
+								Clients/locations?
+								<input id="hisutaclients" type="checkbox" ng-model="data.filterHIPIT.includeClients" /><i></i>
+							</label>
 
-            </div>
-            <div class="row">
-                <div class="col-sm-12">
-                    <h5><i class=" fa fa-file-pdf-o fa-lg" /><span class="m-l-10"><em>Hawaii State Unemployment Insurance Electronic - Form UC-B6 </em></span></h5>
-                </div>
-                <div class="col-sm-12">
-                    <div class="col-sm-3">
-                        <select name="yearde9" ng-model="data.filterhiui.year" class="form-control" convert-to-number ng-options="year for year in data.filter.years track by year">
-                            <option value=""> select year</option>
-                        </select>
-                    </div>
-                    <div class="col-sm-3">
-                        <select name="quarterhw14" ng-model="data.filterhiui.quarter" class="form-control" convert-to-number>
-                            <option value="0"> select quarter</option>
-                            <option value="1"> First Quarter</option>
-                            <option value="2"> Second Quarter</option>
-                            <option value="3"> Third Quarter</option>
-                            <option value="4"> Fourth Quarter</option>
-                        </select>
-                    </div>
-                    <div class="col-sm-2 form-group">
+						</div>
+						<div class="col-sm-2 form-group">
+							<br />
+							<button class="btn btn-sm btn-primary" ng-click="getReportHIPIT()" ng-disabled="!isHIPITValid()">Display VP1</button>
 
-                        <label for="de9history" class="switch">
-                            History?
-                            <input id="de9history" type="checkbox" ng-model="data.filterhiui.includeHistory" /><i></i>
-                        </label>
+						</div>
 
-                    </div>
-                    <div class="col-sm-2 form-group" ng-if="showincludeclients">
+					</div>
 
-                        <label for="hiuiclients" class="switch">
-                            Clients/locations?
-                            <input id="hiuiclients" type="checkbox" ng-model="data.filterhiui.includeClients" /><i></i>
-                        </label>
+				</div>
+				<div class="row">
+					<div class="col-sm-12">
+						<h5><i class=" fa fa-file-pdf-o fa-lg" /><span class="m-l-10"><em>Hawaii Withholding Tax Return - Form HW 14 </em></span></h5>
+					</div>
+					<div class="col-sm-12">
+						<div class="col-sm-3">
+							<select name="yearde9" ng-model="data.filterhi14.year" class="form-control" convert-to-number ng-options="year for year in data.filter.years track by year">
+								<option value=""> select year</option>
+							</select>
+						</div>
+						<div class="col-sm-3">
+							<select name="quarterhw14" ng-model="data.filterhi14.quarter" class="form-control" convert-to-number>
+								<option value="0"> select quarter</option>
+								<option value="1"> First Quarter</option>
+								<option value="2"> Second Quarter</option>
+								<option value="3"> Third Quarter</option>
+								<option value="4"> Fourth Quarter</option>
+							</select>
+						</div>
+						<div class="col-sm-2 form-group">
 
-                    </div>
-                    <div class="col-sm-2">
-                        <button class="btn btn-sm btn-primary" ng-click="getReportHWUI()" ng-disabled="!data.filterhiui.year || !data.filterhiui.quarter">Display UC-B6</button>
-                    </div>
+							<label for="de9history" class="switch">
+								History?
+								<input id="de9history" type="checkbox" ng-model="data.filterhi14.includeHistory" /><i></i>
+							</label>
 
-                </div>
+						</div>
+						<div class="col-sm-2 form-group" ng-if="showincludeclients">
 
-            </div>
-        </div>
+							<label for="hi14clients" class="switch">
+								Clients/locations?
+								<input id="hi14clients" type="checkbox" ng-model="data.filterhi14.includeClients" /><i></i>
+							</label>
 
-		
+						</div>
+						<div class="col-sm-2">
+							<button class="btn btn-sm btn-primary" ng-click="getReportHW14()" ng-disabled="!data.filterhi14.year || !data.filterhi14.quarter">Display HW-14</button>
+						</div>
+
+					</div>
+
+				</div>
+				<div class="row">
+					<div class="col-sm-12">
+						<h5><i class=" fa fa-file-pdf-o fa-lg" /><span class="m-l-10"><em>Annual Withholding Return and Reconciliation – Form HW3</em></span></h5>
+					</div>
+					<div class="col-sm-12">
+						<div class="col-sm-3">
+							<select name="yearw3" ng-model="data.filterHW3.year" class="form-control" convert-to-number ng-options="year for year in data.filter.years track by year">
+								<option value=""> select year</option>
+							</select>
+						</div>
+						<div class="col-sm-3"></div>
+						<div class="col-sm-2 form-group">
+
+							<label for="hw3history" class="switch">
+								History?
+								<input id="hw3history" type="checkbox" ng-model="data.filterHW3.includeHistory" /><i></i>
+							</label>
+
+						</div>
+						<div class="col-sm-2 form-group" ng-if="showincludeclients">
+
+							<label for="hw3clients" class="switch">
+								Clients/locations?
+								<input id="hw3clients" type="checkbox" ng-model="data.filterHW3.includeClients" /><i></i>
+							</label>
+
+						</div>
+						<div class="col-sm-2">
+							<button class="btn btn-sm btn-primary" ng-click="getReportHW3()" ng-disabled="!data.filterHW3.year">Display HW3</button>
+						</div>
+
+					</div>
+
+				</div>
+				<div class="row">
+					<div class="col-sm-12">
+						<h5><i class=" fa fa-file-pdf-o fa-lg" /><span class="m-l-10"><em>Hawaii State Unemployment Insurance Electronic - Form UC-B6 </em></span></h5>
+					</div>
+					<div class="col-sm-12">
+						<div class="col-sm-3">
+							<select name="yearde9" ng-model="data.filterhiui.year" class="form-control" convert-to-number ng-options="year for year in data.filter.years track by year">
+								<option value=""> select year</option>
+							</select>
+						</div>
+						<div class="col-sm-3">
+							<select name="quarterhw14" ng-model="data.filterhiui.quarter" class="form-control" convert-to-number>
+								<option value="0"> select quarter</option>
+								<option value="1"> First Quarter</option>
+								<option value="2"> Second Quarter</option>
+								<option value="3"> Third Quarter</option>
+								<option value="4"> Fourth Quarter</option>
+							</select>
+						</div>
+						<div class="col-sm-2 form-group">
+
+							<label for="de9history" class="switch">
+								History?
+								<input id="de9history" type="checkbox" ng-model="data.filterhiui.includeHistory" /><i></i>
+							</label>
+
+						</div>
+						<div class="col-sm-2 form-group" ng-if="showincludeclients">
+
+							<label for="hiuiclients" class="switch">
+								Clients/locations?
+								<input id="hiuiclients" type="checkbox" ng-model="data.filterhiui.includeClients" /><i></i>
+							</label>
+
+						</div>
+						<div class="col-sm-2">
+							<button class="btn btn-sm btn-primary" ng-click="getReportHWUI()" ng-disabled="!data.filterhiui.year || !data.filterhiui.quarter">Display UC-B6</button>
+						</div>
+
+					</div>
+
+				</div>
+			</div>
+
 		</div>
 	</div>
 </div>

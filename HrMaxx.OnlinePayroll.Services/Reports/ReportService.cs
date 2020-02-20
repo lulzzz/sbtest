@@ -53,7 +53,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 		private readonly IReaderService _readerService;
 		private readonly IDocumentService _documentService;
 		private readonly IFileRepository _fileRepository;
-
+		private readonly IExcelService _excelService;
 		private readonly string _filePath;
 		private readonly string _templatePath;
 
@@ -66,7 +66,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 		
 		public IBus Bus { get; set; }
 
-		public ReportService(IReportRepository reportRepository, ICompanyRepository companyRepository, IJournalService journalService, IPDFService pdfService, ICommonService commonService, IHostService hostService, ITaxationService taxationService, IMetaDataRepository metaDataRepository, IReaderService readerService, IDocumentService documentService, IFileRepository fileRepository, string filePath, string templatePath)
+		public ReportService(IReportRepository reportRepository, ICompanyRepository companyRepository, IJournalService journalService, IPDFService pdfService, ICommonService commonService, IHostService hostService, ITaxationService taxationService, IMetaDataRepository metaDataRepository, IReaderService readerService, IDocumentService documentService, IFileRepository fileRepository, IExcelService excelService, string filePath, string templatePath)
 		{
 			_reportRepository = reportRepository;
 			_companyRepository = companyRepository;
@@ -81,6 +81,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			_readerService = readerService;
 			_documentService = documentService;
 			_fileRepository = fileRepository;
+			_excelService = excelService;
 		}
 
 
@@ -184,10 +185,16 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
                 else if (request.ReportName.Equals("StateHIUIForm"))
                     return StateHIUIForm(request);
                 else if (request.ReportName.Equals("StateHIHW14"))
-                    return StateHIHW14(request);
-                else if (request.ReportName.Equals("HW3"))
+                    return StateHIHW14(request);				
+				else if (request.ReportName.Equals("HW3"))
                     return GetHW3Report(request);
-                return null;
+				else if (request.ReportName.Equals("StateMTMW1"))
+					return StateMTMW1(request);
+				else if (request.ReportName.Equals("StateMTUIForm"))
+					return StateMTUIForm(request);
+				else if (request.ReportName.Equals("StateMTUI"))
+					return StateMTUI(request);
+				return null;
 			}
 			catch (Exception e)
 			{
@@ -1402,8 +1409,80 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 
 			return GetExtractTransformed(request, data, argList, "transformers/extracts/CAPITEFTPSExcel.xslt", "xls", string.Format("California State {2} PIT & DI Excel File-{0}-{1}.xls", request.Year, request.Quarter, request.DepositSchedule.Value.ToString()));
 		}
+		private FileDto StateMTMW1(ReportRequest request)
+		{
+			var response = new ReportResponse();
+			response.CompanyAccumulations = _readerService.GetTaxAccumulations(company: request.CompanyId, startdate: request.StartDate, enddate: request.EndDate,
+				type: AccumulationType.Company, includeTaxes: true, includeHistory: request.IncludeHistory, includeClients: request.IncludeClients,
+				extractDepositName: request.ExtractDepositName, state: (int)States.Montana).First();
+			response.Company = GetCompany(request.CompanyId);
+			response.Host = GetHost(request.HostId);
+			response.Contact = getContactForEntity(EntityTypeEnum.Host, request.HostId, response.Host.CompanyId);
+			response.CompanyContact = getContactForEntity(EntityTypeEnum.Company, request.CompanyId);
+			if (response.Company.FileUnderHost)
+			{
+				response.Company = response.Host.Company;
+			}
+			var argList = new XsltArgumentList();
 
-        private FileDto StateHIPIT(ReportRequest request)
+			argList.AddParam("stateEin", "", response.Company.States.First(s=>s.State.StateId==(int)States.Montana).StateEIN.Replace("WTH", string.Empty));
+			argList.AddParam("periodEndDate", "", request.EndDate.ToString("MMddyyyy"));
+			
+
+			return GetReportTransformedAndPrinted(request, response, argList, "transformers/reports/MTForms/MW-1.xslt");
+		}
+		private FileDto StateMTUI(ReportRequest request)
+		{
+			var response = new ReportResponse();
+			response.CompanyAccumulations = _readerService.GetTaxAccumulations(company: request.CompanyId, startdate: request.StartDate, enddate: request.EndDate,
+				type: AccumulationType.Company, includeTaxes: true, includeHistory: request.IncludeHistory, includeClients: request.IncludeClients,
+				extractDepositName: request.ExtractDepositName, state: (int)States.Montana).First();
+			response.Company = GetCompany(request.CompanyId);
+			var rows = new List<List<string>>();
+			rows.Add(new List<string> { response.CompanyAccumulations.PayCheckWages.Twelve1.ToString(), response.CompanyAccumulations.PayCheckWages.Twelve2.ToString(), response.CompanyAccumulations.PayCheckWages.Twelve3.ToString(), string.Empty });
+			response.EmployeeAccumulationList = _readerService.GetTaxAccumulations(company: request.CompanyId, startdate: request.StartDate, enddate: request.EndDate, type: AccumulationType.Employee, includeTaxes: true, includeHistory: request.IncludeHistory, includeClients: request.IncludeClients, report: "CaliforniaDE9C", state: (int)States.Montana).Where(e => e.PayCheckWages.GrossWage > 0).ToList();
+			response.EmployeeAccumulationList.ForEach(ea => {
+				ea.ExtractType = request.ExtractType;
+				rows.Add(new List<string>{ea.SSNVal, ea.LastName, ea.FirstName, ea.PayCheckWages.GrossWage.ToString("#,##0.00") });
+				});
+
+
+
+			return _excelService.GetExcelFile($"{response.Company.Name} - UI-9.xlsx", new List<string>(), rows);
+
+		}
+		private FileDto StateMTUIForm(ReportRequest request)
+		{
+			var response = new ReportResponse();
+			response.CompanyAccumulations = _readerService.GetTaxAccumulations(company: request.CompanyId, startdate: request.StartDate, enddate: request.EndDate,
+				type: AccumulationType.Company, includeTaxes: true, includeHistory: request.IncludeHistory, includeClients: request.IncludeClients,
+				extractDepositName: request.ExtractDepositName, state: (int)States.Montana).First();
+			response.EmployeeAccumulationList = _readerService.GetTaxAccumulations(company: request.CompanyId, startdate: request.StartDate, enddate: request.EndDate, type: AccumulationType.Employee, includeTaxes: true, includeHistory: request.IncludeHistory, includeClients: request.IncludeClients, report: "CaliforniaDE9C", state: (int)States.Montana).Where(e => e.PayCheckWages.GrossWage > 0).ToList();
+			response.CompanyAccumulations.ExtractType = request.ExtractType;
+			response.EmployeeAccumulationList.ForEach(ea => ea.ExtractType = request.ExtractType);
+
+			response.Company = GetCompany(request.CompanyId);
+			response.Host = GetHost(request.HostId);
+			response.Contact = getContactForEntity(EntityTypeEnum.Host, request.HostId, response.Host.CompanyId);
+			response.CompanyContact = getContactForEntity(EntityTypeEnum.Company, request.CompanyId);
+			if (response.Company.FileUnderHost)
+			{
+				response.Company = response.Host.Company;
+			}
+			var quarterEndDate = new DateTime(request.Year, request.Quarter * 3,
+				DateTime.DaysInMonth(request.Year, request.Quarter * 3));
+			var argList = new XsltArgumentList();
+
+			argList.AddParam("selectedYear", "", request.Year);
+			argList.AddParam("enddate", "", request.EndDate.ToString("MMddyy"));
+			argList.AddParam("quarter", "", request.Quarter.ToString());
+			argList.AddParam("today", "", DateTime.Today.ToString("MM/dd/yyyy"));
+			argList.AddParam("quarterEndDate", "", quarterEndDate.ToString("MM/dd/yyyy"));
+
+			return GetReportTransformedAndPrinted(request, response, argList, "transformers/reports/MTForms/UI-5.xslt");
+
+		}
+		private FileDto StateHIPIT(ReportRequest request)
         {
             var response = new ReportResponse();
             response.CompanyAccumulations = _readerService.GetTaxAccumulations(company: request.CompanyId, startdate: request.StartDate, enddate: request.EndDate,

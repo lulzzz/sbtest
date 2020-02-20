@@ -31,14 +31,16 @@ namespace HrMaxx.Common.Repository.Excel
 				e.SetCellValue(rowCounter, colummCounter++, columm);
 				e.SetCellBold(rowCounter, colummCounter-1);
 			}
+			if (columms.Any())
+				rowCounter++;
 			foreach (var row in rowList)
 			{
-				rowCounter++;
 				colummCounter = 1;
 				foreach (var str in row)
 				{
 					e.SetCellValue(rowCounter, colummCounter++, str);
 				}
+				rowCounter++;
 			}
 			if (hasSampleRow)
 			{
