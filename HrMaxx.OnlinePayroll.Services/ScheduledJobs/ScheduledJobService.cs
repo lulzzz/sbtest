@@ -149,11 +149,16 @@ namespace HrMaxx.OnlinePayroll.Services.ScheduledJobs
 
 		private DateTime GetPayrollNextRunDate(SchedulePayroll sp)
 		{
+			var nextPayDay = DateTime.Now.Date;
 			if (!sp.LastPayrollDate.HasValue)
-				return sp.PayDateStart.Date;
+				nextPayDay = sp.PayDateStart.Date;
 			int days = sp.PaySchedule == PayrollSchedule.Weekly ? 7 : sp.PaySchedule == PayrollSchedule.BiWeekly ? 14 : sp.PaySchedule == PayrollSchedule.SemiMonthly ? 15 : 30;
-			return sp.PaySchedule == PayrollSchedule.Monthly ? sp.LastPayrollDate.Value.Date.AddMonths(1).Date : sp.LastPayrollDate.Value.Date.AddDays(days).Date;
-
+			nextPayDay = sp.PaySchedule == PayrollSchedule.Monthly ? sp.LastPayrollDate.Value.Date.AddMonths(1).Date : sp.LastPayrollDate.Value.Date.AddDays(days).Date;
+			while(nextPayDay.DayOfWeek == DayOfWeek.Saturday || nextPayDay.DayOfWeek == DayOfWeek.Sunday)
+			{
+				nextPayDay = nextPayDay.AddDays(1);
+			}
+			return nextPayDay;
 
 		}
 		public void FillACHData()

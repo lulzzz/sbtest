@@ -4714,6 +4714,30 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 			}
 		}
 
-		
+		public SchedulePayroll DeleteSchedulePayroll(SchedulePayroll payroll)
+		{
+			try
+			{
+				using (var txn = TransactionScopeHelper.Transaction())
+				{
+					
+					_payrollRepository.DeleteSchedulePayroll(payroll);
+					
+					
+					txn.Complete();
+
+					return payroll;
+				}
+
+
+
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, e.Message);
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
 	}
 }

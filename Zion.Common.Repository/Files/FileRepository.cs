@@ -81,6 +81,8 @@ namespace HrMaxx.Common.Repository.Files
 		{
 			var filename =
                 $"{_archivePath}{rootdirectory}\\{(string.IsNullOrWhiteSpace(directory) ? string.Empty : directory + "\\")}{fileName}.json";
+			if (!File.Exists(filename))
+				return string.Empty;
 			return File.ReadAllText(filename);
 		}
 		public bool ArchiveFileExists(string rootdirectory, string directory, string fileName)

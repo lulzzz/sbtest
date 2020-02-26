@@ -25,7 +25,7 @@
 			</div>
 			<div class="row" ng-show="list.length>0">
 				<table ng-table="tableParams" class="table table-responsive" template-pagination="custom/pager">
-					<tr ng-repeat="item in tableData | orderBy:['-lastPayrollDate'] track by $index" class="mouse-over-pointer" ng-click="set(item)" ng-class="getClass(item)">
+					<tr ng-repeat="item in tableData | orderBy:['-lastPayrollDate'] track by $index" class="mouse-over-pointer"  ng-class="getClass(item)">
 						<td data-title=" 'Last Pay Date' " sortable=" 'lastPayrollDate' " class="col-sm-1">
 							{{item.lastPayrollDate | date:'MM/dd/yyyy hh:mm a'}}
 						</td>
@@ -51,7 +51,15 @@
 						<td data-title=" 'Next Pay Date' " sortable=" 'nextPayrollDate' " class="col-sm-1">
 							<i class="fa fa-calendar" style="color:orange"></i> {{item.nextPayrollDate | date:'MM/dd/yyyy'}}
 						</td>
-						<td class="col-sm-1 text-right dt-buttons button-group">
+						<td class="col-sm-1 text-right ">
+							<div class="btn-group dropdown m-r-5 m-b-5">
+								<a href="javascript:;" ng-click="set(item)" class="btn btn-sm btn-primary"><i class="fa fa-eye"></i></a>
+								<a href="javascript:;" ng-click="deletePayroll($event, item)" class="btn btn-sm btn-danger" ng-show="item.id"><i class="fa fa-trash"></i></a>
+								
+							</div>
+
+
+
 						</td>
 					</tr>
 

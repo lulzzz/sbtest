@@ -153,6 +153,16 @@ common.factory('payrollRepository', [
 
 				return deferred.promise;
 			},
+			deleteSchedulePayroll: function (payroll) {
+				var deferred = $q.defer();
+				payrollServer.all('DeleteScheduledPayroll').post(payroll).then(function (data) {
+					deferred.resolve(data);
+				}, function (error) {
+					deferred.reject(error);
+				});
+
+				return deferred.promise;
+			},
 			voidPayroll: function (payroll) {
 				var deferred = $q.defer();
 				payrollServer.all('VoidPayroll').post(payroll).then(function (data) {

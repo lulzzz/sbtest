@@ -453,10 +453,13 @@ common.directive('employee', ['zionAPI', '$timeout', '$window', 'version', '$uib
 								if (pc.id > 0)
 									$scope.selectedPayCodes.push({ id: pc.id });
 							});
-							$.each($scope.selected.payTypeAccruals, function (index, ac) {
-								if (ac > 0)
-									$scope.selectedAccruals.push({ id: ac });
-							});
+							if ($scope.selected.payTypeAccruals) {
+								$.each($scope.selected.payTypeAccruals, function (index, ac) {
+									if (ac > 0)
+										$scope.selectedAccruals.push({ id: ac });
+								});
+							}
+							
 							if ($scope.showControls) {
 								$timeout(function() {
 									$("#wizard").bwizard({

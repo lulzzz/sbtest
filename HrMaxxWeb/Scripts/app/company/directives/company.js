@@ -466,25 +466,25 @@ common.directive('company', ['$uibModal', 'zionAPI', '$timeout', '$window', 'ver
 										if (ui.index == 0) {
 											// step-1 validation
 											if (false === $('form[name="form-wizard"]').parsley().validate('wizard-step-1') || false === validateStep1()) {
-												$("#wizard").bwizard("show", "0")
+												
 												return false;
 											}
 										} else if (ui.index == 1) {
 											// step-2 validation
 											if (false === $('form[name="form-wizard"]').parsley().validate('wizard-step-2') || false === validateStep2()) {
-												$("#wizard").bwizard("show", "1")
+												
 												return false;
 											}
 										} else if (ui.index == 2) {
 											// step-3 validation
 											if (false === $('form[name="form-wizard"]').parsley().validate('wizard-step-3') || false === validateStep3()) {
-												$("#wizard").bwizard("show", "2")
+												
 												return false;
 											}
 										} else if (ui.index == 3) {
 											// step-3 validation
 											if (false === $('form[name="form-wizard"]').parsley().validate('wizard-step-4') || false === validateStep4()) {
-												$("#wizard").bwizard("show", "3")
+												
 												return false;
 											}
 										} else

@@ -965,5 +965,15 @@ LastModified=@LastModified, LastModifiedBy=@LastModifiedBy where Id=@Id;";
 			}
 		}
 
+		public void DeleteSchedulePayroll(SchedulePayroll payroll)
+		{
+			const string sql =
+				"delete from ScheduledPayroll where Id=@Id";
+
+			using (var conn = GetConnection())
+			{
+				conn.Execute(sql, payroll);
+			}
+		}
 	}
 }

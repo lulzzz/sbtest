@@ -326,14 +326,37 @@ namespace HrMaxxAPI.Controllers.Payrolls
 			var result =  Mapper.Map<List<SchedulePayroll>, List<SchedulePayrollResource>>(payrolls);
 			return result;
 		}
+		[HttpPost]
+		[Route(PayrollRoutes.DeleteSchedulePayroll)]
+		public SchedulePayrollResource DeleteSchdulePayroll(SchedulePayrollResource resource)
+		{
+			var mappedResource = Mapper.Map<SchedulePayrollResource, SchedulePayroll>(resource);
 
+			var processed = MakeServiceCall(() => _payrollService.DeleteSchedulePayroll(mappedResource),
+				$"delete schedule payroll for company={resource.Data.Company.Name} with Id={resource.Id}");
+			return Mapper.Map<SchedulePayroll, SchedulePayrollResource>(processed);
+		}
 		[HttpPost]
 		[Route(PayrollRoutes.SaveSchedulePayrolls)]
 		[DeflateCompression]
 		public List<SchedulePayrollResource> SaveScheduledPayrolls(SchedulePayrollResource resource)
 		{
+			if (!resource.LastPayrollDate.HasValue && resource.Data.PayChecks.Any(pc => pc.PaymentMethod == EmployeePaymentMethod.ProfitStars && pc.Included && !pc.ForcePayCheck))
+			{
+				var minPSDate = _achService.GetProfitStarsPaymentDate(DateTime.Now.Hour >= 13 ? DateTime.Today.AddDays(1) : DateTime.Today);
+				if (resource.PayDateStart.Date < minPSDate.Date)
+				{
+					throw new HttpResponseException(new HttpResponseMessage
+					{
+						StatusCode = HttpStatusCode.NotAcceptable,
+						Content = new StringContent("Payroll with Direct Deposit Payments must have a Pay Day On or After " + minPSDate.ToString("MM/dd/yyyy")),
+						ReasonPhrase = "Payroll with Direct Deposit Payments must have a Pay Day On or After " + minPSDate.ToString("MM/dd/yyyy")
+					});
+				}
+			}
 			try
 			{
+				
 				resource.Data.PayChecks.ForEach(p =>
 				{
 					p.StartDate = resource.Data.StartDate;

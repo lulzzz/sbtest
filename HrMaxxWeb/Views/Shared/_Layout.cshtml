@@ -251,8 +251,10 @@
                         <h2 class="modal-title">Version #{{memento.version}} Details</h2>
                     </div>
                     <div class="modal-body">
-
-                        <div class="row" ng-if="sourceTypeId===2">
+                        <div class="row" ng-if="sourceTypeId===2 && !memento.object">
+                            the document cannot be loaded at this time.
+                        </div>
+                        <div class="row" ng-if="sourceTypeId===2 && memento.object">
                             <company company="memento.object" main-data="mainData" is-popup="true" show-controls="false" />
                         </div>
                         <div class="row" ng-if="sourceTypeId===3">

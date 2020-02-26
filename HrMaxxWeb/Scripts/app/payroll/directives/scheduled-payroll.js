@@ -277,7 +277,7 @@ common.directive('scheduledPayroll', ['$uibModal', 'zionAPI', '$timeout', '$wind
 						var modalInstance = $modal.open({
 							templateUrl: 'popover/updatecomps1.html',
 							controller: 'updateCompsCtrl',
-							size: 'md',
+							size: 'sm',
 							windowClass: 'my-modal-popup',
 							resolve: {
 								paycheck: function() {
@@ -319,6 +319,12 @@ common.directive('scheduledPayroll', ['$uibModal', 'zionAPI', '$timeout', '$wind
 								},
 								companyRepository: function() {
 									return companyRepository;
+								},
+								payday: function () {
+									return $scope.item.payDay;
+								},
+								mainData: function () {
+									return $scope.mainData;
 								}
 							}
 						});

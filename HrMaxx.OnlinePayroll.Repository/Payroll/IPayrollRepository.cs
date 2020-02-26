@@ -75,6 +75,6 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 		void UpdateCompanyAndEmployeeLastPayrollDate();
         void SaveScheduledPayroll(SchedulePayroll payroll);
 		void FixPayCheckPayCodes(List<PayCheck> payChecks);
-
-	}
+        void DeleteSchedulePayroll(SchedulePayroll payroll);
+    }
 }

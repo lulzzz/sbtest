@@ -509,10 +509,10 @@ namespace HrMaxx.OnlinePayroll.Services.USTax
 			if (!TaxTables.MTSITTaxTable.Any(t => t.Year == payDay.Year))
 				throw new Exception("Taxes Not Available");
 			var n = payCheck.Employee.State.Exemptions;
-			var T = n>0 ? grossWage -
+			var T = grossWage -
 									   TaxTables.MTSITExemptionConstantTable.First(
 										   i => i.Year == payDay.Year && i.PayrollSchedule == payCheck.Employee.PayrollSchedule)
-										   .Amount * n : 0;
+										   .Amount * n;
 
 			var taxableWage = GetTaxExemptedDeductionAmount(payCheck, grossWage, tax);
 			T -= taxableWage;

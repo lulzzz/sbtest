@@ -744,8 +744,7 @@ common.controller('updateDedsCtrl', function ($scope, $uibModalInstance, $filter
 			
 
 		}
-		else
-			return true;
+		return true;
 	}
 	$scope.cancel = function () {
 		$uibModalInstance.dismiss();

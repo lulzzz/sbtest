@@ -83,5 +83,6 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 
 		void UpdateCompanyAndEmployeeLastPayrollDate();
 		List<SchedulePayroll> SaveSchedulePayroll(SchedulePayroll payroll);
-	}
+		SchedulePayroll DeleteSchedulePayroll(SchedulePayroll mappedResource);
+    }
 }
