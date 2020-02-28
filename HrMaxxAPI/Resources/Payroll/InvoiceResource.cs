@@ -59,7 +59,7 @@ namespace HrMaxxAPI.Resources.Payroll
 		public decimal Amount { get; set; }
 		public string Notes { get; set; }
 	}
-
+	
 	public class InvoicePaymentResource
 	{
 		public int? Id { get; set; }

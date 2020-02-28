@@ -592,10 +592,17 @@
           <Property Name="NetPay" Type="decimal" Precision="18" Scale="2" Nullable="false" />
           <Property Name="CheckPay" Type="decimal" Precision="18" Scale="2" Nullable="false" />
           <Property Name="DDPay" Type="decimal" Precision="18" Scale="2" Nullable="false" />
-          <Property Name="SalesRep" Type="uniqueidentifier" />
-          <Property Name="Commission" Type="decimal" Precision="18" Scale="2" />
           <Property Name="TaxesDelayed" Type="bit" />
           <Property Name="SpecialRequest" Type="varchar(max)" />
+        </EntityType>
+        <EntityType Name="PayrollInvoiceCommission">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="InvoiceId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="SalesRep" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="Amount" Type="decimal" Precision="18" Scale="2" Nullable="false" />
         </EntityType>
         <EntityType Name="PayrollPayCheck">
           <Key>
@@ -1170,6 +1177,20 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_InvoiceCommission_PayrollInvoice">
+          <End Role="PayrollInvoice" Type="Self.PayrollInvoice" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="PayrollInvoiceCommission" Type="Self.PayrollInvoiceCommission" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="PayrollInvoice">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="PayrollInvoiceCommission">
+              <PropertyRef Name="InvoiceId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_InvoicePayment_PayrollInvoice">
           <End Role="PayrollInvoice" Type="Self.PayrollInvoice" Multiplicity="1" />
           <End Role="InvoicePayment" Type="Self.InvoicePayment" Multiplicity="*" />
@@ -1360,6 +1381,7 @@
           <EntitySet Name="PayCheckExtract" EntityType="Self.PayCheckExtract" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Payroll" EntityType="Self.Payroll" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="PayrollInvoice" EntityType="Self.PayrollInvoice" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="PayrollInvoiceCommission" EntityType="Self.PayrollInvoiceCommission" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="PayrollPayCheck" EntityType="Self.PayrollPayCheck" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="PayType" EntityType="Self.PayType" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ReportConstants" EntityType="Self.ReportConstants" Schema="dbo" store:Type="Tables" />
@@ -1511,6 +1533,10 @@
           <AssociationSet Name="FK_Host_Company" Association="Self.FK_Host_Company">
             <End Role="Company" EntitySet="Company" />
             <End Role="Host" EntitySet="Host" />
+          </AssociationSet>
+          <AssociationSet Name="FK_InvoiceCommission_PayrollInvoice" Association="Self.FK_InvoiceCommission_PayrollInvoice">
+            <End Role="PayrollInvoice" EntitySet="PayrollInvoice" />
+            <End Role="PayrollInvoiceCommission" EntitySet="PayrollInvoiceCommission" />
           </AssociationSet>
           <AssociationSet Name="FK_InvoicePayment_PayrollInvoice" Association="Self.FK_InvoicePayment_PayrollInvoice">
             <End Role="PayrollInvoice" EntitySet="PayrollInvoice" />
@@ -1821,6 +1847,11 @@
           <AssociationSet Name="FK_EmployeeACA_Employee" Association="HrMaxxModel.FK_EmployeeACA_Employee">
             <End Role="Employee" EntitySet="Employees" />
             <End Role="EmployeeACA" EntitySet="EmployeeACAs" />
+          </AssociationSet>
+          <EntitySet Name="PayrollInvoiceCommissions" EntityType="HrMaxxModel.PayrollInvoiceCommission" />
+          <AssociationSet Name="FK_InvoiceCommission_PayrollInvoice" Association="HrMaxxModel.FK_InvoiceCommission_PayrollInvoice">
+            <End Role="PayrollInvoice" EntitySet="PayrollInvoices" />
+            <End Role="PayrollInvoiceCommission" EntitySet="PayrollInvoiceCommissions" />
           </AssociationSet>
           </EntityContainer>
         <EntityType Name="Host">
@@ -2842,11 +2873,10 @@
           <NavigationProperty Name="InvoicePayments" Relationship="HrMaxxModel.FK_InvoicePayment_PayrollInvoice" FromRole="PayrollInvoice" ToRole="InvoicePayment" />
           <NavigationProperty Name="Payroll" Relationship="HrMaxxModel.FK_PayrollInvoice_Payroll" FromRole="PayrollInvoice" ToRole="Payroll" />
           <NavigationProperty Name="PayrollPayChecks" Relationship="HrMaxxModel.FK_PayrollPayCheck_PayrollInvoice" FromRole="PayrollInvoice" ToRole="PayrollPayCheck" />
-          <Property Name="SalesRep" Type="Guid" />
-          <Property Name="Commission" Type="Decimal" Precision="18" Scale="2" />
           <NavigationProperty Name="CommissionExtracts" Relationship="HrMaxxModel.FK_CommissionExtract_PayrollInvoice" FromRole="PayrollInvoice" ToRole="CommissionExtract" />
           <Property Name="TaxesDelayed" Type="Boolean" />
           <Property Name="SpecialRequest" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="PayrollInvoiceCommissions" Relationship="HrMaxxModel.FK_InvoiceCommission_PayrollInvoice" FromRole="PayrollInvoice" ToRole="PayrollInvoiceCommission" />
         </EntityType>
         <Association Name="FK_PayrollInvoice_Company">
           <End Type="HrMaxxModel.Company" Role="Company" Multiplicity="1" />
@@ -3240,6 +3270,28 @@
             </Principal>
             <Dependent Role="EmployeeACA">
               <PropertyRef Name="EmployeeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="PayrollInvoiceCommission">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="InvoiceId" Type="Guid" Nullable="false" />
+          <Property Name="SalesRep" Type="Guid" Nullable="false" />
+          <Property Name="Amount" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
+          <NavigationProperty Name="PayrollInvoice" Relationship="HrMaxxModel.FK_InvoiceCommission_PayrollInvoice" FromRole="PayrollInvoiceCommission" ToRole="PayrollInvoice" />
+        </EntityType>
+        <Association Name="FK_InvoiceCommission_PayrollInvoice">
+          <End Type="HrMaxxModel.PayrollInvoice" Role="PayrollInvoice" Multiplicity="1" />
+          <End Type="HrMaxxModel.PayrollInvoiceCommission" Role="PayrollInvoiceCommission" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="PayrollInvoice">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="PayrollInvoiceCommission">
+              <PropertyRef Name="InvoiceId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -3804,8 +3856,6 @@
               <MappingFragment StoreEntitySet="PayrollInvoice">
                 <ScalarProperty Name="SpecialRequest" ColumnName="SpecialRequest" />
                 <ScalarProperty Name="TaxesDelayed" ColumnName="TaxesDelayed" />
-                <ScalarProperty Name="Commission" ColumnName="Commission" />
-                <ScalarProperty Name="SalesRep" ColumnName="SalesRep" />
                 <ScalarProperty Name="DDPay" ColumnName="DDPay" />
                 <ScalarProperty Name="CheckPay" ColumnName="CheckPay" />
                 <ScalarProperty Name="NetPay" ColumnName="NetPay" />
@@ -4015,6 +4065,16 @@
                 <ScalarProperty Name="Amount" ColumnName="Amount" />
                 <ScalarProperty Name="Year" ColumnName="Year" />
                 <ScalarProperty Name="EmployeeId" ColumnName="EmployeeId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="PayrollInvoiceCommissions">
+            <EntityTypeMapping TypeName="HrMaxxModel.PayrollInvoiceCommission">
+              <MappingFragment StoreEntitySet="PayrollInvoiceCommission">
+                <ScalarProperty Name="Amount" ColumnName="Amount" />
+                <ScalarProperty Name="SalesRep" ColumnName="SalesRep" />
+                <ScalarProperty Name="InvoiceId" ColumnName="InvoiceId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

@@ -84,5 +84,13 @@ namespace HrMaxx.Infrastructure.Repository
 				}
 			}
 		}
+		public void Execute(string query, object param = null)
+		{
+			using (var conn = GetConnection())
+			{
+				conn.Execute(query, param);
+
+			}
+		}
 	}
 }

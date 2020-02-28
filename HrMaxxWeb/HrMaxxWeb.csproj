@@ -309,9 +309,11 @@
     <Content Include="Content\images\coming-soon.jpg" />
     <Content Include="Content\morris.css" />
     <Content Include="Content\jstree.min.css" />
+    <Content Include="Content\templates\entity-documents.html" />
     <Content Include="Content\templates\log-view.html" />
     <Content Include="Content\templates\logs.html" />
     <Content Include="Scripts\angular1.5\angular-ui\ui-bootstrap-tpls-2.5.0.min.js" />
+    <Content Include="Scripts\app\common\directives\entity-documents.js" />
     <Content Include="Scripts\app\common\directives\log-viewer.js" />
     <Content Include="Scripts\app\common\directives\pay-type-list.js" />
     <Content Include="Scripts\app\payroll\directives\scheduled-payroll.js" />

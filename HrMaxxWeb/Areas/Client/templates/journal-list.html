@@ -153,27 +153,27 @@
 			</div>
 			<div class="panel panel-info" ng-if="selected && selected.transactionType===2">
 				<div class="panel-body tab-content">
-					<regular-check item="selected" datasvc="data" company="mainData.selectedCompany" show-controls="true" />
+					<regular-check item="selected" datasvc="data" company="mainData.selectedCompany" show-controls="true" main-data="mainData" />
 
 				</div>
 
 			</div>
 			<div class="panel panel-info" ng-if="selected && (selected.transactionType===5 || selected.transactionType===6)">
 				<div class="panel-body tab-content">
-					<tax-payment item="selected" datasvc="data" company="mainData.selectedCompany" show-controls="true" />
+					<tax-payment item="selected" datasvc="data" company="mainData.selectedCompany" show-controls="true" main-data="mainData"/>
 
 				</div>
 
 			</div>
 			<div class="panel panel-info" ng-if="selected && (selected.transactionType===3 || selected.transactionType===7)">
 				<div class="panel-body tab-content">
-					<deposit-ticket item="selected" datasvc="data" company="mainData.selectedCompany" show-controls="true" />
+					<deposit-ticket item="selected" datasvc="data" company="mainData.selectedCompany" show-controls="true" main-data="mainData"/>
 				</div>
 
 			</div>
 			<div class="panel panel-info" ng-if="selected && selected.transactionType===4">
 				<div class="panel-body tab-content">
-					<account-adjustment item="selected" datasvc="data" company="mainData.selectedCompany" show-controls="true" />
+					<account-adjustment item="selected" datasvc="data" company="mainData.selectedCompany" show-controls="true" main-data="mainData"/>
 				</div>
 
 			</div>

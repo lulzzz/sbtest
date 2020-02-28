@@ -556,6 +556,7 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 				.ForMember(dest => dest.Balance, opt => opt.MapFrom(src => src.Balance))
 				.ForMember(dest => dest.Company, opt => opt.Ignore())
 				.ForMember(dest => dest.DeliveryClaimedOn, opt => opt.Ignore())
+				.ForMember(dest => dest.PayrollInvoiceCommissions, opt => opt.MapFrom(src=>src.Commissions))
 				.ForMember(dest => dest.DeliveryClaimedBy, opt => opt.Ignore())
 				.ForMember(dest => dest.PayrollPayChecks, opt => opt.Ignore())
 				.ForMember(dest => dest.InvoicePayments, opt => opt.MapFrom(src=>src.InvoicePayments))
@@ -572,6 +573,7 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 				.ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.LastModifiedBy))
 				.ForMember(dest => dest.Company, opt => opt.MapFrom(src=>src.Company))
 				.ForMember(dest => dest.InvoicePayments, opt => opt.MapFrom(src => src.InvoicePayments))
+				.ForMember(dest => dest.Commissions, opt => opt.MapFrom(src => src.PayrollInvoiceCommissions))
 				.ForMember(dest => dest.PayChecks, opt => opt.MapFrom(src => !string.IsNullOrWhiteSpace(src.PayChecks) ? JsonConvert.DeserializeObject<List<int>>(src.PayChecks) : new List<int>()))
 				.ForMember(dest => dest.VoidedCreditedChecks, opt => opt.MapFrom(src => !string.IsNullOrWhiteSpace(src.VoidedCreditChecks) ? JsonConvert.DeserializeObject<List<int>>(src.VoidedCreditChecks) : new List<int>()))
 				.ForMember(dest => dest.UserId, opt => opt.Ignore())
@@ -579,6 +581,9 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 				.ForMember(dest => dest.PayrollPayDay, opt => opt.MapFrom(src=>src.Payroll.PayDay));
 
 			CreateMap<Models.InvoicePayment, Models.DataModel.InvoicePayment>()
+				.ForMember(dest => dest.PayrollInvoice, opt => opt.Ignore());
+			CreateMap<Models.DataModel.PayrollInvoiceCommission, Models.PayrollInvoiceCommission>();
+			CreateMap<Models.PayrollInvoiceCommission, Models.DataModel.PayrollInvoiceCommission>()
 				.ForMember(dest => dest.PayrollInvoice, opt => opt.Ignore());
 			CreateMap<Models.DataModel.InvoicePayment, Models.InvoicePayment>()
 				.ForMember(dest => dest.HasChanged, opt => opt.MapFrom(src=>false));

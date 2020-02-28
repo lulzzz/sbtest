@@ -260,7 +260,8 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 		public bool PrintClientName { get; set; }
 		public bool PaysByAch { get; set; }
 		public List<RecurringChargeResource> RecurringCharges { get; set; }
-		public SalesRepResource SalesRep { get; set; } 
+		public List<SalesRepResource> SalesReps { get; set; } 
+		public SalesRepResource SalesRep { get; set; }
 	}
 
 	public class RecurringChargeResource

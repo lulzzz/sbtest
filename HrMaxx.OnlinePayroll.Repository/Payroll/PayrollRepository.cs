@@ -112,14 +112,16 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 			
 			const string pisql = "select * from PayrollInvoice with (nolock) where Id=@Id or PayrollId=@PayrollId";
 			const string pipaysql = "select * from InvoicePayment  with (nolock) where InvoiceId=@Id";
+			const string picommsql = "select * from PayrollInvoiceCommission  with (nolock) where InvoiceId=@Id";
 			const string insertsql =
 						"insert into PayrollInvoice(Id,CompanyId,PayrollId,PeriodStart,PeriodEnd,InvoiceSetup,GrossWages,EmployerTaxes,InvoiceDate,NoOfChecks,Deductions,WorkerCompensations,EmployeeContribution,EmployerContribution,AdminFee,EnvironmentalFee,MiscCharges,Total,Status,SubmittedOn,SubmittedBy,DeliveredOn,DeliveredBy,LastModified,LastModifiedBy,Courier,EmployeeTaxes,Notes,ProcessedBy,Balance,ProcessedOn,PayChecks,VoidedCreditChecks,ApplyWCMinWageLimit,DeliveryClaimedBy,DeliveryClaimedOn,NetPay,CheckPay,DDPay,SalesRep,Commission, SpecialRequest) values(@Id,@CompanyId,@PayrollId,@PeriodStart,@PeriodEnd,@InvoiceSetup,@GrossWages,@EmployerTaxes,@InvoiceDate,@NoOfChecks,@Deductions,@WorkerCompensations,@EmployeeContribution,@EmployerContribution,@AdminFee,@EnvironmentalFee,@MiscCharges,@Total,@Status,@SubmittedOn,@SubmittedBy,@DeliveredOn,@DeliveredBy,@LastModified,@LastModifiedBy,@Courier,@EmployeeTaxes,@Notes,@ProcessedBy,@Balance,@ProcessedOn,@PayChecks,@VoidedCreditChecks,@ApplyWCMinWageLimit,@DeliveryClaimedBy,@DeliveryClaimedOn,@NetPay,@CheckPay,@DDPay,@SalesRep,@Commission, @SpecialRequest); select cast(scope_identity() as int)";
+			const string insertcommission = "insert into PayrollInvoiceCommission(InvoiceId, SalesRep, Amount) values(@InvoiceId, @SalesRep, @Amount);";
 			const string updatepayrollsql =
 				"update Payroll set InvoiceId=@Id where Id=@PayrollId;update PayrollPayCheck set InvoiceId=@Id where Id in @PayCheckIds;";
 
 			const string updatecreditcheckssql = "update PayrollPayCheck set CreditInvoiceId=@Id where Id in @CreditChecks;";
 			const string updateRecurringChargeClaimed = "update CompanyRecurringCharge set Claimed=(Claimed+@Claimed) where Id=@Id;";
-
+			const string deletecommission = "delete from PayrollInvoiceCommission where InvoiceId=@InvoiceId;";
 			var mapped = _mapper.Map<Models.PayrollInvoice, Models.DataModel.PayrollInvoice>(payrollInvoice);
 			using (var conn = GetConnection())
 			{
@@ -129,6 +131,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 				if (pi == null)
 				{
 					payrollInvoice.InvoiceNumber = conn.Query<int>(insertsql, mapped).Single();
+					conn.Execute(insertcommission, payrollInvoice.Commissions);
 					strLog.AppendLine("Created Invoice " + DateTime.Now.ToString("hh:mm:ss:fff"));
 					conn.Execute(updatepayrollsql,
 						new
@@ -164,6 +167,8 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 																		where Id=@Id";
 					
 					conn.Execute(updatepisql, mapped);
+					conn.Execute(deletecommission, new { InvoiceId = mapped.Id });
+					conn.Execute(insertcommission, mapped.PayrollInvoiceCommissions);
 					strLog.AppendLine("Updated Invoice " + DateTime.Now.ToString("hh:mm:ss:fff"));
 					if (!string.IsNullOrWhiteSpace(pi.VoidedCreditChecks) && pi.VoidedCreditChecks!=mapped.VoidedCreditChecks)
 					{
@@ -395,15 +400,7 @@ LastModified=@LastModified, LastModifiedBy=@LastModifiedBy where Id=@Id;";
 			});
 			_dbContext.SaveChanges();
 		}
-
-		public void SavePayrollInvoiceCommission(PayrollInvoice payrollInvoice)
-		{
-			var dbi = _dbContext.PayrollInvoices.First(i => i.Id == payrollInvoice.Id);
-			dbi.SalesRep = payrollInvoice.SalesRep;
-			dbi.Commission = payrollInvoice.Commission;
-			_dbContext.SaveChanges();
-		}
-		
+				
 		public List<InvoiceDeliveryClaim> GetInvoiceDeliveryClaims(DateTime? startDate, DateTime? endDate)
 		{
 			var dbClaims = _dbContext.InvoiceDeliveryClaims.Where(id => ((startDate.HasValue && id.DeliveryClaimedOn >= startDate.Value) || (!startDate.HasValue)) && ((endDate.HasValue && id.DeliveryClaimedOn <= endDate.Value) || (!endDate.HasValue))).ToList();

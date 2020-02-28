@@ -53,12 +53,12 @@ namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
 		public decimal NetPay { get; set; }
 		public decimal CheckPay { get; set; }
 		public decimal DDPay { get; set; }
-		public Guid? SalesRep { get; set; }
-		public decimal Commission { get; set; }
+		
 		public DateTime PayrollPayDay { get; set; }
 		public DateTime PayrollTaxPayDay { get; set; }
 		public CompanyJson Company { get; set; }
 		public List<InvoicePaymentJson> InvoicePayments { get; set; }
+		public List<PayrollInvoiceCommissionJson> Commissions { get; set; }
 		public bool CommissionClaimed { get; set; }
 		public bool TaxesDelayed { get; set; }
 		
@@ -76,6 +76,13 @@ namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
 		public string Notes { get; set; }
 		public DateTime LastModified { get; set; }
 		public string LastModifiedBy { get; set; }
+	}
+	public class PayrollInvoiceCommissionJson
+	{
+		public int Id { get; set; }
+		public Guid InvoiceId { get; set; }
+		public Guid SalesRep { get; set; }
+		public decimal Amount { get; set; }
 	}
 
 	public class XmlResult

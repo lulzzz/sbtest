@@ -23,20 +23,6 @@ namespace HrMaxxAPI.Resources.Payroll
         public Guid? LastPayrollId { get; set; }
         public string StatusText { get { return Status.GetDbName(); } }
         public string ScheduleText { get { return PaySchedule.GetDbName(); } }
-        public DateTime NextPayrollDate
-        {
-            get
-            {
-                var nextPayDay = !LastPayrollDate.HasValue ? PayDateStart : (PaySchedule == PayrollSchedule.Weekly ? LastPayrollDate.Value.AddDays(7) :
-                PaySchedule == PayrollSchedule.BiWeekly ? LastPayrollDate.Value.AddDays(14) :
-                PaySchedule == PayrollSchedule.SemiMonthly ? LastPayrollDate.Value.AddDays(15) :
-                LastPayrollDate.Value.AddMonths(1)).Date;
-                while (nextPayDay.DayOfWeek == DayOfWeek.Saturday || nextPayDay.DayOfWeek == DayOfWeek.Sunday)
-                {
-                    nextPayDay = nextPayDay.AddDays(1);
-                }
-                return nextPayDay;
-            }
-        }
+        public DateTime NextPayrollDate { get; set; }
     }
 }

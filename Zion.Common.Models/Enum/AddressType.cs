@@ -43,8 +43,10 @@ namespace HrMaxx.Common.Models.Enum
         [HrMaxxSecurity(DbId = 4, DbName = "Employee On-Boarding")]
         EmployeeOnBoarding = 4,
         [HrMaxxSecurity(DbId = 5, DbName = "Employee Compliance")]
-        EmployeeCompliance = 5
-    }
+        EmployeeCompliance = 5,
+		[HrMaxxSecurity(DbId = 6, DbName = "Entity Document")]
+		EntityDocument = 6
+	}
 
     public enum DocumentCategory
 	{
@@ -53,6 +55,8 @@ namespace HrMaxx.Common.Models.Enum
 		[HrMaxxSecurity(DbId = 3, DbName = "Employee Document")]
 		Employee = 3,
 		[HrMaxxSecurity(DbId = 2, DbName = "Company Document for Employee")]
-		CompanyEmployeeDocument = 2
+		CompanyEmployeeDocument = 2,
+		[HrMaxxSecurity(DbId = 4, DbName = "Entity Document")]
+		EntityDocument = 4
 	}
 }

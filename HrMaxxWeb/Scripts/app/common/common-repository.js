@@ -263,6 +263,16 @@ common.factory('commonRepository', [
 
 				return deferred.promise;
 			},
+			getDocuments: function (sourceType, sourceId) {
+				var deferred = $q.defer();
+				commonServer.one('Common/Documents/' + sourceType + '/' + sourceId).getList().then(function (data) {
+					deferred.resolve(data);
+				}, function (error) {
+					deferred.reject(error);
+				});
+
+				return deferred.promise;
+			},
 			getEmployeeDocumentsMetaData: function (companyId, employeeId) {
 				var deferred = $q.defer();
 				commonServer.one('Document/EmployeeDocumentMetaData').one(companyId, employeeId).get().then(function (data) {

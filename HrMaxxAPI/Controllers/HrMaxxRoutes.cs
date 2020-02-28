@@ -24,6 +24,7 @@
         public const string DeleteEmployeeDocument = "Document/DeleteEmployeeDocument/{employeeId:guid}/{documentId:guid}";
         public const string SaveDocumentType = "SaveDocumentType";
 
+		
 		public const string Addresses = "Common/Addresses/{sourceTypeId:int}/{sourceId:guid}";
 		public const string FirstAddress = "Common/FirstAddress/{sourceTypeId:int}/{sourceId:guid}";
 		public const string Documents = "Common/Documents/{sourceTypeId:int}/{sourceId:guid}";

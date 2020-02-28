@@ -96,6 +96,8 @@
         <AssociationConnector Association="HrMaxxModel.FK_CompanyRecurringCharge_Company" />
         <EntityTypeShape EntityType="HrMaxxModel.EmployeeACA" Width="1.5" PointX="16.125" PointY="23.625" />
         <AssociationConnector Association="HrMaxxModel.FK_EmployeeACA_Employee" />
+        <EntityTypeShape EntityType="HrMaxxModel.PayrollInvoiceCommission" Width="1.5" PointX="25.875" PointY="0.75" />
+        <AssociationConnector Association="HrMaxxModel.FK_InvoiceCommission_PayrollInvoice" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

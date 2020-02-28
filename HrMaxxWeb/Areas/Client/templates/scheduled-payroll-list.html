@@ -26,7 +26,7 @@
 			<div class="row" ng-show="list.length>0">
 				<table ng-table="tableParams" class="table table-responsive" template-pagination="custom/pager">
 					<tr ng-repeat="item in tableData | orderBy:['-lastPayrollDate'] track by $index" class="mouse-over-pointer"  ng-class="getClass(item)">
-						<td data-title=" 'Last Pay Date' " sortable=" 'lastPayrollDate' " class="col-sm-1">
+						<td data-title=" 'Last Run Date' " sortable=" 'lastPayrollDate' " class="col-sm-1">
 							{{item.lastPayrollDate | date:'MM/dd/yyyy hh:mm a'}}
 						</td>
 						<td data-title=" 'Pay Schedule Start Date' " sortable=" 'scheduleStartDate' " class="col-sm-1">
@@ -48,7 +48,7 @@
 						<td data-title=" 'Status' " sortable=" 'statusText' " class="col-sm-1">
 							{{item.statusText}}
 						</td>
-						<td data-title=" 'Next Pay Date' " sortable=" 'nextPayrollDate' " class="col-sm-1">
+						<td data-title=" 'Next Run Date' " sortable=" 'nextPayrollDate' " class="col-sm-1">
 							<i class="fa fa-calendar" style="color:orange"></i> {{item.nextPayrollDate | date:'MM/dd/yyyy'}}
 						</td>
 						<td class="col-sm-1 text-right ">

@@ -46,6 +46,7 @@ namespace HrMaxxAPI.Resources.Payroll
 		public CompanyResource Company { get; set; }
 		public string Courier { get; set; }
 		public List<InvoicePaymentResource> InvoicePayments { get; set; }
+		public List<PayrollInvoiceCommission> Commissions { get; set; }
 		public List<InvoiceLateFeeConfig> TaxPaneltyConfig { get; set; }
 		public string Notes { get; set; }
 		public string SpecialRequest { get; set; }
@@ -62,8 +63,7 @@ namespace HrMaxxAPI.Resources.Payroll
 		public decimal DDPay { get; set; }
 		public decimal NetPay { get; set; }
 
-		public Guid? SalesRep { get; set; }
-		public decimal Commission { get; set; }
+		
 		public bool CommissionClaimed { get; set; }
 
 		public string DeliveryClaimedBy { get; set; }

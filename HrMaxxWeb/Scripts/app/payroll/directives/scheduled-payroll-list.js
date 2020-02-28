@@ -279,7 +279,7 @@ common.directive('scheduledPayrollList', ['zionAPI', '$timeout', '$window', 'ver
 								
 							}, function (error) {
 								$scope.set($scope.selected);
-								$scope.mainData.showMessage('error saving scheduled payroll', 'danger');
+								$scope.mainData.handleError('', error, 'danger');
 							});
 						}, function () {
 							$scope.set(item);

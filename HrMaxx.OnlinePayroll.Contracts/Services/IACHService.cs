@@ -16,6 +16,7 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 		List<ProfitStarsPayrollFund> GetProfitStarsPayrollList();
 		List<ProfitStarsPayrollFund> MarkFundingSuccessful(int fundRequestId);
 		DateTime GetProfitStarsPaymentDate(DateTime today);
-		
+		DateTime GetProfitStarsMinRunDate(DateTime today);
+
 	}
 }

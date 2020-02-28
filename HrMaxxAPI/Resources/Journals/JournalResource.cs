@@ -83,6 +83,7 @@ namespace HrMaxxAPI.Resources.Journals
 		{
 			get { return IsVoid ? "Void" : string.Empty; }
 		}
+		public Guid SourceId { get { return Utilities.GetGuidFromEntityTypeAndId(EntityType1, Id.Value); } }
 	}
 
 	public class JournalDetailResource

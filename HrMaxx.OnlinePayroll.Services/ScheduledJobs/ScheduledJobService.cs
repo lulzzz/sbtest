@@ -97,14 +97,14 @@ namespace HrMaxx.OnlinePayroll.Services.ScheduledJobs
 			try
 			{
 				const string query = "select * from ScheduledPayroll;";
-				var scheduledPayrolls = _readerService.GetQueryData<ScheduledPayrollJson, SchedulePayroll>(query).Where(sp => DateTime.Today == GetPayrollNextRunDate(sp)).ToList();
+				var scheduledPayrolls = _readerService.GetQueryData<ScheduledPayrollJson, SchedulePayroll>(query).Where(sp => GetPayrollNextRunDate(sp)).ToList();
 				Log.Info($"Starting Running Scheduled Payrolls - {scheduledPayrolls.Count}");
 				scheduledPayrolls.ForEach(sp =>
 				{
 					
 					var payroll = sp.Data;
-					payroll.PayDay = DateTime.Today;
-					payroll.TaxPayDay = DateTime.Today;
+					payroll.PayDay = sp.NextPayrollDate;
+					payroll.TaxPayDay = sp.NextPayrollDate;
 					if (sp.LastPayrollDate.HasValue)
 					{
 						var lastPayroll = _readerService.GetPayroll(sp.LastPayrollId.Value);
@@ -147,18 +147,16 @@ namespace HrMaxx.OnlinePayroll.Services.ScheduledJobs
 			}
 		}
 
-		private DateTime GetPayrollNextRunDate(SchedulePayroll sp)
+		private bool GetPayrollNextRunDate(SchedulePayroll sp)
 		{
-			var nextPayDay = DateTime.Now.Date;
-			if (!sp.LastPayrollDate.HasValue)
-				nextPayDay = sp.PayDateStart.Date;
-			int days = sp.PaySchedule == PayrollSchedule.Weekly ? 7 : sp.PaySchedule == PayrollSchedule.BiWeekly ? 14 : sp.PaySchedule == PayrollSchedule.SemiMonthly ? 15 : 30;
-			nextPayDay = sp.PaySchedule == PayrollSchedule.Monthly ? sp.LastPayrollDate.Value.Date.AddMonths(1).Date : sp.LastPayrollDate.Value.Date.AddDays(days).Date;
-			while(nextPayDay.DayOfWeek == DayOfWeek.Saturday || nextPayDay.DayOfWeek == DayOfWeek.Sunday)
+			var nextPayDay = sp.NextPayrollDate;
+			
+			if (sp.Data.PayChecks.Any(pc => pc.PaymentMethod == EmployeePaymentMethod.ProfitStars))
 			{
-				nextPayDay = nextPayDay.AddDays(1);
+				nextPayDay = _achService.GetProfitStarsMinRunDate(sp.NextPayrollDate);
+
 			}
-			return nextPayDay;
+			return nextPayDay.Date==DateTime.Today.Date;
 
 		}
 		public void FillACHData()

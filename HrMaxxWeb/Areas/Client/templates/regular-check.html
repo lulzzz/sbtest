@@ -1,5 +1,5 @@
 ﻿<div class="row">
-	<div class="col-sm-10 col-sm-offset-1" style="background-color:lightgray">
+	<div class="col-sm-12" style="background-color:lightgray">
 		<div class="row p-10">
 			<div class="col-sm-8 text-bold" style="color: darkgreen">
 				<div class="col-sm-12">
@@ -76,13 +76,13 @@
 
 
 	</div>
-	<div class="col-sm-10 col-sm-offset-1" ng-show="showControls">
+	<div class="col-sm-12" ng-show="showControls">
 		<button class="btn btn-sm btn-default pull-right m-5" ng-click="cancel()"><i class="fa fa-undo m-r-5"></i> Cancel</button>
 		<button class="btn btn-sm btn-primary pull-right m-5" ng-click="save()" ng-disabled="isCheckInValid()" ng-show="!item.isVoid"><i class="fa fa-check m-r-5"></i> Save</button>
 		<button class="btn btn-sm btn-success pull-right m-5" ng-click="print()" ng-show="item.id && !item.isVoid && !hasChanged()"><i class="fa fa-print m-r-5"></i>print</button>
 		<button class="btn btn-sm btn-warning pull-right m-5" ng-click="void()" ng-show="item.id && !item.isVoid">void</button>
 	</div>
-	<div class="col-sm-10 col-sm-offset-1" >
+	<div class="col-sm-12" >
 		<table class="table table-header table-bordered table-condensed form-controls input-sm">
 			<thead>
 				<tr>
@@ -113,14 +113,14 @@
 					<td style="white-space: nowrap" ng-show="showControls">
 						<!-- form -->
 						<form editable-form id="rowform" name="rowform" onbeforesave="saveJournalDetail(jd)" class="form-buttons form-inline" shown="selectedjd===jd" ng-show="!item.isVoid">
-							<button type="button" ng-show="!rowform.$visible" class="btn btn-primary" ng-click="rowform.$show();setselectedjd(jd)">
-								edit
+							<button type="button" ng-show="!rowform.$visible" class="btn btn-sm btn-primary" ng-click="rowform.$show();setselectedjd(jd)">
+								<i class="fa fa-pencil"/>
 							</button>
-							<button type="submit" ng-disabled="rowform.$waiting || !isJournalDetailValid(jd)" ng-show="rowform.$visible" class="btn btn-success">
-								save
+							<button type="submit" ng-disabled="rowform.$waiting || !isJournalDetailValid(jd)" ng-show="rowform.$visible" class="btn btn-sm btn-success">
+								<i class="fa fa-check"/>
 							</button>
-							<button type="button" ng-disabled="rowform.$waiting" ng-show="rowform.$visible" ng-click="rowform.$cancel();canceljd($index)" class="btn btn-default">
-								cancel
+							<button type="button" ng-disabled="rowform.$waiting" ng-show="rowform.$visible" ng-click="rowform.$cancel();canceljd($index)" class="btn btn-sm btn-default">
+								<i class="fa fa-undo"/>
 							</button>
 						</form>
 					</td>
@@ -140,6 +140,9 @@
 
 			</tbody>
 		</table>
+	</div>
+	<div class="col-sm-12" ng-if="item.id">
+		<entity-documents main-data="mainData" source-type-id="item.entityType1" heading="'Documents'" source-id="item.sourceId"/>
 	</div>
 </div>
 

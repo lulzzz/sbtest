@@ -136,6 +136,8 @@ namespace HrMaxx.OnlinePayroll.ReadServices.Mappers
 			CreateMap<Models.JsonDataModel.InvoicePaymentJson, Models.InvoicePayment>()
 				.ForMember(dest => dest.HasChanged, opt => opt.MapFrom(src => false));
 
+			CreateMap<Models.JsonDataModel.PayrollInvoiceCommissionJson, Models.PayrollInvoiceCommission>();
+
 			CreateMap<Models.JsonDataModel.PayrollPayCheckJson, PayCheck>()
 				.ForMember(dest => dest.Employee, opt => opt.MapFrom(src => JsonConvert.DeserializeObject<Employee>(src.Employee)))
 				.ForMember(dest => dest.PayCodes, opt => opt.MapFrom(src => JsonConvert.DeserializeObject<List<PayrollPayCode>>(src.PayCodes)))

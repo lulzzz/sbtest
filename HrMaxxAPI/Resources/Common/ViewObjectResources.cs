@@ -80,9 +80,8 @@ namespace HrMaxxAPI.Resources.Common
 		{
 			get
 			{
-				return InvoiceSetup!=null && InvoiceSetup.SalesRep != null
-					? string.Format("{0} {1}", InvoiceSetup.SalesRep.User.FirstName,
-						InvoiceSetup.SalesRep.User.LastName)
+				return InvoiceSetup!=null && InvoiceSetup.SalesReps != null
+					? InvoiceSetup.SalesReps.Aggregate(string.Empty, (current, m) => current + string.Format("{0} {1}", m.User.FirstName, m.User.LastName) + ", ")
 					: string.Empty;
 			}
 		}
@@ -91,8 +90,9 @@ namespace HrMaxxAPI.Resources.Common
 		{
 			get
 			{
-				return InvoiceSetup!=null && InvoiceSetup.SalesRep != null ?
-					string.Format("{0}{1}{2}", InvoiceSetup.SalesRep.Method == DeductionMethod.Amount ? "$" : "", InvoiceSetup.SalesRep.Rate, InvoiceSetup.SalesRep.Method == DeductionMethod.Amount ? "" : "%") :
+				return InvoiceSetup!=null && InvoiceSetup.SalesReps != null 
+					? InvoiceSetup.SalesReps.Aggregate(string.Empty, (current, m) => current + string.Format("{0}{1}{2}", m.Method == DeductionMethod.Amount ? "$" : "", m.Rate, m.Method == DeductionMethod.Amount ? "" : "%")) :
+					 
 					string.Empty;
 			}
 		}

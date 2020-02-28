@@ -60,7 +60,7 @@
 				</div>
 				<div class="col-sm-4">
 					<date-ctrl name="startdate" required="true" model="item.transactionDate" disabled="item.id" />
-					
+
 				</div>
 			</div>
 		</div>
@@ -83,7 +83,7 @@
 		<button class="btn btn-sm btn-default pull-right m-5" ng-click="cancel()"><i class="fa fa-undo m-r-5"></i> Cancel</button>
 		<button class="btn btn-sm btn-primary pull-right m-5" ng-click="save()" ng-disabled="isCheckInValid()" ng-show="!item.isVoid"><i class="fa fa-check m-r-5"></i> Save</button>
 		<button class="btn btn-sm btn-success pull-right m-5" ng-click="print()" ng-show="item.id && !item.isVoid && !hasChanged()"><i class="fa fa-print m-r-5"></i>print</button>
-		<button class="btn btn-sm btn-warning pull-right m-5" ng-click="void()" ng-show="item.id && !item.isVoid" >void</button>
+		<button class="btn btn-sm btn-warning pull-right m-5" ng-click="void()" ng-show="item.id && !item.isVoid">void</button>
 	</div>
 	<div class="col-sm-12">
 		<table class="table table-header table-bordered table-condensed form-controls input-sm">
@@ -137,19 +137,19 @@
 					<td style="white-space: nowrap" ng-show="showControls">
 						<!-- form -->
 						<form editable-form id="rowform" name="rowform" onbeforesave="saveJournalDetail(jd)" class="form-buttons form-inline" shown="selectedjd===jd">
-							<button title="edit" type="button" ng-show="!rowform.$visible" ng-disabled="selectedjd" class="btn btn-primary" ng-click="rowform.$show();setselectedjd(jd)">
+							<button title="edit" type="button" ng-show="!rowform.$visible" ng-disabled="selectedjd" class="btn btn-sm btn-primary" ng-click="rowform.$show();setselectedjd(jd)">
 								<i class="fa fa-pencil"></i>
 							</button>
-							<button title="deposit" type="button" ng-show="!rowform.$visible && item.transactionType===7 && !jd.deposited && jd.depositMethod.key===1" ng-disabled="selectedjd" class="btn btn-success" ng-click="jd.deposited=true">
+							<button title="deposit" type="button" ng-show="!rowform.$visible && item.transactionType===7 && !jd.deposited && jd.depositMethod.key===1" ng-disabled="selectedjd" class="btn btn-sm btn-success" ng-click="jd.deposited=true">
 								<i class="fa fa-dollar"></i>
 							</button>
-							<button title="remove" type="button" ng-show="!rowform.$visible" ng-disabled="selectedjd" class="btn btn-danger" ng-click="removejd(jd)">
+							<button title="remove" type="button" ng-show="!rowform.$visible" ng-disabled="selectedjd" class="btn btn-sm btn-danger" ng-click="removejd(jd)">
 								<i class="fa fa-fire"></i>
 							</button>
-							<button title="save" type="submit" ng-disabled="rowform.$waiting || !isJournalDetailValid(jd)" ng-show="rowform.$visible" class="btn btn-success">
+							<button title="save" type="submit" ng-disabled="rowform.$waiting || !isJournalDetailValid(jd)" ng-show="rowform.$visible" class="btn btn-sm btn-success">
 								<i class="fa fa-check"></i>
 							</button>
-							<button title="cancel" type="button" ng-disabled="rowform.$waiting" ng-show="rowform.$visible" ng-click="rowform.$cancel();canceljd($index)" class="btn btn-default">
+							<button title="cancel" type="button" ng-disabled="rowform.$waiting" ng-show="rowform.$visible" ng-click="rowform.$cancel();canceljd($index)" class="btn btn-sm btn-default">
 								<i class="fa fa-undo"></i>
 							</button>
 						</form>
@@ -170,6 +170,9 @@
 
 			</tbody>
 		</table>
+	</div>
+	<div class="col-sm-10" ng-if="item.id">
+		<entity-documents main-data="mainData" source-type-id="item.entityType1" heading="'Documents'" source-id="item.sourceId" />
 	</div>
 </div>
 

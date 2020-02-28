@@ -118,9 +118,9 @@ namespace HrMaxxAPI.Controllers
 
 		[System.Web.Http.HttpGet]
 		[System.Web.Http.Route(HrMaxxRoutes.Documents)]
-		public IList<DocumentDto> Documents(int sourceTypeId, Guid sourceId)
+		public IList<Document> Documents(int sourceTypeId, Guid sourceId)
 		{
-			return MakeServiceCall(() => _commonService.GetRelatedEntities<DocumentDto>((EntityTypeEnum)sourceTypeId, EntityTypeEnum.Document, sourceId), "Get Entity Documents", true);
+			return MakeServiceCall(() => _commonService.GetDocuments((EntityTypeEnum)sourceTypeId, sourceId), "Get Entity Documents", true);
 		}
 
 		[System.Web.Http.HttpGet]

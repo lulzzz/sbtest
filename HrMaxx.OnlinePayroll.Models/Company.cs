@@ -240,7 +240,8 @@ namespace HrMaxx.OnlinePayroll.Models
 		public bool PrintClientName { get; set; }
 		public bool PaysByAch { get; set; }
 		public List<RecurringCharge> RecurringCharges { get; set; }
-		public SalesRep SalesRep { get; set; } 
+		public List<SalesRep> SalesReps { get; set; } 
+		public SalesRep SalesRep { get; set; }
 	}
 
 	public class SalesRep

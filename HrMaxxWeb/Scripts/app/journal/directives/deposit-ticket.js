@@ -9,7 +9,8 @@ common.directive('depositTicket', ['zionAPI','version',
 				item: "=item",
 				datasvc: "=datasvc",
 				company: "=company",
-				showControls: "=showControls"
+				showControls: "=showControls",
+				mainData: "=mainData"
 			},
 			templateUrl: zionAPI.Web + 'Areas/Client/templates/deposit-ticket.html?v=' + version,
 
@@ -34,9 +35,6 @@ common.directive('depositTicket', ['zionAPI','version',
 						$scope.$parent.$parent.cancel();
 					}
 
-					var addAlert = function (error, type) {
-						$scope.$parent.$parent.addAlert(error, type);
-					};
 					
 					$scope.payeeSelected = function() {
 						if (dataSvc.selectedPayee) {

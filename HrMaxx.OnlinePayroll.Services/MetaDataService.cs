@@ -67,9 +67,9 @@ namespace HrMaxx.OnlinePayroll.Services
 			try
 			{
 				const string sql = "select " +
-												 "(select * from DocumentType for xml auto, elements, type) Types, " +
+												 "(select * from DocumentType where Id<6 for xml auto, elements, type) Types, " +
 												 "(select *, (select * from DocumentType where Id=Type for Xml path('DocumentType'), elements, type) from CompanyDocumentSubType where CompanyId='{0}' for xml path('CompanyDocumentSubType'), elements, type) CompanyDocumentSubTypes, " +
-												 "(select * from Document where SourceEntityId='{0}' and SourceEntityTypeId=2 for xml path('Document'), elements, type) Docs " +
+												 "(select * from Document where SourceEntityId='{0}' and SourceEntityTypeId=2 and Type<>6 for xml path('Document'), elements, type) Docs " +
 												 "for Xml path('DocumentServiceMetaData') , elements, type";
 				
 				//var docs =_metaDataRepository.GetDocumentServiceMetaData(companyId);

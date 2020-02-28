@@ -505,11 +505,15 @@ common.directive('company', ['$uibModal', 'zionAPI', '$timeout', '$window', 'ver
 					
 					$scope.addSalesRep = function () {
 
-						$scope.selectedCompany.contract.invoiceSetup.salesRep = {
+						var salesRep = {
 							user: null,
 							method: 1,
 							rate: 25
 						};
+						$scope.selectedCompany.contract.invoiceSetup.salesReps.push(salesRep);
+					}
+					$scope.removeSalesRep = function (index) {
+						$scope.selectedCompany.contract.invoiceSetup.salesReps = $scope.selectedCompany.contract.invoiceSetup.salesReps.splice(index, 1);
 					}
 					$scope.showMinWages = function ($event) {
 						$event.stopPropagation();

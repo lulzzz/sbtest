@@ -308,14 +308,14 @@
 				</div>
 				
 			</div>
-			<div class="hidden-print alert alert-warning " ng-show="data.showCommissions">
+			<div class="hidden-print alert alert-warning " ng-show="data.showCommissions" ng-repeat="comm in invoice.commissions track by $index">
 				<div class="col-sm-9 form-group">
-					<select ng-model="invoice.salesRep" ng-disabled="invoice.commissionClaimed" name="user" class="form-control" ng-options="u.userId as (u.firstName + ' ' + u.lastName) for u in mainData.users">
+					<select ng-model="comm.salesRep" ng-disabled="invoice.commissionClaimed" name="user" class="form-control" ng-options="u.userId as (u.firstName + ' ' + u.lastName) for u in mainData.users">
 						<option value="">Select User</option>
 					</select>
 				</div>
 				<div class="col-sm-3 form-group">
-					<input name="com" ng-model="invoice.commission" ng-disabled="invoice.commissionClaimed" step="0.01" class="form-control" convert-to-decimal />
+					<input name="com" ng-model="comm.amount" ng-disabled="invoice.commissionClaimed" step="0.01" class="form-control" convert-to-decimal />
 				</div>
 				
 				

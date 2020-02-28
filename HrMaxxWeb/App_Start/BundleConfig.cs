@@ -143,6 +143,7 @@ namespace HrMaxxWeb
 				"~/Scripts/app/common/users/user-app.js",
 				"~/Scripts/app/common/users/user-repository.js",
 				"~/Scripts/app/common/directives/document-list.js",
+				"~/Scripts/app/common/directives/entity-documents.js",
 				"~/Scripts/app/common/directives/address.js",
 				"~/Scripts/app/common/directives/comment-list.js",
 				"~/Scripts/app/common/directives/contact-list.js",

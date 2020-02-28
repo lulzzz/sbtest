@@ -163,6 +163,9 @@ namespace SiteInspectionStatus_Utility
                 case 35:
                     CreateDemoData(container);
                     break;
+                case 36:
+                    ConvertSalesRep(container);
+                    break;
                 default:
 					break;
 			}
@@ -268,6 +271,56 @@ namespace SiteInspectionStatus_Utility
                     chckCounter += payChecks.Count;
                 });
                 Console.WriteLine($"{chckCounter} total checks, {empcounter} Employees");
+
+
+
+
+            }
+        }
+        private static void ConvertSalesRep(IContainer container)
+        {
+            using (var scope = container.BeginLifetimeScope())
+            {
+                var readerservice = scope.Resolve<IReaderService>();
+                var write = scope.Resolve<IWriteRepository>();
+
+                var companies = readerservice.GetQueryData<IdValuePair>("select CompanyId [Key], InvoiceSetup [Value] from CompanyContract");
+                companies.ForEach(c =>
+                {
+                    var inv = !string.IsNullOrWhiteSpace(c.Value) ? JsonConvert.DeserializeObject<InvoiceSetup>(c.Value) : new InvoiceSetup();
+                    if (inv.SalesRep!=null)
+                    {
+                        inv.SalesReps = new List<SalesRep> { inv.SalesRep };
+                    }
+                    else
+                    {
+                        inv.SalesReps = new List<SalesRep>();
+                    }
+                    inv.SalesRep = null;
+                    //var inv1 = new InvoiceSetup
+                    //{ InvoiceStyle=inv.InvoiceStyle, InvoiceType=inv.InvoiceType, AdminFee=inv.AdminFee, AdminFeeMethod=inv.AdminFeeMethod, AdminFeeThreshold=inv.AdminFeeThreshold,
+                    //    SUIManagement=inv.SUIManagement, ApplyStatuaryLimits=inv.ApplyStatuaryLimits,  ApplyEnvironmentalFee=inv.ApplyEnvironmentalFee, ApplyWCCharge=inv.ApplyWCCharge,
+                    //    PrintClientName = inv.PrintClientName, PaysByAch=inv.PaysByAch, RecurringCharges = inv.RecurringCharges, SalesRep = inv.SalesRep!=null ? new List<SalesRep> { inv.SalesRep} : new List<SalesRep>()
+                    //};
+
+                    write.ExecuteQuery("update companycontract set InvoiceSetup=@InvoiceSetup where CompanyId=@Id", new { Id = c.Key, InvoiceSetup = JsonConvert.SerializeObject(inv) });
+                });
+                var invoices = readerservice.GetQueryData<IdValuePair>("select Id [Key], InvoiceSetup [Value] from payrollInvoice");
+                invoices.ForEach(i =>
+                {
+                    var inv = !string.IsNullOrWhiteSpace(i.Value) ? JsonConvert.DeserializeObject<InvoiceSetup>(i.Value) : new InvoiceSetup();
+                    if (inv.SalesRep != null)
+                    {
+                        inv.SalesReps = new List<SalesRep> { inv.SalesRep };
+                    }
+                    else
+                    {
+                        inv.SalesReps = new List<SalesRep>();
+                    }
+                    inv.SalesRep = null;
+                    write.ExecuteQuery("update PayrollInvoice set InvoiceSetup=@InvoiceSetup where CompanyId=@Id", new { Id = i.Key, InvoiceSetup = JsonConvert.SerializeObject(inv) });
+                });
+                Console.WriteLine($"{companies.Count} total companies, total invoices {invoices.Count}");
 
 
 
