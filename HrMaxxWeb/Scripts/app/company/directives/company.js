@@ -85,6 +85,11 @@ common.directive('company', ['$uibModal', 'zionAPI', '$timeout', '$window', 'ver
 					$scope.removeState = function (state) {
 						$scope.selectedCompany.states.splice($scope.selectedCompany.states.indexOf(state), 1);
 					}
+					$scope.greaterThan = function (val) {
+						return function (item) {
+							return item.role.roleId > val;
+						}
+					}
 					$scope.availableStates = function () {
 						var states = [];
 						if (dataSvc.companyMetaData) {
@@ -513,7 +518,7 @@ common.directive('company', ['$uibModal', 'zionAPI', '$timeout', '$window', 'ver
 						$scope.selectedCompany.contract.invoiceSetup.salesReps.push(salesRep);
 					}
 					$scope.removeSalesRep = function (index) {
-						$scope.selectedCompany.contract.invoiceSetup.salesReps = $scope.selectedCompany.contract.invoiceSetup.salesReps.splice(index, 1);
+						$scope.selectedCompany.contract.invoiceSetup.salesReps.splice(index, 1);
 					}
 					$scope.showMinWages = function ($event) {
 						$event.stopPropagation();

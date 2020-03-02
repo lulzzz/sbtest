@@ -347,7 +347,7 @@ namespace HrMaxx.OnlinePayroll.Services.USTax
 				//else if (tax.Tax.Code.Equals("SUI"))
 				//	return SimpleTaxCalculator(company, payCheck, grossWage, payDay, tax, hostCompany, employeeAccumulation);
 			}
-			return new PayrollTax();
+			//return new PayrollTax();
 
 		}
 

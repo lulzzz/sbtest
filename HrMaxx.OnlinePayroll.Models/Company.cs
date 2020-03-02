@@ -64,6 +64,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public ContractDetails Contract { get; set; }
 		public List<CompanyTaxRate> CompanyTaxRates { get; set; }
 		public List<CompanyPayCode> PayCodes { get; set; }
+		public List<CompanyRenewal> CompanyRenewals { get; set; }
 		public DateTime Created { get; set; }
 		public Guid? ParentId { get; set; }
 		public bool HasLocations { get; set; }
@@ -217,7 +218,14 @@ namespace HrMaxx.OnlinePayroll.Models
 		public PayCodeRateType RateType { get; set; }
 		
 	}
-
+	public class CompanyRenewal
+	{
+		public int Id { get; set; }
+		public Guid CompanyId { get; set; }
+		public string Description { get; set; }
+		public int Month { get; set; }
+		public int Day { get; set; }
+	}
 	public class CompanyLocation
 	{
 		public Guid Id { get; set; }

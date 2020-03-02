@@ -319,6 +319,30 @@ namespace HrMaxx.OnlinePayroll.Services
 				throw new HrMaxxApplicationException(message, e);
 			}
 		}
+		public CompanyRenewal SaveRenewal(CompanyRenewal renewal, string user, Guid userId)
+		{
+			try
+			{
+				
+				using (var txn = TransactionScopeHelper.Transaction())
+				{
+					var pc = _companyRepository.SaveRenewal(renewal);
+
+					var returnCompany = _readerService.GetCompany(pc.CompanyId);
+					var memento = Memento<Company>.Create(returnCompany, EntityTypeEnum.Company, user, "Renewal updated: " + renewal.Description, userId);
+					_mementoDataService.AddMementoData(memento, true);
+					txn.Complete();
+					return pc;
+				}
+
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, "renewal for company ");
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
 
 		public List<VendorCustomer> GetVendorCustomers(Guid? companyId, bool isVendor)
 		{

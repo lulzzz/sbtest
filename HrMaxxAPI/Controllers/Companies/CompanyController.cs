@@ -262,6 +262,14 @@ namespace HrMaxxAPI.Controllers.Companies
 			var wc = MakeServiceCall(() => _companyService.SavePayCode(mappedResource, CurrentUser.FullName, new Guid(CurrentUser.UserId)), "save company pay code", true);
 			return Mapper.Map<CompanyPayCode, CompanyPayCodeResource>(wc);
 		}
+		[System.Web.Http.HttpPost]
+		[System.Web.Http.Route(CompanyRoutes.SaveRenewal)]
+		public CompanyRenewal SaveRenewal(CompanyRenewal resource)
+		{
+			
+			return MakeServiceCall(() => _companyService.SaveRenewal(resource, CurrentUser.FullName, new Guid(CurrentUser.UserId)), "save company pay code", true);
+			
+		}
 
 		[System.Web.Http.HttpPost]
 		[System.Web.Http.Route(CompanyRoutes.SaveLocation)]

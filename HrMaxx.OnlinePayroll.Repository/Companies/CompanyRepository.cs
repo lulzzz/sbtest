@@ -314,6 +314,29 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 			return _mapper.Map<Models.DataModel.CompanyPayCode, CompanyPayCode>(mappedpc);
 		}
 
+		public Models.CompanyRenewal SaveRenewal(Models.CompanyRenewal renewal)
+		{
+			var mappedpc = _mapper.Map<Models.CompanyRenewal, Models.DataModel.CompanyRenewal>(renewal);
+			if (mappedpc.Id == 0)
+			{
+				_dbContext.CompanyRenewals.Add(mappedpc);
+			}
+			else
+			{
+				var wc = _dbContext.CompanyRenewals.FirstOrDefault(cd => cd.Id == mappedpc.Id);
+				if (wc != null)
+				{
+					
+					wc.Description = mappedpc.Description;
+					wc.Month = mappedpc.Month;
+					wc.Day = mappedpc.Day;
+
+				}
+			}
+			_dbContext.SaveChanges();
+			return _mapper.Map<Models.DataModel.CompanyRenewal, Models.CompanyRenewal>(mappedpc);
+		}
+
 		public List<VendorCustomer> GetVendorCustomers(Guid? companyId, bool isVendor)
 		{
 			var list = _dbContext.VendorCustomers.Where(vc => ((companyId.HasValue && vc.CompanyId.HasValue && vc.CompanyId == companyId.Value) || (!companyId.HasValue && !vc.CompanyId.HasValue)) && vc.IsVendor == isVendor);

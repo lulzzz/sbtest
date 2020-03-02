@@ -75,6 +75,7 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 		public List<CompanyWorkerCompensationResource> WorkerCompensations { get; set; }
 		public ContractDetailsResource Contract { get; set; }
 		public List<CompanyPayCodeResource> PayCodes { get; set; }
+		public List<CompanyRenewal> CompanyRenewals { get; set; }
 		public List<CompanyLocation> Locations { get; set; } 
 		public Guid? ParentId { get; set; }
 
@@ -233,7 +234,7 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 				
 		}
 	}
-
+	
 	public class CompanyLocationResource
 	{
 		public Guid Id { get; set; }

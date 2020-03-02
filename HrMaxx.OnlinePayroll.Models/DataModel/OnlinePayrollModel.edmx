@@ -246,6 +246,16 @@
           <Property Name="IsPaidInFull" Type="bit" Nullable="false" />
           <Property Name="Comments" Type="varchar(max)" />
         </EntityType>
+        <EntityType Name="CompanyRenewal">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="CompanyId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="Description" Type="varchar(max)" Nullable="false" />
+          <Property Name="Month" Type="int" Nullable="false" />
+          <Property Name="Day" Type="int" Nullable="false" />
+        </EntityType>
         <EntityType Name="CompanyTaxRate">
           <Key>
             <PropertyRef Name="Id" />
@@ -1007,6 +1017,18 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_CompanyRenewal_Company">
+          <End Role="Company" Type="Self.Company" Multiplicity="1" />
+          <End Role="CompanyRenewal" Type="Self.CompanyRenewal" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Company">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="CompanyRenewal">
+              <PropertyRef Name="CompanyId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_CompanyTax_Company">
           <End Role="Company" Type="Self.Company" Multiplicity="1" />
           <End Role="CompanyTaxRate" Type="Self.CompanyTaxRate" Multiplicity="*" />
@@ -1362,6 +1384,7 @@
           <EntitySet Name="CompanyDeduction" EntityType="Self.CompanyDeduction" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="CompanyPayCode" EntityType="Self.CompanyPayCode" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="CompanyRecurringCharge" EntityType="Self.CompanyRecurringCharge" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="CompanyRenewal" EntityType="Self.CompanyRenewal" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="CompanyTaxRate" EntityType="Self.CompanyTaxRate" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="CompanyTaxState" EntityType="Self.CompanyTaxState" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="CompanyTSImportMap" EntityType="Self.CompanyTSImportMap" Schema="dbo" store:Type="Tables" />
@@ -1477,6 +1500,10 @@
           <AssociationSet Name="FK_CompanyRecurringCharge_Company" Association="Self.FK_CompanyRecurringCharge_Company">
             <End Role="Company" EntitySet="Company" />
             <End Role="CompanyRecurringCharge" EntitySet="CompanyRecurringCharge" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CompanyRenewal_Company" Association="Self.FK_CompanyRenewal_Company">
+            <End Role="Company" EntitySet="Company" />
+            <End Role="CompanyRenewal" EntitySet="CompanyRenewal" />
           </AssociationSet>
           <AssociationSet Name="FK_CompanyTax_Company" Association="Self.FK_CompanyTax_Company">
             <End Role="Company" EntitySet="Company" />
@@ -1853,6 +1880,11 @@
             <End Role="PayrollInvoice" EntitySet="PayrollInvoices" />
             <End Role="PayrollInvoiceCommission" EntitySet="PayrollInvoiceCommissions" />
           </AssociationSet>
+          <EntitySet Name="CompanyRenewals" EntityType="HrMaxxModel.CompanyRenewal" />
+          <AssociationSet Name="FK_CompanyRenewal_Company" Association="HrMaxxModel.FK_CompanyRenewal_Company">
+            <End Role="Company" EntitySet="Companies" />
+            <End Role="CompanyRenewal" EntitySet="CompanyRenewals" />
+          </AssociationSet>
           </EntityContainer>
         <EntityType Name="Host">
           <Key>
@@ -1956,6 +1988,7 @@
           <Property Name="ProfitStarsPayer" Type="Boolean" Nullable="false" />
           <Property Name="ControlId" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
           <Property Name="IsRestaurant" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="CompanyRenewals" Relationship="HrMaxxModel.FK_CompanyRenewal_Company" FromRole="Company" ToRole="CompanyRenewal" />
         </EntityType>
         <EntityType Name="CompanyTaxRate">
           <Key>
@@ -3295,6 +3328,29 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="CompanyRenewal">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="CompanyId" Type="Guid" Nullable="false" />
+          <Property Name="Description" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="Month" Type="Int32" Nullable="false" />
+          <Property Name="Day" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Company" Relationship="HrMaxxModel.FK_CompanyRenewal_Company" FromRole="CompanyRenewal" ToRole="Company" />
+        </EntityType>
+        <Association Name="FK_CompanyRenewal_Company">
+          <End Type="HrMaxxModel.Company" Role="Company" Multiplicity="1" />
+          <End Type="HrMaxxModel.CompanyRenewal" Role="CompanyRenewal" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Company">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="CompanyRenewal">
+              <PropertyRef Name="CompanyId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -4074,6 +4130,17 @@
                 <ScalarProperty Name="Amount" ColumnName="Amount" />
                 <ScalarProperty Name="SalesRep" ColumnName="SalesRep" />
                 <ScalarProperty Name="InvoiceId" ColumnName="InvoiceId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="CompanyRenewals">
+            <EntityTypeMapping TypeName="HrMaxxModel.CompanyRenewal">
+              <MappingFragment StoreEntitySet="CompanyRenewal">
+                <ScalarProperty Name="Day" ColumnName="Day" />
+                <ScalarProperty Name="Month" ColumnName="Month" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="CompanyId" ColumnName="CompanyId" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>

@@ -183,6 +183,16 @@ common.factory('companyRepository', [
 
 				return deferred.promise;
 			},
+			saveRenewalDate: function (input) {
+				var deferred = $q.defer();
+				companyServer.all('Renewal').post(input).then(function (data) {
+					deferred.resolve(data);
+				}, function (error) {
+					deferred.reject(error);
+				});
+
+				return deferred.promise;
+			},
 			getVendorCustomers: function (companyId, isVendor) {
 				var deferred = $q.defer();
 				if (companyId) {

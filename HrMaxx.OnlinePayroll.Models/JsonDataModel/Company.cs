@@ -76,6 +76,7 @@ namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
 		public List<CompanyAccumlatedPayType> CompanyAccumlatedPayTypes { get; set; }
 
 		public List<CompanyPayCode> CompanyPayCodes { get; set; }
+		public List<CompanyRenewal> CompanyRenewals { get; set; }
 
 		public InsuranceGroup InsuranceGroup { get; set; }
 
@@ -210,7 +211,14 @@ namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
 
 		
 	}
-
+	public class CompanyRenewal
+	{
+		public int Id { get; set; }
+		public Guid CompanyId { get; set; }
+		public string Description { get; set; }
+		public int Month { get; set; }
+		public int Day { get; set; }
+	}
 	
 	public class CompanyPayCode
 	{

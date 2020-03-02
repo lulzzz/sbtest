@@ -168,6 +168,7 @@ namespace HrMaxxWeb
 				"~/Scripts/app/company/directives/tax-year-rate-list.js",
 				"~/Scripts/app/company/directives/accumulated-pay-type-list.js",
 				"~/Scripts/app/company/directives/pay-code-list.js",
+				"~/Scripts/app/company/directives/renewal-date-list.js",
 				"~/Scripts/app/company/directives/company-locations.js",
 				"~/Scripts/app/company/directives/company-list.js",
 				"~/Scripts/app/company/directives/company.js",
@@ -229,8 +230,9 @@ namespace HrMaxxWeb
 				"~/Scripts/app/reports/directives/profit-stars-report.js",
 				"~/Scripts/app/reports/directives/commissions-view.js",
 				"~/Scripts/app/reports/directives/cpa-report.js"
-
 				
+
+
 
 				);
 			jquery.Builder = nullBuilder;

@@ -539,6 +539,10 @@
 			var ded = args.ded;
 			updateInList(dataSvc.selectedCompany.deductions, ded);
 		});
+		$scope.$on('companyRenewalUpdated', function (event, args) {
+			var ded = args.pc;
+			updateInList(dataSvc.selectedCompany.companyRenewals, ded);
+		});
 		$scope.$on('companyWCUpdated', function (event, args) {
 			var wc = args.wc;
 			updateInList(dataSvc.selectedCompany.workerCompensations, wc);

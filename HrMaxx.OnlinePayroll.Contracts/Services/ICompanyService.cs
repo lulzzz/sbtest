@@ -47,5 +47,6 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 		void BulkTerminateEmployees(Guid companyId, List<Guid> employees, string userId, string name);
 
 		Account GetComanyAccountById(Guid companyId, int accountId);
+		CompanyRenewal SaveRenewal(CompanyRenewal renewal, string username, Guid userid);
 	}
 }

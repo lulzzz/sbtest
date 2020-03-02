@@ -102,6 +102,7 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 				.ForMember(dest => dest.States, opt => opt.MapFrom(src => src.CompanyTaxStates))
 				.ForMember(dest => dest.Deductions, opt => opt.MapFrom(src => src.CompanyDeductions))
 				.ForMember(dest => dest.PayCodes, opt => opt.MapFrom(src => src.CompanyPayCodes))
+				.ForMember(dest => dest.CompanyRenewals, opt => opt.MapFrom(src => src.CompanyRenewals))
 				.ForMember(dest => dest.WorkerCompensations, opt => opt.MapFrom(src => src.CompanyWorkerCompensations))
 				.ForMember(dest => dest.UserId, opt => opt.Ignore())
 				.ForMember(dest => dest.InsuranceClientNo, opt => opt.MapFrom(src=>src.ClientNo))
@@ -144,6 +145,7 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 				.ForMember(dest => dest.CompanyAccumlatedPayTypes, opt => opt.Ignore())
 				.ForMember(dest => dest.CompanyDeductions, opt => opt.Ignore())
 				.ForMember(dest => dest.CompanyPayCodes, opt => opt.Ignore())
+				.ForMember(dest => dest.CompanyRenewals, opt => opt.Ignore())
 				.ForMember(dest => dest.CompanyWorkerCompensations, opt => opt.Ignore())
 				.ForMember(dest => dest.CompanyContracts, opt => opt.Ignore())
 				.ForMember(dest => dest.CompanyTaxRates, opt => opt.MapFrom(src => src.CompanyTaxRates))
@@ -289,6 +291,10 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 
 			CreateMap<Models.DataModel.CompanyPayCode, CompanyPayCode>();
 			CreateMap<CompanyPayCode, Models.DataModel.CompanyPayCode>()
+				.ForMember(dest => dest.Company, opt => opt.Ignore());
+
+			CreateMap<Models.DataModel.CompanyRenewal, Models.CompanyRenewal>();
+			CreateMap<Models.CompanyRenewal, Models.DataModel.CompanyRenewal>()
 				.ForMember(dest => dest.Company, opt => opt.Ignore());
 
 			CreateMap<Models.DataModel.VendorCustomer, VendorCustomer>()
@@ -678,6 +684,7 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 				.ForMember(dest => dest.ProfitStarsPayer, opt => opt.Ignore())
 				.ForMember(dest => dest.Contract, opt => opt.Ignore())
 				.ForMember(dest => dest.PayCodes, opt => opt.Ignore())
+				.ForMember(dest => dest.CompanyRenewals, opt => opt.Ignore())
 				.ForMember(dest => dest.UserId, opt => opt.Ignore())
 				.ForMember(dest => dest.Created, opt => opt.Ignore())
 				
