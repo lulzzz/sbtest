@@ -416,6 +416,7 @@ common.controller('companyCtrl', function ($scope, $uibModalInstance, $filter, i
 	$scope.original = mainData.selectedCompany;
 	$scope.company = angular.copy(mainData.selectedCompany);
 	$scope.mainData = mainData;
+	
 	$scope.cancel = function () {
 		$uibModalInstance.close($scope.company);
 	};
