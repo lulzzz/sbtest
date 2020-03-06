@@ -43,6 +43,7 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
         public bool IsCleared { get; set; }
         public string ClearedBy { get; set; }
         public Nullable<System.DateTime> ClearedOn { get; set; }
+        public string ListItems { get; set; }
     
         public virtual EntityType EntityType1 { get; set; }
         public virtual Company Company { get; set; }

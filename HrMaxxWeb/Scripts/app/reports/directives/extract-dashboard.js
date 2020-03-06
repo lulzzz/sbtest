@@ -1,4 +1,5 @@
-﻿'use strict';
+﻿
+'use strict';
 
 common.directive('extractDashboard', ['zionAPI', '$timeout', '$window', 'version', '$sce',
 	function (zionAPI, $timeout, $window, version, $sce) {

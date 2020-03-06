@@ -1,14 +1,15 @@
-﻿<div class="table-responsive col-sm-8 col-sm-offset-2">
+﻿<div class="table-responsive col-sm-10 col-sm-offset-1">
 	<div class="row">
 		<alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</alert>
 	</div>
-	<table class="table table-header table-bordered table-condensed form-controls input-sm">
+	<table class="table table-header table-bordered form-controls input-sm">
 		<thead>
 			<tr>
-				<td class="col-sm-3">Description</td>
+				<td class="col-sm-4">Description</td>
+				<td class="col-sm-3">Reminder in (days)</td>
 				<td class="col-sm-3">Month &amp; Day</td>
-				
-				<td class="col-sm-2" ng-show="showControls"></td>
+
+				<td class="col-sm-1" ng-show="showControls"></td>
 			</tr>
 		</thead>
 		<tbody>
@@ -20,10 +21,15 @@
 					</span>
 				</td>
 				<td>
+					<span e-ng-change="item.reminderDays = $data" editable-number="item.reminderDays" e-name="reminder" e-form="rowform" e-ng-pattern="/^[0-9]{1,2}[:.,-]?$/" e-style="width:10em">
+						{{ item.reminderDays }}
+					</span>
+				</td>
+				<td>
 					<span e-ng-change="item.month = $data;" editable-select="item.month" e-name="month" e-form="rowform" e-ng-options="m.id as m.name for m in data.months">
 						{{ getMonthName(item.month) }}
 					</span>
-					<span e-ng-change="item.day = $data" editable-text="item.day" e-name="day" e-form="rowform" e-ng-disabled="!item.month" e-ng-pattern="/(0[1-9]|[12]\d|3[01])/">
+					<span e-ng-change="item.day = $data" editable-text="item.day" e-name="day" e-form="rowform" e-ng-disabled="!item.month" e-ng-pattern="/([1-9]|[12]\d|3[01])/">
 						{{ item.day }}
 					</span>
 				</td>

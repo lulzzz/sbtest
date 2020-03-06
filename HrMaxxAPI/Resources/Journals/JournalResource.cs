@@ -47,6 +47,7 @@ namespace HrMaxxAPI.Resources.Journals
 		public bool IsVoid { get; set; }
 		[Required]
 		public List<JournalDetailResource> JournalDetails { get; set; }
+		public List<JournalItemResource> ListItems { get; set; }
 		public string LastModifiedBy { get; set; }
 		public DateTime LastModified { get; set; }
 		public Guid? DocumentId { get; set; }
@@ -85,7 +86,13 @@ namespace HrMaxxAPI.Resources.Journals
 		}
 		public Guid SourceId { get { return Utilities.GetGuidFromEntityTypeAndId(EntityType1, Id.Value); } }
 	}
-
+	public class JournalItemResource
+	{
+		public string Item { get; set; }
+		public decimal Rate { get; set; }
+		public decimal Quantity { get; set; }
+		public decimal Amount { get { return Math.Round(Rate * Quantity, 2, MidpointRounding.AwayFromZero); } set { } }
+	}
 	public class JournalDetailResource
 	{
 		[Required]

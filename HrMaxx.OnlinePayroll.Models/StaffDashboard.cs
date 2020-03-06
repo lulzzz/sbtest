@@ -32,6 +32,11 @@ namespace HrMaxx.OnlinePayroll.Models
 		public List<StaffDashboardCube> MissedPayrolls { get; set; }
 		public List<StaffDashboardCube> MissedPayrollsYesterday { get { return MissedPayrolls.Where(p => p.TS.Date == p.LastBusinessDay).ToList(); } }
 		public EmployeeDocumentMetaData EmployeeDocumentMetaData { get; set; }
+		public List<CompanyDueDate> RenewalDue { get; set; }
+		public List<CompanyDueDate> Renewals { get { return RenewalDue.GroupBy(r => r.DueDate).Select(g => new CompanyDueDate { DueDate = g.Key.Date, Details = g.ToList().GroupBy(r1 => r1.Description)
+			.Select(g2 => new CompanyDueDate { DueDate = g.Key.Date, Description = g2.Key, Details = g2.ToList() }).ToList() }).OrderBy(c=>c.DueDate).ToList(); } }
+		public int RenewalDueToday { get { return RenewalDue.Count(cr=>cr.DueInDays<=1); } }
+		public int RenewalDueNext { get { return RenewalDue.Count(cr => cr.DueInDays <= 15); } }
 	}
 
 	public class StaffDashboardCube
@@ -42,6 +47,16 @@ namespace HrMaxx.OnlinePayroll.Models
 		public string UserName { get; set; }
 		public DateTime TS { get; set; }
 		public DateTime LastBusinessDay { get; set; }
+	}
+	public class CompanyDueDate
+	{
+		public string Host { get; set; }
+		public string Company { get; set; }
+		public string Description { get; set; }
+		public DateTime DueDate { get; set; }
+		public InvoiceSetup InvoiceSetup { get; set; }
+		public int DueInDays { get { return (int)((DueDate - DateTime.Today).TotalDays); } }
+		public List<CompanyDueDate> Details { get; set; }
 	}
 
 	public class PieChart

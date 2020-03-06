@@ -99,6 +99,7 @@
           <Property Name="IsCleared" Type="bit" Nullable="false" />
           <Property Name="ClearedBy" Type="varchar(max)" />
           <Property Name="ClearedOn" Type="datetime" />
+          <Property Name="ListItems" Type="varchar(max)" />
         </EntityType>
         <EntityType Name="CommissionExtract">
           <Key>
@@ -255,6 +256,7 @@
           <Property Name="Description" Type="varchar(max)" Nullable="false" />
           <Property Name="Month" Type="int" Nullable="false" />
           <Property Name="Day" Type="int" Nullable="false" />
+          <Property Name="ReminderDays" Type="int" Nullable="false" />
         </EntityType>
         <EntityType Name="CompanyTaxRate">
           <Key>
@@ -496,6 +498,7 @@
           <Property Name="IsCleared" Type="bit" Nullable="false" />
           <Property Name="ClearedBy" Type="varchar(max)" />
           <Property Name="ClearedOn" Type="datetime" />
+          <Property Name="ListItems" Type="varchar(max)" />
         </EntityType>
         <EntityType Name="MasterExtracts">
           <Key>
@@ -2629,6 +2632,7 @@
           <Property Name="IsCleared" Type="Boolean" Nullable="false" />
           <Property Name="ClearedBy" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
           <Property Name="ClearedOn" Type="DateTime" Precision="3" />
+          <Property Name="ListItems" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
         </EntityType>
         <Association Name="FK_Journal_EntityType">
           <End Type="HrMaxxModel.EntityType" Role="EntityType" Multiplicity="1" />
@@ -3217,6 +3221,7 @@
           <Property Name="IsCleared" Type="Boolean" Nullable="false" />
           <Property Name="ClearedBy" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
           <Property Name="ClearedOn" Type="DateTime" Precision="3" />
+          <Property Name="ListItems" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
         </EntityType>
         <Association Name="FK_CheckbookJournal_Company">
           <End Type="HrMaxxModel.Company" Role="Company" Multiplicity="1" />
@@ -3338,6 +3343,7 @@
           <Property Name="Month" Type="Int32" Nullable="false" />
           <Property Name="Day" Type="Int32" Nullable="false" />
           <NavigationProperty Name="Company" Relationship="HrMaxxModel.FK_CompanyRenewal_Company" FromRole="CompanyRenewal" ToRole="Company" />
+          <Property Name="ReminderDays" Type="Int32" Nullable="false" />
         </EntityType>
         <Association Name="FK_CompanyRenewal_Company">
           <End Type="HrMaxxModel.Company" Role="Company" Multiplicity="1" />
@@ -3755,6 +3761,7 @@
           <EntitySetMapping Name="Journals">
             <EntityTypeMapping TypeName="HrMaxxModel.Journal">
               <MappingFragment StoreEntitySet="Journal">
+                <ScalarProperty Name="ListItems" ColumnName="ListItems" />
                 <ScalarProperty Name="ClearedOn" ColumnName="ClearedOn" />
                 <ScalarProperty Name="ClearedBy" ColumnName="ClearedBy" />
                 <ScalarProperty Name="IsCleared" ColumnName="IsCleared" />
@@ -4065,6 +4072,7 @@
           <EntitySetMapping Name="CheckbookJournals">
             <EntityTypeMapping TypeName="HrMaxxModel.CheckbookJournal">
               <MappingFragment StoreEntitySet="CheckbookJournal">
+                <ScalarProperty Name="ListItems" ColumnName="ListItems" />
                 <ScalarProperty Name="ClearedOn" ColumnName="ClearedOn" />
                 <ScalarProperty Name="ClearedBy" ColumnName="ClearedBy" />
                 <ScalarProperty Name="IsCleared" ColumnName="IsCleared" />
@@ -4137,6 +4145,7 @@
           <EntitySetMapping Name="CompanyRenewals">
             <EntityTypeMapping TypeName="HrMaxxModel.CompanyRenewal">
               <MappingFragment StoreEntitySet="CompanyRenewal">
+                <ScalarProperty Name="ReminderDays" ColumnName="ReminderDays" />
                 <ScalarProperty Name="Day" ColumnName="Day" />
                 <ScalarProperty Name="Month" ColumnName="Month" />
                 <ScalarProperty Name="Description" ColumnName="Description" />

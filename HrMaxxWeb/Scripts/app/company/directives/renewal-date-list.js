@@ -40,7 +40,8 @@ common.directive('renewalDateList', ['zionAPI','version',
 						companyId: $scope.companyId,						
 						description: '',
 						month: '',
-						day: 1
+						day: 1,
+						reminderDays: 1
 					};
 					$scope.list.push(item);
 					$scope.setSelected($scope.list.indexOf(item));
@@ -73,7 +74,7 @@ common.directive('renewalDateList', ['zionAPI','version',
 					}
 					
 				$scope.isItemValid = function(item) {
-					if (!item.description || !item.month || !item.day )
+					if (!item.description || !item.month || !item.day || !item.reminderDays )
 						return false;
 					else if ((item.month === 2 && item.day > 28) || ((item.month === 4 || item.month === 6 || item.month === 9 || item.month === 11) && item.day > 30))
 						return false;

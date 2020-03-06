@@ -421,6 +421,8 @@ namespace HrMaxx.OnlinePayroll.Models.Enum
 		DeductionPayment = 6,
 		[HrMaxxSecurity(DbName = "Invoice Deposit")]
 		InvoiceDeposit = 7,
+		[HrMaxxSecurity(DbName = "Customer Invoice")]
+		CustomerInvoice = 8,
 
 	}
 

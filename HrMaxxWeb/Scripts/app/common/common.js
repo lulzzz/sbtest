@@ -112,7 +112,7 @@ common.constant('zionPaths', {
 	Logout: 'Account/LogOff',
 	Token: 'token'
 });
-common.constant('version', '1.0.3.76');
+common.constant('version', '1.0.3.77');
 common.constant('EntityTypes', {
 	General:0,
 	Host:1,
@@ -133,7 +133,8 @@ common.constant('EntityTypes', {
 	Customer: 16,
 	HostHomePage: 17,
 	Adjustment: 18,
-	TaxPayment: 19
+	TaxPayment: 19,
+	CustomerInvoice:23
 });
 common.constant('ClaimTypes', {
 	ManageConfiguration: 'http://Paxol/ManageConfiguration',

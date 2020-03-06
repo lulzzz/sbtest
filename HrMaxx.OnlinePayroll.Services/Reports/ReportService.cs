@@ -849,7 +849,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			}
 		}
 
-		public StaffDashboard GetStaffDashboard(Guid? hostId)
+		public StaffDashboard GetStaffDashboard(Guid? hostId, Guid userId)
 		{
 			try
 			{
@@ -857,7 +857,8 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 				if(hostId.HasValue)
 					filters.Add(new FilterParam { Key = "host", Value = hostId.ToString() });
 				var data = _readerService.GetDataFromStoredProc<StaffDashboard, StaffDashboardJson>("GetStaffDashboard", filters);
-				
+				if (data.RenewalDue.Any())
+					data.RenewalDue = data.RenewalDue.Where(cr => cr.InvoiceSetup.SalesReps.Any(u => u.User.UserId.Equals(userId))).ToList();
 				return data;
 			}
 			catch (Exception e)

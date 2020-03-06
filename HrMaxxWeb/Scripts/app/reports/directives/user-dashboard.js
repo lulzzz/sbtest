@@ -37,6 +37,9 @@ common.directive('userDashboard', ['$uibModal','zionAPI', '$timeout', '$window',
 						viewPerformance: $scope.mainData.hasClaim(ClaimTypes.DashboardPerformance, 1),
 						viewClearance: $scope.mainData.hasClaim(ClaimTypes.DashboardAccountReceivable,1),
 					}
+					$scope.dueranges = [
+						{ id: 1, title: '0 - 15 days' }, { id: 2, title: '15 - 30 days' }, { id: 3, title: '30 - 60 days' }, {id:4, title: '60 - 90 days'}
+					];
 					$scope.invoiceStatusList = [];
 					$scope.selectedInvoice = null;
 					$scope.set = function (item) {
@@ -604,7 +607,8 @@ common.directive('userDashboard', ['$uibModal','zionAPI', '$timeout', '$window',
 											company: ap[3],
 											description: ap[5],
 											salesRep: salesRepJson.SalesReps ? mapAndJoin(salesRepJson.SalesReps) : 'NA',
-											due: ap[6]
+											due: ap[6],
+											dueRange: ap[7]
 										});
 									}
 

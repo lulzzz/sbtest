@@ -162,7 +162,7 @@
 						<table class="table table-condensed" ng-class="{'hidden-print': data.printOption!==6}">
 							<thead>
 								<tr>
-									<th colspan="5">Companies Renewals <i class="fa pull-right hidden-print" show-filter="true" template-pagination="custom/nopager" ng-if="data.renewals.length>1" ng-class="{'fa-minus-square' : data.viewingChart===6, 'fa-plus-square': data.viewingChart!==4}" ng-click="data.viewingChart=(data.viewingChart===6?0:6)"></i> <i class="fa fa-refresh pull-right hidden-print" ng-click="drawCompaniesRenewal()"></i><i class="fa fa-print hidden-print pull-right" ng-click="print(6)" ng-if="data.renewals.length>1"></i></th>
+									<th colspan="4">Companies Renewals <i class="fa pull-right hidden-print" show-filter="true" template-pagination="custom/nopager" ng-if="data.renewals.length>1" ng-class="{'fa-minus-square' : data.viewingChart===6, 'fa-plus-square': data.viewingChart!==4}" ng-click="data.viewingChart=(data.viewingChart===6?0:6)"></i> <i class="fa fa-refresh pull-right hidden-print" ng-click="drawCompaniesRenewal()"></i><i class="fa fa-print hidden-print pull-right" ng-click="print(6)" ng-if="data.renewals.length>1"></i></th>
 								</tr>
 
 							</thead>
@@ -170,24 +170,20 @@
 						<table ng-table="tableParamsRenewals" ng-show="data.viewingChart===6" class="table table-bordered table-condensed" ng-class="{'hidden-print': data.printOption!==6}">
 							
 							<tr ng-repeat="item in tableDataRenewals track by $index" class="mouse-over-pointer">
-								<td data-title=" 'Host' " sortable=" 'host' " filter="{ 'host': 'text' }" class="col-sm-3">
-									{{item.host}}
-								</td>
-								<td data-title=" 'Company' " sortable=" 'company' " filter="{ 'company': 'text' }" class="col-sm-3">
+								
+								<td data-title=" 'Company' " sortable=" 'company' " filter="{ 'company': 'text' }" class="col-sm-5">
 									{{item.company }}
 								</td>
 								<td data-title=" 'Sales Rep' " sortable=" 'salesRep' " filter="{ 'salesRep': 'text' }" class="col-sm-3">
 									{{item.salesRep }}
 								</td>
-								<td data-title=" 'Desc' " sortable=" 'description' " filter="{ 'description': 'text' }" class="col-sm-3">
+								<td data-title=" 'Desc' " sortable=" 'description' " filter="{ 'description': 'text' }" class="col-sm-2">
 									{{item.description }}
 								</td>
-								<td data-title=" 'Due' " filter="{ 'due': 'number' }" sortable=" 'due' " class="col-sm-2">
-									{{item.due}}
+								<td data-title=" 'Due' " filter="{dueRange:'select'}" filter-data="dueranges" sortable=" 'due' " class="col-sm-2">
+									{{item.due | date:'MM/dd/yyyy'}}
 								</td>
-								<td class="hidden-print text-center">
-									<button class="btn btn-xs btn-primary" ng-click="viewPayrolls(item.hostId, item.companyId)"><i class="fa fa-eye" /></button>
-								</td>
+								
 							</tr>
 						</table>
 

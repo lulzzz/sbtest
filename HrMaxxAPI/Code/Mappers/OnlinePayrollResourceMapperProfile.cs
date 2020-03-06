@@ -254,6 +254,8 @@ namespace HrMaxxAPI.Code.Mappers
 			CreateMap<JournalDetail, JournalDetailResource>();
 			CreateMap<JournalDetailResource, JournalDetail>()
 				.ForMember(dest => dest.Amount, opt => opt.MapFrom(src => Math.Round(src.Amount, 2, MidpointRounding.AwayFromZero)));
+			CreateMap<JournalItem, JournalItemResource>();
+			CreateMap<JournalItemResource, JournalItem>();
 
 			CreateMap<JournalList, JournalListResource>();
 

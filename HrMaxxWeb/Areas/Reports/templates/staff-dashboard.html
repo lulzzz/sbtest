@@ -1,65 +1,65 @@
 ﻿
-<div class="row">
-	<!-- begin col-3 -->
-	<div class="col-md-2 col-sm-4">
-		<div class="widget widget-stats bg-green">
-			<div class="stats-icon"></div>
-			<div class="stats-info">
-				<h4>Today</h4>
-				<p>{{data.dashboard.payrollsProcessedToday}}</p>
+	<div class="row">
+		<!-- begin col-3 -->
+		<div class="col-md-2 col-sm-4">
+			<div class="widget widget-stats bg-green">
+				<div class="stats-icon"></div>
+				<div class="stats-info">
+					<h4>Today</h4>
+					<p>{{data.dashboard.payrollsProcessedToday}}</p>
+				</div>
+				<div class="stats-info">
+					<h4>Last 15 Days</h4>
+					<p>{{data.dashboard.payrollsProcessed.length}}</p>
+				</div>
+				<div class="stats-link">
+					<a href="javascript:;">Payrolls Run</a>
+				</div>
 			</div>
-			<div class="stats-info">
-				<h4>Last 15 Days</h4>
-				<p>{{data.dashboard.payrollsProcessed.length}}</p>
-			</div>
-			<div class="stats-link">
-				<a href="javascript:;">Payrolls Run</a>
-			</div>
-		</div>
-		<div class="widget widget-chart bg-dark-darker">
-			<div class="chart-title">
-				Payrolls Processed - Last 15 Days
-			</div>
-			<div id="processed-donut" style="height: 260px"></div>
-			<ul class="chart-legend list-unstyled">
-				<li ng-repeat="i in data.dashboard.payrollsProcessedChart.legend track by $index">
-					<i class="fa fa-circle-o fa-fw m-r-5" ng-style="{'color':getColor($index)}"></i> {{i.value | currency:''}}% <span>{{i.key}}</span>
-				</li>
+			<div class="widget widget-chart bg-dark-darker">
+				<div class="chart-title">
+					Payrolls Processed - Last 15 Days
+				</div>
+				<div id="processed-donut" style="height: 260px"></div>
+				<ul class="chart-legend list-unstyled">
+					<li ng-repeat="i in data.dashboard.payrollsProcessedChart.legend track by $index">
+						<i class="fa fa-circle-o fa-fw m-r-5" ng-style="{'color':getColor($index)}"></i> {{i.value | currency:''}}% <span>{{i.key}}</span>
+					</li>
 
-			</ul>
+				</ul>
 
-		</div>
-
-	</div>
-	<div class="col-md-2 col-sm-4">
-		<div class="widget widget-stats bg-orange">
-			<div class="stats-icon"></div>
-			<div class="stats-info">
-				<h4>Today</h4>
-				<p>{{data.dashboard.payrollsVoidedToday}}</p>
 			</div>
-			<div class="stats-info">
-				<h4>Last 15 Days</h4>
-				<p>{{data.dashboard.payrollsVoided.length}}</p>
-			</div>
-			<div class="stats-link">
-				<a href="javascript:;">Payrolls Voided</a>
-			</div>
-		</div>
-		<div class="widget widget-chart bg-dark-darker">
-
-			<div class="chart-title">
-				Payrolls Voided - Last 15 Days
-			</div>
-			<div id="voided-donut" style="height: 260px"></div>
-			<ul class="chart-legend list-unstyled">
-				<li ng-repeat="item in data.dashboard.payrollsVoidedChart.legend"><i class="fa fa-circle-o fa-fw m-r-5" ng-style="{'color':getColor($index)}"></i> {{item.value | currency:''}}% <span>{{item.key}}</span></li>
-
-			</ul>
 
 		</div>
-	</div>
-	<div class="col-md-2 col-sm-4">
+		<div class="col-md-2 col-sm-4">
+			<div class="widget widget-stats bg-orange">
+				<div class="stats-icon"></div>
+				<div class="stats-info">
+					<h4>Today</h4>
+					<p>{{data.dashboard.payrollsVoidedToday}}</p>
+				</div>
+				<div class="stats-info">
+					<h4>Last 15 Days</h4>
+					<p>{{data.dashboard.payrollsVoided.length}}</p>
+				</div>
+				<div class="stats-link">
+					<a href="javascript:;">Payrolls Voided</a>
+				</div>
+			</div>
+			<div class="widget widget-chart bg-dark-darker">
+
+				<div class="chart-title">
+					Payrolls Voided - Last 15 Days
+				</div>
+				<div id="voided-donut" style="height: 260px"></div>
+				<ul class="chart-legend list-unstyled">
+					<li ng-repeat="item in data.dashboard.payrollsVoidedChart.legend"><i class="fa fa-circle-o fa-fw m-r-5" ng-style="{'color':getColor($index)}"></i> {{item.value | currency:''}}% <span>{{item.key}}</span></li>
+
+				</ul>
+
+			</div>
+		</div>
+		<!--<div class="col-md-2 col-sm-4">
 		<div class="widget widget-stats bg-blue">
 			<div class="stats-icon"></div>
 			<div class="stats-info">
@@ -86,99 +86,149 @@
 
 		</div>
 
-	</div>
-	<div class="col-md-2 col-sm-4">
-		<div class="widget widget-stats bg-purple">
-			<div class="stats-icon"></div>
-			<div class="stats-info">
-				<h4>Today</h4>
-				<p>{{data.dashboard.invoicesDeliveredToday}}</p>
-			</div>
-			<div class="stats-info">
-				<h4>Last 15 Days</h4>
-				<p>{{data.dashboard.invoicesDelivered.length}}</p>
-			</div>
-			<div class="stats-link">
-				<a href="javascript:;">Invoices Delivered</a>
-			</div>
-
-		</div>
-		<div class="widget widget-chart bg-dark-darker">
-			<div class="chart-title">
-				Invoice Delivered - Last 15 Days
-			</div>
-			<div id="delivered-donut" style="height: 260px"></div>
-			<ul class="chart-legend list-unstyled">
-				<li ng-repeat="item in data.dashboard.invoicesDeliveredChart.legend"><i class="fa fa-circle-o fa-fw m-r-5" ng-style="{'color':getColor($index)}"></i> {{item.value | currency:''}}% <span>{{item.key}}</span></li>
-
-			</ul>
-
-		</div>
-	</div>
-	<div class="col-md-2 col-sm-4">
-		<div class="widget widget-stats bg-dark">
-			<div class="stats-icon"></div>
-			<div class="stats-info">
-				<h4>Today</h4>
-				<p>{{data.dashboard.companiesUpdatedToday}}</p>
-			</div>
-			<div class="stats-info">
-				<h4>Last 15 Days</h4>
-				<p>{{data.dashboard.companiesUpdated.length}}</p>
-			</div>
-			<div class="stats-link">
-				<a href="javascript:;">Companies Updated</a>
-			</div>
-
-		</div>
-		<div class="widget widget-chart bg-dark-darker">
-			<div class="chart-title">
-				Companies Updated - Last 15 Days
-			</div>
-			<div id="companies-donut" style="height: 260px"></div>
-			<ul class="chart-legend list-unstyled">
-				<li ng-repeat="item in data.dashboard.companiesUpdatedChart.legend"><i class="fa fa-circle-o fa-fw m-r-5" ng-style="{'color':getColor($index)}"></i> {{item.value | currency:''}}% <span>{{item.key}}</span></li>
-
-			</ul>
-
-		</div>
-	</div>
-	<div class="col-md-2 col-sm-4">
-		<div class="widget widget-stats bg-red">
-			<div class="stats-icon"></div>
-			<div class="stats-info">
-				<h4>Today</h4>
-				<p>{{data.dashboard.missedPayrollsYesterday.length}}</p>
-			</div>
-			<div class="stats-info">
-				<h4>Last 15 Days</h4>
-				<p>{{data.dashboard.missedPayrolls.length}}</p>
-			</div>
-			<div class="stats-link">
-				<a href="javascript:;">Missed Payrolls</a>
-			</div>
-
-		</div>
-		<div class="panel panel-danger scrollableContainer p-t-0 p-l-0" style="height: 400px;">
-			<div class="panel-heading">
-				<div class="panel-heading-btn">
-
+	</div>-->
+		<div class="col-md-2 col-sm-4">
+			<div class="widget widget-stats bg-purple">
+				<div class="stats-icon"></div>
+				<div class="stats-info">
+					<h4>Today</h4>
+					<p>{{data.dashboard.invoicesDeliveredToday}}</p>
 				</div>
-				<h4 class="panel-title">Missed Payrolls Yesterday</h4>
-			</div>
-			<div class="panel-body p-0 scrollArea">
-				<div>
-					<ul>
-						<li ng-repeat="item in data.dashboard.missedPayrollsYesterday">
-							{{item.companyName}}
-							
-						</li>
-
-					</ul>
+				<div class="stats-info">
+					<h4>Last 15 Days</h4>
+					<p>{{data.dashboard.invoicesDelivered.length}}</p>
+				</div>
+				<div class="stats-link">
+					<a href="javascript:;">Invoices Delivered</a>
 				</div>
 
 			</div>
-		</div>
-	</div>
+			<div class="widget widget-chart bg-dark-darker">
+				<div class="chart-title">
+					Invoice Delivered - Last 15 Days
+				</div>
+				<div id="delivered-donut" style="height: 260px"></div>
+				<ul class="chart-legend list-unstyled">
+					<li ng-repeat="item in data.dashboard.invoicesDeliveredChart.legend"><i class="fa fa-circle-o fa-fw m-r-5" ng-style="{'color':getColor($index)}"></i> {{item.value | currency:''}}% <span>{{item.key}}</span></li>
 
-</div>
+				</ul>
+
+			</div>
+		</div>
+		<div class="col-md-2 col-sm-4">
+			<div class="widget widget-stats bg-dark">
+				<div class="stats-icon"></div>
+				<div class="stats-info">
+					<h4>Today</h4>
+					<p>{{data.dashboard.companiesUpdatedToday}}</p>
+				</div>
+				<div class="stats-info">
+					<h4>Last 15 Days</h4>
+					<p>{{data.dashboard.companiesUpdated.length}}</p>
+				</div>
+				<div class="stats-link">
+					<a href="javascript:;">Companies Updated</a>
+				</div>
+
+			</div>
+			<div class="widget widget-chart bg-dark-darker">
+				<div class="chart-title">
+					Companies Updated - Last 15 Days
+				</div>
+				<div id="companies-donut" style="height: 260px"></div>
+				<ul class="chart-legend list-unstyled">
+					<li ng-repeat="item in data.dashboard.companiesUpdatedChart.legend"><i class="fa fa-circle-o fa-fw m-r-5" ng-style="{'color':getColor($index)}"></i> {{item.value | currency:''}}% <span>{{item.key}}</span></li>
+
+				</ul>
+
+			</div>
+		</div>
+		<div class="col-md-2 col-sm-4">
+			<div class="widget widget-stats bg-blue">
+				<div class="stats-icon"></div>
+				<div class="stats-info">
+					<h4>Today</h4>
+					<p>{{data.dashboard.renewalDueToday}}</p>
+				</div>
+				<div class="stats-info">
+					<h4>Next 15 Days</h4>
+					<p>{{data.dashboard.renewalDueNext}}</p>
+				</div>
+				<div class="stats-link">
+					<a href="javascript:;">Renewals Due</a>
+				</div>
+
+			</div>
+			<div class="panel panel-primary scrollableContainer p-t-0 p-l-0" style="height: 400px;">
+				<div class="panel-heading">
+					<div class="panel-heading-btn">
+
+					</div>
+					<h4 class="panel-title">Renewals Due</h4>
+				</div>
+				<div class="panel-body p-0 scrollArea">
+					<div id="jstree-default2">
+						<ul>
+							<li data-jstree='{"opened":false}' ng-repeat="item4 in data.dashboard.renewals">
+								{{item4.dueDate | date:'MM/dd/yyyy'}}
+								<ul>
+									<li data-jstree='{"opened":false}' ng-repeat="item5 in item4.details">
+										{{item5.description}}
+										<ul>
+											<li ng-repeat="item6 in item5.details" ng-title="item6.company">
+												{{item6.company}} - {{item6.dueDate | date:'MM/dd/yyyy'}}
+											</li>
+										</ul>
+
+
+									</li>
+
+								</ul>
+						</ul>
+
+
+					</div>
+
+
+				</div>
+			</div>
+		</div>
+		<div class="col-md-2 col-sm-4">
+			<div class="widget widget-stats bg-red">
+				<div class="stats-icon"></div>
+				<div class="stats-info">
+					<h4>Today</h4>
+					<p>{{data.dashboard.missedPayrollsYesterday.length}}</p>
+				</div>
+				<div class="stats-info">
+					<h4>Last 15 Days</h4>
+					<p>{{data.dashboard.missedPayrolls.length}}</p>
+				</div>
+				<div class="stats-link">
+					<a href="javascript:;">Missed Payrolls</a>
+				</div>
+
+			</div>
+			<div class="panel panel-danger scrollableContainer p-t-0 p-l-0" style="height: 400px;">
+				<div class="panel-heading">
+					<div class="panel-heading-btn">
+
+					</div>
+					<h4 class="panel-title">Missed Payrolls Yesterday</h4>
+				</div>
+				<div class="panel-body p-0 scrollArea">
+					<div>
+						<ul>
+							<li ng-repeat="item in data.dashboard.missedPayrollsYesterday">
+								{{item.companyName}}
+
+							</li>
+
+						</ul>
+					</div>
+
+				</div>
+			</div>
+		</div>
+
+	</div>

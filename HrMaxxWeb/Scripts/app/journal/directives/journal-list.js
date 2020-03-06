@@ -352,9 +352,10 @@ common.directive('journalList', ['zionAPI', '$timeout', '$window','version',
 							mainAccountId : dataSvc.selectedAccount.id,
 							transactionDate : new Date(),
 							memo : '',
-							isDebit : transactionType===3? false : true,
+							isDebit : transactionType===3 || transactionType===8? false : true,
 							isVoid : false,
-							journalDetails : []
+							journalDetails: [],
+							listItems: []
 						};
 						if (transactionType === 3) {
 							newItem.checkNumber = -1;

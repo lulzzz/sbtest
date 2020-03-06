@@ -270,6 +270,7 @@
     <Content Include="Areas\Client\templates\documents.html" />
     <Content Include="Areas\Client\templates\company.html" />
     <Content Include="Areas\Client\templates\employee.html" />
+    <Content Include="Areas\Client\templates\customer-invoice.html" />
     <Content Include="Areas\Client\templates\renewal-date-list.html" />
     <Content Include="Areas\Client\templates\pay-type-list.html" />
     <Content Include="Areas\Client\templates\insurance-group-list.html" />
@@ -318,6 +319,7 @@
     <Content Include="Scripts\app\common\directives\log-viewer.js" />
     <Content Include="Scripts\app\common\directives\pay-type-list.js" />
     <Content Include="Scripts\app\company\directives\renewal-date-list.js" />
+    <Content Include="Scripts\app\journal\directives\customer-invoice.js" />
     <Content Include="Scripts\app\payroll\directives\scheduled-payroll.js" />
     <Content Include="Scripts\app\payroll\directives\scheduled-payroll-list.js" />
     <Content Include="Scripts\app\reports\directives\news-ticker.js" />

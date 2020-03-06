@@ -17,6 +17,7 @@ namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
 		public List<StaffDashboardCubeJson> CompaniesUpdated { get; set; }
 		public List<StaffDashboardCubeJson> MissedPayrolls { get; set; }
 		public EmployeeDocumentMetaData EmployeeDocumentMetaData { get; set; }
+		public List<CompanyDueDateJson> RenewalDue { get; set; }
 	}
 
 	public class StaffDashboardCubeJson
@@ -27,5 +28,13 @@ namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
 		public string UserName { get; set; }
 		public DateTime TS { get; set; }
 		public DateTime LastBusinessDay { get; set; }
+	}
+	public class CompanyDueDateJson
+	{
+		public string Host { get; set; }
+		public string Company { get; set; }
+		public string Description { get; set; }
+		public DateTime DueDate { get; set; }
+		public string InvoiceSetup { get; set; }
 	}
 }

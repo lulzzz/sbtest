@@ -83,9 +83,27 @@ common.directive('staffDashboard', ['zionAPI', '$timeout', '$window', 'version',
 							$timeout(function() {
 								handleDonutChart(dataSvc.dashboard.payrollsProcessedChart.items, 'processed-donut');
 								handleDonutChart(dataSvc.dashboard.payrollsVoidedChart.items, 'voided-donut');
-								handleDonutChart(dataSvc.dashboard.invoicesCreatedChart.items, 'created-donut');
+								//handleDonutChart(dataSvc.dashboard.invoicesCreatedChart.items, 'created-donut');
 								handleDonutChart(dataSvc.dashboard.invoicesDeliveredChart.items, 'delivered-donut');
 								handleDonutChart(dataSvc.dashboard.companiesUpdatedChart.items, 'companies-donut');
+								$timeout(function () {
+									$('#jstree-default2').jstree({
+										"core": {
+											"themes": {
+												"responsive": false
+											}
+										},
+										"types": {
+											"default": {
+												"icon": "fa fa-folder text-warning fa-lg"
+											},
+											"file": {
+												"icon": "fa fa-file text-inverse fa-lg"
+											}
+										},
+										"plugins": ["types"]
+									});
+								});
 							});
 						}, function (erorr) {
 

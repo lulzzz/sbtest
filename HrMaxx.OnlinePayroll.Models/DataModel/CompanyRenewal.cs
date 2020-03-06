@@ -19,6 +19,7 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
         public string Description { get; set; }
         public int Month { get; set; }
         public int Day { get; set; }
+        public int ReminderDays { get; set; }
     
         public virtual Company Company { get; set; }
     }

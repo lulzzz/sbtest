@@ -264,7 +264,8 @@ namespace HrMaxx.OnlinePayroll.ReadServices.Mappers
 				.ForMember(dest => dest.Accumulation, opt => opt.MapFrom(src => JsonConvert.DeserializeObject<PayrollAccumulation>(src.Accumulation)));
 
 			CreateMap<Models.JsonDataModel.JournalJson, Models.Journal>()
-				.ForMember(dest => dest.JournalDetails, opt => opt.MapFrom(src => JsonConvert.DeserializeObject<List<Models.JournalDetail>>(src.JournalDetails)));
+				.ForMember(dest => dest.JournalDetails, opt => opt.MapFrom(src => JsonConvert.DeserializeObject<List<Models.JournalDetail>>(src.JournalDetails)))
+				.ForMember(dest => dest.ListItems, opt => opt.MapFrom(src => JsonConvert.DeserializeObject<List<Models.JournalItem>>(src.ListItems)));
 
 			CreateMap<Models.JsonDataModel.ExtractInvoicePaymentJson, Models.ExtractInvoicePayment>();
 			CreateMap<Models.JsonDataModel.PayrollInvoiceMiscCharges, Models.PayrollInvoiceMiscCharges>()
@@ -300,6 +301,8 @@ namespace HrMaxx.OnlinePayroll.ReadServices.Mappers
             CreateMap<Models.JsonDataModel.StaffDashboardJson, Models.StaffDashboard>()
 				.ForMember(dest => dest.MissedPayrollsYesterday, opt => opt.Ignore());
 			CreateMap<Models.JsonDataModel.StaffDashboardCubeJson, Models.StaffDashboardCube>();
+			CreateMap<Models.JsonDataModel.CompanyDueDateJson, Models.CompanyDueDate>()
+				.ForMember(dest => dest.InvoiceSetup, opt => opt.MapFrom(src => JsonConvert.DeserializeObject<InvoiceSetup>(src.InvoiceSetup)));
 
 			CreateMap<Models.JsonDataModel.EmployeeMinifiedJson, Models.EmployeeMinified>()
 				.ForMember(dest => dest.HostId, opt => opt.MapFrom(src => src.HostId))

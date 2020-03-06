@@ -537,16 +537,19 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 				.ForMember(dest => dest.EntityType1, opt => opt.Ignore())
 				.ForMember(dest => dest.PayrollPayCheck, opt => opt.Ignore())
 				.ForMember(dest => dest.TransactionDate, opt => opt.MapFrom(src=>src.TransactionDate.Date))
-				.ForMember(dest => dest.JournalDetails, opt => opt.MapFrom(src => JsonConvert.SerializeObject(src.JournalDetails)));
+				.ForMember(dest => dest.JournalDetails, opt => opt.MapFrom(src => JsonConvert.SerializeObject(src.JournalDetails)))
+				.ForMember(dest => dest.ListItems, opt => opt.MapFrom(src => JsonConvert.SerializeObject(src.ListItems)));
 
 			CreateMap<Models.Account, Models.AccountWithJournal>()
 				.ForMember(dest => dest.Journals, opt => opt.MapFrom(src=>new List<AccountRegister>()))
 				.ForMember(dest => dest.AccountBalance, opt => opt.MapFrom(src=>(decimal)0));
 
 			CreateMap<Models.DataModel.Journal, Models.Journal>()
-				.ForMember(dest => dest.JournalDetails, opt => opt.MapFrom(src => JsonConvert.DeserializeObject<List<Models.JournalDetail>>(src.JournalDetails)));
+				.ForMember(dest => dest.JournalDetails, opt => opt.MapFrom(src => JsonConvert.DeserializeObject<List<Models.JournalDetail>>(src.JournalDetails)))
+				.ForMember(dest => dest.ListItems, opt => opt.MapFrom(src => JsonConvert.DeserializeObject<List<Models.JournalItem>>(src.ListItems)));
 			CreateMap<Models.DataModel.CheckbookJournal, Models.Journal>()
-				.ForMember(dest => dest.JournalDetails, opt => opt.MapFrom(src => JsonConvert.DeserializeObject<List<Models.JournalDetail>>(src.JournalDetails)));
+				.ForMember(dest => dest.JournalDetails, opt => opt.MapFrom(src => JsonConvert.DeserializeObject<List<Models.JournalDetail>>(src.JournalDetails)))
+				.ForMember(dest => dest.ListItems, opt => opt.MapFrom(src => JsonConvert.DeserializeObject<List<Models.JournalItem>>(src.ListItems)));
 
 			
 			CreateMap<Models.PayrollInvoice, Models.DataModel.PayrollInvoice>()
