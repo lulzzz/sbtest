@@ -114,7 +114,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 			const string pipaysql = "select * from InvoicePayment  with (nolock) where InvoiceId=@Id";
 			
 			const string insertsql =
-						"insert into PayrollInvoice(Id,CompanyId,PayrollId,PeriodStart,PeriodEnd,InvoiceSetup,GrossWages,EmployerTaxes,InvoiceDate,NoOfChecks,Deductions,WorkerCompensations,EmployeeContribution,EmployerContribution,AdminFee,EnvironmentalFee,MiscCharges,Total,Status,SubmittedOn,SubmittedBy,DeliveredOn,DeliveredBy,LastModified,LastModifiedBy,Courier,EmployeeTaxes,Notes,ProcessedBy,Balance,ProcessedOn,PayChecks,VoidedCreditChecks,ApplyWCMinWageLimit,DeliveryClaimedBy,DeliveryClaimedOn,NetPay,CheckPay,DDPay,SalesRep,Commission, SpecialRequest) values(@Id,@CompanyId,@PayrollId,@PeriodStart,@PeriodEnd,@InvoiceSetup,@GrossWages,@EmployerTaxes,@InvoiceDate,@NoOfChecks,@Deductions,@WorkerCompensations,@EmployeeContribution,@EmployerContribution,@AdminFee,@EnvironmentalFee,@MiscCharges,@Total,@Status,@SubmittedOn,@SubmittedBy,@DeliveredOn,@DeliveredBy,@LastModified,@LastModifiedBy,@Courier,@EmployeeTaxes,@Notes,@ProcessedBy,@Balance,@ProcessedOn,@PayChecks,@VoidedCreditChecks,@ApplyWCMinWageLimit,@DeliveryClaimedBy,@DeliveryClaimedOn,@NetPay,@CheckPay,@DDPay,@SalesRep,@Commission, @SpecialRequest); select cast(scope_identity() as int)";
+						"insert into PayrollInvoice(Id,CompanyId,PayrollId,PeriodStart,PeriodEnd,InvoiceSetup,GrossWages,EmployerTaxes,InvoiceDate,NoOfChecks,Deductions,WorkerCompensations,EmployeeContribution,EmployerContribution,AdminFee,EnvironmentalFee,MiscCharges,Total,Status,SubmittedOn,SubmittedBy,DeliveredOn,DeliveredBy,LastModified,LastModifiedBy,Courier,EmployeeTaxes,Notes,ProcessedBy,Balance,ProcessedOn,PayChecks,VoidedCreditChecks,ApplyWCMinWageLimit,DeliveryClaimedBy,DeliveryClaimedOn,NetPay,CheckPay,DDPay, SpecialRequest) values(@Id,@CompanyId,@PayrollId,@PeriodStart,@PeriodEnd,@InvoiceSetup,@GrossWages,@EmployerTaxes,@InvoiceDate,@NoOfChecks,@Deductions,@WorkerCompensations,@EmployeeContribution,@EmployerContribution,@AdminFee,@EnvironmentalFee,@MiscCharges,@Total,@Status,@SubmittedOn,@SubmittedBy,@DeliveredOn,@DeliveredBy,@LastModified,@LastModifiedBy,@Courier,@EmployeeTaxes,@Notes,@ProcessedBy,@Balance,@ProcessedOn,@PayChecks,@VoidedCreditChecks,@ApplyWCMinWageLimit,@DeliveryClaimedBy,@DeliveryClaimedOn,@NetPay,@CheckPay,@DDPay, @SpecialRequest); select cast(scope_identity() as int)";
 			const string insertcommission = "insert into PayrollInvoiceCommission(InvoiceId, SalesRep, Amount) values(@InvoiceId, @SalesRep, @Amount);";
 			const string updatepayrollsql =
 				"update Payroll set InvoiceId=@Id where Id=@PayrollId;update PayrollPayCheck set InvoiceId=@Id where Id in @PayCheckIds;";
@@ -162,8 +162,8 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 					const string updatepisql =
 						@"update PayrollInvoice set MiscCharges=@MiscCharges, Total=@Total, LastModified=@LastModified, LastModifiedBy=@LastModifiedBy, Status=@Status, 
 																		SubmittedBy=@SubmittedBy, SubmittedOn	=@SubmittedOn, DeliveredBy=@DeliveredBy, DeliveredOn=@DeliveredOn, InvoiceDate=@InvoiceDate, Deductions=@Deductions, Courier=@Courier,
-																		Notes=@Notes, Balance=@Balance, WorkerCompensations=@WorkerCompensations, VoidedCreditChecks=@VoidedCreditChecks, NetPay=@NetPay, DDPay=@DDPay, CheckPay=@CheckPay, SalesRep=@SalesRep, 
-																		Commission=@Commission , TaxesDelayed=@TaxesDelayed, SpecialRequest = @SpecialRequest  															
+																		Notes=@Notes, Balance=@Balance, WorkerCompensations=@WorkerCompensations, VoidedCreditChecks=@VoidedCreditChecks, NetPay=@NetPay, DDPay=@DDPay, CheckPay=@CheckPay, 
+																		TaxesDelayed=@TaxesDelayed, SpecialRequest = @SpecialRequest  															
 																		where Id=@Id";
 					
 					conn.Execute(updatepisql, mapped);
