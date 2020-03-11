@@ -152,16 +152,16 @@ namespace HrMaxx.OnlinePayroll.Services
 					
 					txn.Complete();
 
-					if (comp != null && savedcompany.Contract.ContractOption==ContractOption.PostPaid && savedcompany.Contract.BillingOption==BillingOptions.Invoice 
-						&& savedcompany.Contract.InvoiceSetup.SalesRep != null)
-					{
-						Bus.Publish<CompanySalesRepChangeEvent>(new CompanySalesRepChangeEvent
-						{
-							SavedObject = savedcompany,
-							UserId = company.UserId,
-							UserName = company.UserName
-						});			
-					}
+					//if (comp != null && savedcompany.Contract.ContractOption==ContractOption.PostPaid && savedcompany.Contract.BillingOption==BillingOptions.Invoice 
+					//	&& savedcompany.Contract.InvoiceSetup.SalesRep != null)
+					//{
+					//	Bus.Publish<CompanySalesRepChangeEvent>(new CompanySalesRepChangeEvent
+					//	{
+					//		SavedObject = savedcompany,
+					//		UserId = company.UserId,
+					//		UserName = company.UserName
+					//	});			
+					//}
 
 					Bus.Publish<CompanyUpdatedEvent>(new CompanyUpdatedEvent
 					{

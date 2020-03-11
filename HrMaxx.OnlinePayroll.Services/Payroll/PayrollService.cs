@@ -3802,6 +3802,9 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 					{
 						var employeeAccumulations = _readerService.GetAccumulations(company: company.Id,
 							startdate: new DateTime(payCheck.PayDay.Year, 1, 1), enddate: payCheck.PayDay, ssns: Crypto.Encrypt(payCheck.Employee.SSN));
+						payCheck.Employee.HireDate = employee.HireDate;
+						payCheck.Employee.SickLeaveHireDate = employee.SickLeaveHireDate;
+						payCheck.Employee.CarryOver = employee.CarryOver;
 						payCheck.Accumulations = ProcessAccumulations(payCheck, employeeAccumulations.First(), company);
 						_payrollRepository.UpdatePayCheckSickLeaveAccumulation(payCheck);
 						var memento = Memento<PayCheck>.Create(payCheck, EntityTypeEnum.PayCheck, user, "Pay Type Accumulation Updated", new Guid(userId));

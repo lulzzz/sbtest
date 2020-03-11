@@ -299,10 +299,12 @@ namespace HrMaxx.OnlinePayroll.ReadServices.Mappers
                 .ForMember(dest => dest.Accumulations, opt => opt.MapFrom(src => !string.IsNullOrWhiteSpace(src.Accumulations) ? JsonConvert.DeserializeObject<List<PayTypeAccumulation>>(src.Accumulations) : default(List<PayTypeAccumulation>)));
 
             CreateMap<Models.JsonDataModel.StaffDashboardJson, Models.StaffDashboard>()
-				.ForMember(dest => dest.MissedPayrollsYesterday, opt => opt.Ignore());
+				.ForMember(dest => dest.MissedPayrollsYesterday, opt => opt.Ignore())
+				.ForMember(dest => dest.Renewals, opt => opt.Ignore());
 			CreateMap<Models.JsonDataModel.StaffDashboardCubeJson, Models.StaffDashboardCube>();
 			CreateMap<Models.JsonDataModel.CompanyDueDateJson, Models.CompanyDueDate>()
-				.ForMember(dest => dest.InvoiceSetup, opt => opt.MapFrom(src => JsonConvert.DeserializeObject<InvoiceSetup>(src.InvoiceSetup)));
+				.ForMember(dest => dest.InvoiceSetup, opt => opt.MapFrom(src => JsonConvert.DeserializeObject<InvoiceSetup>(src.InvoiceSetup)))
+				.ForMember(dest => dest.Details, opt => opt.Ignore());
 
 			CreateMap<Models.JsonDataModel.EmployeeMinifiedJson, Models.EmployeeMinified>()
 				.ForMember(dest => dest.HostId, opt => opt.MapFrom(src => src.HostId))

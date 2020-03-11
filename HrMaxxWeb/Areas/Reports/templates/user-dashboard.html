@@ -159,7 +159,7 @@
 
 						<br />
 						<br />
-						<table class="table table-condensed" ng-class="{'hidden-print': data.printOption!==6}">
+						<table class="table table-bordered table-condensed" ng-class="{'hidden-print': data.printOption!==6}">
 							<thead>
 								<tr>
 									<th colspan="4">Companies Renewals <i class="fa pull-right hidden-print" show-filter="true" template-pagination="custom/nopager" ng-if="data.renewals.length>1" ng-class="{'fa-minus-square' : data.viewingChart===6, 'fa-plus-square': data.viewingChart!==4}" ng-click="data.viewingChart=(data.viewingChart===6?0:6)"></i> <i class="fa fa-refresh pull-right hidden-print" ng-click="drawCompaniesRenewal()"></i><i class="fa fa-print hidden-print pull-right" ng-click="print(6)" ng-if="data.renewals.length>1"></i></th>
@@ -185,12 +185,15 @@
 								</td>
 								
 							</tr>
+							<tr ng-show="tableDataRenewals.length===0">
+								<td colspan="4">No results found</td>
+							</tr>
 						</table>
 
 					</div>
 
 					<div class="col-md-6">
-						<table class="table table-condensed" ng-class="{'hidden-print': data.printOption!==2}">
+						<table class="table table-bordered table-condensed" ng-class="{'hidden-print': data.printOption!==2}">
 							<tr>
 								<th colspan="5">Companies Next Payroll Due ( in days ) <i class="fa pull-right hidden-print" ng-if="data.filteredApproachingPayrolls.length>0" ng-class="{'fa-minus-square' : data.viewingChart===2, 'fa-plus-square': data.viewingChart!==2}" ng-click="data.viewingChart=(data.viewingChart===2?0:2)"></i> <i class="fa fa-refresh pull-right hidden-print" ng-click="drawCompaniesWithApproachingPayrolls()"></i><i class="fa fa-print hidden-print pull-right" ng-click="print(2)" ng-if="data.filteredApproachingPayrolls.length>1"></i></th>
 							</tr>
@@ -218,7 +221,7 @@
 							
 						</table>
 						
-						<table class="table table-condensed" ng-class="{'hidden-print': data.printOption!==5}">
+						<table class="table table-bordered table-condensed" ng-class="{'hidden-print': data.printOption!==5}">
 							<tr>
 
 								<th colspan="2">Compan Payroll Schedules and Reporting Days <i class="fa fa-print hidden-print pull-right" ng-show="data.companySchedules.length>0" ng-click="print(5)"></i></th>
