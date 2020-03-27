@@ -115,7 +115,17 @@ common.directive('config', ['zionAPI', '$timeout', '$window', 'version', 'localS
 				$scope.saveDeductionType = function (dt) {
 					if ($scope.selectedType) {
 						$scope.selectedType.category = $scope.selectedType.categoryOption.key;
-						commonRepository.saveDeductionType($scope.selectedType).then(function (data) {
+						var precList = [];
+						$.each(dataSvc.precedenceList, function (i, p) {
+							if (p.typeId === $scope.selectedType.id) {
+								$.each(p.list, function (i1, p1) {
+									$.each(p1.list, function (i2, p2) {
+										precList.push(p2);
+									});
+								});
+							}
+						});
+						commonRepository.saveDeductionType({ deductionType: $scope.selectedType, precedence: precList }).then(function (data) {
 
 							$scope.mainData.showMessage('Successfully saved deduction type ', 'success');
 							$scope.deductionTypes[dt] = angular.copy(data);
@@ -193,7 +203,8 @@ common.directive('config', ['zionAPI', '$timeout', '$window', 'version', 'localS
 								$scope.mainData.handleError('error occurred in bank holidays ' , error, 'danger');
 						});
 						commonRepository.getDeductionTypes().then(function (types) {
-							$scope.deductionTypes = angular.copy(types);
+							$scope.deductionTypes = angular.copy(types.types);
+							dataSvc.precedenceList = angular.copy(types.precedence);
 						}, function (error) {
 							$scope.mainData.handleError('error occurred in getting deduction types ', error, 'danger');
 						});

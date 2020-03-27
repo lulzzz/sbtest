@@ -854,5 +854,15 @@ namespace HrMaxx.OnlinePayroll.Services.USTax
 			return  state;
 
 		}
+		public void UpdateTaxDeductionPrecedence(List<PreTaxDeduction> precedence)
+		{
+			precedence.ForEach(p => {
+				if (p.Selected && !TaxTables.TaxDeductionPrecendences.Any(tdp => tdp.TaxCode.Equals(p.TaxCode) && tdp.DeductionTypeId == p.DeductionTypeId))
+					TaxTables.TaxDeductionPrecendences.Add(new TaxDeductionPrecendence { DeductionTypeId = p.DeductionTypeId, TaxCode = p.TaxCode });
+				else if (!p.Selected && TaxTables.TaxDeductionPrecendences.Any(tdp => tdp.TaxCode.Equals(p.TaxCode) && tdp.DeductionTypeId == p.DeductionTypeId))
+					TaxTables.TaxDeductionPrecendences.Remove(TaxTables.TaxDeductionPrecendences.First(tdp => tdp.TaxCode.Equals(p.TaxCode) && tdp.DeductionTypeId == p.DeductionTypeId));
+			});
+
+		}
 	}
 }

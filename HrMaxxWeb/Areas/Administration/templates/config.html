@@ -155,12 +155,13 @@
 		<div class="row" ng-show="deductionTypes.length>0">
 			<table class="table table-bordered table-condensed">
 				<tr>
-					<th>Category</th>
-					<th>Name</th>
-					<th>W2_12</th>
-					<th>W2_13R</th>
-					<th>940_R</th>
-					<th><a class="btn btn-success btn-icon btn-circle btn-lg" ng-show="!selectedType" ng-click="addDeductionType()"><i class="fa fa-plus"></i></a></th>
+					<th class="col-sm-3">Category</th>
+					<th class="col-sm-2">Name</th>
+					<th class="col-sm-1">W2_12</th>
+					<th class="col-sm-1">W2_13R</th>
+					<th class="col-sm-1">940_R</th>
+					<th class="col-sm-3">Pre-Tax</th>
+					<th class="col-sm-1"><a class="btn btn-success btn-icon btn-circle btn-lg" ng-show="!selectedType" ng-click="addDeductionType()"><i class="fa fa-plus"></i></a></th>
 				</tr>
 				<tr ng-repeat="item in deductionTypes track by $index" class="mouse-over-pointer" ng-class="{'success':selectedType.id===item.id}">
 					<td>
@@ -189,6 +190,22 @@
 						<span e-ng-change="item.r940_R = $data" editable-text="item.r940_R" e-name="w2_12" e-form="rowform">
 							{{ item.r940_R }}
 						</span>
+					</td>
+					<td>
+						<div ng-repeat="p in data.precedenceList  | filter:{typeId: item.id} " ng-if="selectedType && item.categoryOption.key===2">
+							<ul  class="list-unstyled">
+								<li ng-repeat="s in p.list">
+									<i class="fa fa-lg text-primary-darker"  ng-click="s.show=!s.show" ng-class="{'fa-plus-square':!s.show, 'fa-minus-square':s.show}"/> {{s.state}}
+									<div ng-repeat="p1 in s.list" ng-show="s.show">
+										<label for="pre{{p1.taxCode}}{{p1.deductionTypeId}}" class="switch">
+											<input id="pre{{p1.taxCode}}{{p1.deductionTypeId}}" type="checkbox" ng-model="p1.selected"  /><i></i> {{p1.taxCode}}
+
+										</label>
+									</div>
+								</li>
+							</ul>
+							
+						</div>
 					</td>
 					<td style="white-space: nowrap">
 						<!-- form -->

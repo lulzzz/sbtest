@@ -474,5 +474,27 @@ namespace HrMaxx.OnlinePayroll.Repository
             }
             return payType;
         }
-    }
+
+		public List<PreTaxDeduction> GetDeductionTaxPrecendence()
+		{
+			const string sql = "select t.Code TaxCode, dt.Id DeductionTypeId, t.StateId, " +
+								"case when exists(select 'x' from TaxDeductionPrecedence where TaxCode = t.Code and DeductionTypeId = dt.Id) then 1 else 0 end Selected " +
+								"from tax t left outer join DeductionType dt on dt.Category = 2";
+			using (var conn = GetConnection())
+			{
+				return conn.Query<PreTaxDeduction>(sql).ToList();
+			}
+			
+		}
+		public void SaveDeductionPrecedence(List<PreTaxDeduction> precedence)
+		{
+			const string sql = "if @Selected=0 begin delete from TaxDeductionPrecedence where TaxCode=@TaxCode and DeductionTypeId=@DeductionTypeId; end " +
+				"else begin if not exists(select 'x' from TaxDeductionPrecedence where TaxCode=@TaxCode and DeductionTypeId=@DeductionTypeId) " +
+	"insert into TaxDeductionPrecedence values (@TaxCode, @DeductionTypeId) end";
+			using (var conn = GetConnection())
+			{
+				conn.Execute(sql, precedence);
+			}
+		}
+	}
 }

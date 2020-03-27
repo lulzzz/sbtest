@@ -400,7 +400,7 @@ common.factory('commonRepository', [
 			},
 			getDeductionTypes: function () {
 				var deferred = $q.defer();
-				commonServer.one('DeductionTypes').getList().then(function (data) {
+				commonServer.one('DeductionTypes').get().then(function (data) {
 					deferred.resolve(data);
 				}, function (error) {
 					deferred.reject(error);

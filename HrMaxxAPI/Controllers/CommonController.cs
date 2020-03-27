@@ -57,15 +57,15 @@ namespace HrMaxxAPI.Controllers
 		}
 		[System.Web.Http.HttpGet]
 		[System.Web.Http.Route(HrMaxxRoutes.DeductionTypes)]
-		public IList<DeductionType> GetDeductionTypes()
+		public object GetDeductionTypes()
 		{
 			return MakeServiceCall(() => _metaDataService.GetDeductionTypes(), "Get Deduction Types in the System", true);
 		}
 		[HttpPost	]
 		[System.Web.Http.Route(HrMaxxRoutes.SaveDeductionType)]
-		public DeductionType SaveDeductionType(DeductionType dt)
+		public DeductionType SaveDeductionType(DeductionTypeResource dt)
 		{
-			return MakeServiceCall(() => _metaDataService.SaveDeductionType(dt), "save Deduction Types in the System", true);
+			return MakeServiceCall(() => _metaDataService.SaveDeductionType(dt.DeductionType, dt.Precedence), "save Deduction Types in the System", true);
 		}
 		[System.Web.Http.HttpPost]
 		[System.Web.Http.Route(HrMaxxRoutes.SaveDocumentType)]

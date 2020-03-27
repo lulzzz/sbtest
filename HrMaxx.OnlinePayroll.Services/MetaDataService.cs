@@ -232,11 +232,14 @@ namespace HrMaxx.OnlinePayroll.Services
 			}
 		}
 
-		public IList<DeductionType> GetDeductionTypes()
+		public object GetDeductionTypes()
 		{
 			try
 			{
-				return _metaDataRepository.GetDeductionTypes();
+				var types = _metaDataRepository.GetDeductionTypes();
+				var precedence = _metaDataRepository.GetDeductionTaxPrecendence();
+				var precGroups = precedence.GroupBy(p => p.DeductionTypeId).Select(g => new { TypeId= g.Key, List= g.ToList().GroupBy(p1 => p1.StateCode).Select(g2 => new { State = g2.Key, List = g2.ToList() }).ToList()}).ToList();
+				return new { Types = types, Precedence = precGroups };
 			}
 			catch (Exception e)
 			{
@@ -335,11 +338,14 @@ namespace HrMaxx.OnlinePayroll.Services
 					"GetAccessMetaData", new List<FilterParam>(), new XmlRootAttribute("AccessList"));
 		}
 
-		public DeductionType SaveDeductionType(DeductionType dt)
+		public DeductionType SaveDeductionType(DeductionType dt, List<PreTaxDeduction> precedence)
 		{
 			try
 			{
-				return _metaDataRepository.SaveDeductionType(dt);
+				var dedType = _metaDataRepository.SaveDeductionType(dt);
+				_metaDataRepository.SaveDeductionPrecedence(precedence);
+				_taxationService.UpdateTaxDeductionPrecedence(precedence);
+				return dedType;
 			}
 			catch (Exception e)
 			{

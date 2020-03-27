@@ -307,6 +307,7 @@
     <Compile Include="JsonDataModel\ScheduledPayrollJson.cs" />
     <Compile Include="JsonDataModel\StaffDashboardJson.cs" />
     <Compile Include="JsonDataModel\VoidedPayCheckInvoiceCredit.cs" />
+    <Compile Include="MetaDataModels\PreTaxDeduction.cs" />
     <Compile Include="MinWageEligibileCompany.cs" />
     <Compile Include="MinWageEligibilityCriteria.cs" />
     <Compile Include="PayCheckJournal.cs" />
