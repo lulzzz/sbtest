@@ -175,7 +175,7 @@
 						</span>
 					</td>
 					<td>
-						<span e-ng-change="item.w2_12 = $data" editable-text="item.w2_12" e-name="w2_12" e-form="rowform">
+						<span e-ng-change="item.w2_12 = $data" editable-text="item.w2_12" e-name="w2_12" e-form="rowform" e-style="width:5em">
 							{{ item.w2_12 }}
 						</span>
 					</td>
@@ -187,12 +187,12 @@
 						</div>
 					</td>
 					<td>
-						<span e-ng-change="item.r940_R = $data" editable-text="item.r940_R" e-name="w2_12" e-form="rowform">
+						<span e-ng-change="item.r940_R = $data" editable-text="item.r940_R" e-name="w2_12" e-form="rowform" e-style="width:5em">
 							{{ item.r940_R }}
 						</span>
 					</td>
 					<td>
-						<div ng-repeat="p in data.precedenceList  | filter:{typeId: item.id} " ng-if="selectedType && item.categoryOption.key===2">
+						<div ng-repeat="p in data.precedenceList  | filter:{typeId: item.id} " ng-show="selectedType && selectedType.id===item.id && item.categoryOption.key===2">
 							<ul  class="list-unstyled">
 								<li ng-repeat="s in p.list">
 									<i class="fa fa-lg text-primary-darker"  ng-click="s.show=!s.show" ng-class="{'fa-plus-square':!s.show, 'fa-minus-square':s.show}"/> {{s.state}}
@@ -210,13 +210,13 @@
 					<td style="white-space: nowrap">
 						<!-- form -->
 						<form editable-form id="rowform" name="rowform" onbeforesave="saveDeductionType($index)" class="form-buttons form-inline" shown="selectedType===item">
-							<button type="button" ng-show="!rowform.$visible" class="btn btn-lg btn-primary  btn-icon btn-circle" ng-click="rowform.$show();setSelectedType($index)">
+							<button type="button" ng-show="!rowform.$visible" class="btn btn-primary  btn-icon btn-circle" ng-click="rowform.$show();setSelectedType($index)">
 								<i class="fa fa-pencil"></i>
 							</button>
-							<button type="submit" ng-disabled="rowform.$waiting || !isDeductionTypeValid()" ng-show="rowform.$visible" class="btn btn-lg btn-success  btn-icon btn-circle">
+							<button type="submit" ng-disabled="rowform.$waiting || !isDeductionTypeValid()" ng-show="rowform.$visible" class="btn  btn-success  btn-icon btn-circle">
 								<i class="fa fa-check"></i>
 							</button>
-							<button type="button" ng-disabled="rowform.$waiting" ng-show="rowform.$visible" ng-click="rowform.$cancel();cancelDeduction($index)" class="btn btn-lg btn-default  btn-icon btn-circle">
+							<button type="button" ng-disabled="rowform.$waiting" ng-show="rowform.$visible" ng-click="rowform.$cancel();cancelDeduction($index)" class="btn  btn-default  btn-icon btn-circle">
 								<i class="fa fa-undo"></i>
 							</button>
 						</form>
