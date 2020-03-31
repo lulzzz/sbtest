@@ -330,7 +330,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 					wc.Description = mappedpc.Description;
 					wc.Month = mappedpc.Month;
 					wc.Day = mappedpc.Day;
-
+					wc.ReminderDays = mappedpc.ReminderDays;
 				}
 			}
 			_dbContext.SaveChanges();
@@ -810,6 +810,15 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 			using (var conn = GetConnection())
 			{
 				conn.Execute(sql, mapped);
+			}
+		}
+
+		public void SaveRenewalDate(Guid companyId, int renewalId, string fullName)
+		{
+			const string sql = "update CompanyRenewal set LastRenewed=getdate() , LastRenewedBy=@User where Id=@Id";
+			using (var conn = GetConnection())
+			{
+				conn.Execute(sql, new { Id=renewalId, User=fullName});
 			}
 		}
 	}

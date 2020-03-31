@@ -219,6 +219,8 @@ namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
 		public int Month { get; set; }
 		public int Day { get; set; }
 		public int ReminderDays { get; set; }
+		public DateTime? LastRenewed { get; set; }
+		public string LastRenewedBy { get; set; }
 	}
 	
 	public class CompanyPayCode

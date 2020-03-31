@@ -31,10 +31,13 @@ namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
 	}
 	public class CompanyDueDateJson
 	{
+		public Guid CompanyId { get; set; }
+		public int RenewalId { get; set; }
 		public string Host { get; set; }
 		public string Company { get; set; }
 		public string Description { get; set; }
 		public DateTime DueDate { get; set; }
+		public int RemindDaysBefore { get; set; }
 		public string InvoiceSetup { get; set; }
 	}
 }

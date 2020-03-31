@@ -1,4 +1,4 @@
-﻿<div class="table-responsive col-sm-10 col-sm-offset-1">
+﻿<div class="table-responsive col-sm-12">
 	<div class="row">
 		<alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</alert>
 	</div>
@@ -6,9 +6,9 @@
 		<thead>
 			<tr>
 				<td class="col-sm-4">Description</td>
-				<td class="col-sm-3">Reminder in (days)</td>
-				<td class="col-sm-3">Month &amp; Day</td>
-
+				<td class="col-sm-2">Reminder in (days)</td>
+				<td class="col-sm-23">Month &amp; Day</td>
+				<td class="col-sm-2"> Last Renewed</td>
 				<td class="col-sm-1" ng-show="showControls"></td>
 			</tr>
 		</thead>
@@ -16,7 +16,7 @@
 			<tr ng-repeat="item in list track by $index">
 				
 				<td>
-					<span e-ng-change="item.description = $data" editable-text="item.description" e-name="description" e-form="rowform">
+					<span e-ng-change="item.description = $data" editable-text="item.description" e-name="description" e-form="rowform" e-style="width:20em">
 						{{ item.description }}
 					</span>
 				</td>
@@ -33,7 +33,7 @@
 						{{ item.day }}
 					</span>
 				</td>
-				
+				<td>{{item.lastRenewed ? ((item.lastRenewed | date:'MM/dd/yyyy hh:mm:ss a') + ' (' + item.lastRenewedBy + ')') : ''}}</td>
 
 				<td style="white-space: nowrap" ng-show="showControls">
 					<!-- form -->

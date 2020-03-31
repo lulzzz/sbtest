@@ -683,6 +683,14 @@ namespace HrMaxxAPI.Controllers.Companies
 		{
 			return MakeServiceCall(() => _companyService.GetCaliforniaCompanyTaxes(year), "Get all companies for tax rates", true);
 		}
+		[System.Web.Http.HttpGet]
+		[System.Web.Http.Route(CompanyRoutes.SaveRenewalDate)]
+		[DeflateCompression]
+		public HttpStatusCode SaveRenewalDate(Guid companyId, int renewalId)
+		{
+			MakeServiceCall(() => _companyService.SaveRenewalDate(companyId, renewalId, CurrentUser.FullName), "save renewal date");
+			return HttpStatusCode.OK;
+		}
 
 		[System.Web.Http.HttpGet]
 		[System.Web.Http.Route(CompanyRoutes.GetCaliforniaEDDExport)]

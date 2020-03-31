@@ -55,5 +55,6 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 		void UpdateEmployeePayrollSchedules(Guid id, PayrollSchedule payrollSchedule);
 		void UpdateEmployeePayCodes(List<Employee> employees);
         CompanyRenewal SaveRenewal(CompanyRenewal renewal);
+        void SaveRenewalDate(Guid companyId, int renewalId, string fullName);
     }
 }

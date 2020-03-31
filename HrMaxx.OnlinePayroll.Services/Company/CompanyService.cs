@@ -824,5 +824,19 @@ namespace HrMaxx.OnlinePayroll.Services
 				throw new HrMaxxApplicationException(message, e);
 			}
 		}
+
+		public void SaveRenewalDate(Guid companyId, int renewalId, string fullName)
+		{
+			try
+			{
+				_companyRepository.SaveRenewalDate(companyId, renewalId, fullName);
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, " save renewal date completion " + renewalId);
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
 	}
 }

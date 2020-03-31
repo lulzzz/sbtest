@@ -167,16 +167,16 @@
 					<h4 class="panel-title">Renewals Due</h4>
 				</div>
 				<div class="panel-body p-0 scrollArea">
-					<div id="jstree-default2">
-						<ul>
-							<li data-jstree='{"opened":false}' ng-repeat="item4 in data.dashboard.renewals">
-								{{item4.dueDate | date:'MM/dd/yyyy'}}
-								<ul>
-									<li data-jstree='{"opened":false}' ng-repeat="item5 in item4.details">
-										{{item5.description}}
-										<ul>
-											<li ng-repeat="item6 in item5.details" ng-title="item6.company">
-												{{item6.company}} - {{item6.dueDate | date:'MM/dd/yyyy'}}
+					<div>
+						<ul class="list-unstyled p-l-2 p-t-5">
+							<li ng-repeat="item4 in data.dashboard.renewals">
+								<i class="fa fa-lg" ng-class="{'fa-folder text-warning': !item4.isOpen, 'fa-folder-open text-black' : item4.isOpen}" ng-click="item4.isOpen=!item4.isOpen"></i>  {{item4.dueDate | date:'MM/dd/yyyy'}}
+								<ul ng-show="item4.isOpen" class="list-unstyled p-l-10 p-t-5">
+									<li ng-repeat="item5 in item4.details" >
+										<i class="fa fa-lg" ng-click="item5.isOpen=!item5.isOpen" ng-class="{'fa-folder text-warning': !item5.isOpen, 'fa-folder-open text-black' : item5.isOpen}"></i> {{item5.description}}
+										<ul ng-show="item5.isOpen" class="list-unstyled p-l-20 p-t-5">
+											<li  ng-repeat="item6 in item5.details" ng-title="item6.company">
+												<i class="fa fa-lg" ng-class="{'fa-check-circle text-primary':!item6.isComplete, 'fa-thumbs-up text-warning': item6.isComplete}" ng-click="taskCompleted(item5.details, item6)"></i> {{item6.company}} - {{item6.dueDate | date:'MM/dd/yyyy'}} ( {{item6.remindDaysBefore}} days )
 											</li>
 										</ul>
 
@@ -184,7 +184,7 @@
 									</li>
 
 								</ul>
-						</ul>
+</ul>
 
 
 					</div>

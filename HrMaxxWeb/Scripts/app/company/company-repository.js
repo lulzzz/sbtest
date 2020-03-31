@@ -312,6 +312,16 @@ common.factory('companyRepository', [
 
 				return deferred.promise;
 			},
+			saveRenewalDone: function (companyId, renewalId) {
+				var deferred = $q.defer();
+				companyServer.one('SaveRenewalDate').one(companyId, renewalId).get().then(function (data) {
+					deferred.resolve(data);
+				}, function (error) {
+					deferred.reject(error);
+				});
+
+				return deferred.promise;
+			},
 			getEmployeeImportTemplate: function (companyId) {
 				var deferred = $q.defer();
 				$http.get(zionAPI.URL + "Company/EmployeeImport/" + companyId, { responseType: "arraybuffer" }).success(

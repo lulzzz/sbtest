@@ -50,10 +50,13 @@ namespace HrMaxx.OnlinePayroll.Models
 	}
 	public class CompanyDueDate
 	{
+		public Guid CompanyId { get; set; }
+		public int RenewalId { get; set; }
 		public string Host { get; set; }
 		public string Company { get; set; }
 		public string Description { get; set; }
 		public DateTime DueDate { get; set; }
+		public int RemindDaysBefore { get; set; }
 		public InvoiceSetup InvoiceSetup { get; set; }
 		public int DueInDays { get { return (int)((DueDate - DateTime.Today).TotalDays); } }
 		public List<CompanyDueDate> Details { get; set; }
