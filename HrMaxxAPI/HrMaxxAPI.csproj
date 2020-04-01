@@ -362,6 +362,7 @@
     <Content Include="templates\transformers\extracts\Federal940EFTPSExcel.xslt" />
     <Content Include="templates\transformers\extracts\Federal941EFTPSExcel.xslt" />
     <Content Include="templates\transformers\extracts\GarnishmentReport.xslt" />
+    <Content Include="templates\transformers\extracts\Paperless941-2020.xslt" />
     <Content Include="templates\transformers\extracts\Paperless941-2019.xslt" />
     <Content Include="templates\transformers\extracts\TXSuta.xslt">
       <SubType>Designer</SubType>
@@ -425,6 +426,7 @@
     </Content>
     <Content Include="templates\transformers\reports\941\Fed941-2015.xslt" />
     <Content Include="templates\transformers\reports\941\Fed941-2016.xslt" />
+    <Content Include="templates\transformers\reports\941\Fed941-2020.xslt" />
     <Content Include="templates\transformers\reports\941\Fed941-2019.xslt" />
     <Content Include="templates\transformers\reports\941\Fed941-2018.xslt">
       <SubType>Designer</SubType>
@@ -597,6 +599,9 @@
     <Content Include="templates\GovtForms\W3\W3-2019.pdf" />
     <Content Include="templates\GovtForms\MTForms\MW-1.pdf" />
     <Content Include="templates\GovtForms\MTForms\UI-5.pdf" />
+    <Content Include="templates\GovtForms\941\f941-2020-part1.pdf" />
+    <Content Include="templates\GovtForms\941\f941-2020-part2.pdf" />
+    <Content Include="templates\GovtForms\941\f941sb-2020.pdf" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\HrMaxx.OnlinePayroll.Contracts\HrMaxx.OnlinePayroll.Contracts.csproj">
