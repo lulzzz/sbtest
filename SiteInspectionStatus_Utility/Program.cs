@@ -4,8 +4,10 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Web.UI;
 using System.Xml.Serialization;
+using System.Xml.Xsl;
 using Autofac;
 using HrMaxx.Bus.Contracts;
 using HrMaxx.Common.Contracts.Services;
@@ -166,12 +168,105 @@ namespace SiteInspectionStatus_Utility
                 case 36:
                     ConvertSalesRep(container);
                     break;
+                case 37:
+                    FillExtract(container);
+                    break;
                 default:
 					break;
 			}
 
 			Console.WriteLine("Utility run finished for ");
 		}
+        private static void FillExtract(IContainer scope)
+        {
+            var reader = scope.Resolve<IReaderService>();
+            var reportservice = scope.Resolve<IReportService>();
+            var _fileRepository = scope.Resolve<IFileRepository>();
+            
+            Console.Write("Enter Extract Name : ");
+            string extractName = Console.ReadLine();
+            var extracts = reader.GetExtracts(extractName);
+            Console.WriteLine("extracts " + extracts.Count);
+            extracts =
+                extracts.Where(
+                    e => !_fileRepository.ArchiveFileExists(ArchiveTypes.Extract.GetDbName(), string.Empty, e.Id.ToString())).ToList();
+            Console.WriteLine("extracts without files " + extracts.Count);
+            extracts.OrderByDescending(e=>e.Id).ToList().ForEach(e =>
+            {
+
+                var extract = new Extract();
+                var reportrequest = new ReportRequest()
+                {
+                    MasterExtractId = e.Id,
+                    DepositDate = e.DepositDate,
+                    StartDate = e.StartDate,
+                    EndDate = e.EndDate,
+                    IncludeHistory = true,
+                    ReportName = extractName,
+                    IsReverse = true
+                };
+                if (!e.ExtractName.Equals("ACH"))
+                {
+                    if (e.StartDate.Day == 1 && e.StartDate.Month == e.EndDate.Month && e.EndDate.Day == DateTime.DaysInMonth(e.EndDate.Year, e.EndDate.Month))
+                        reportrequest.DepositSchedule = DepositSchedule941.Monthly;
+                    else if (e.StartDate.Day == 1 && e.StartDate.Month != e.EndDate.Month && e.EndDate.Day == DateTime.DaysInMonth(e.EndDate.Year, e.EndDate.Month))
+                        reportrequest.DepositSchedule = DepositSchedule941.Quarterly;
+                    else
+                    {
+                        reportrequest.DepositSchedule = DepositSchedule941.SemiWeekly;
+                    }
+                }
+                
+
+                try
+                {
+                    var _templatePath = "C:\\Dev\\EDPI\\Source\\Zion\\HrMaxxAPI\\templates\\";
+                    if (e.ExtractName.Equals("ACH"))
+                    {
+                        var achExtract = reportservice.GetACHReport(reportrequest);
+                        achExtract.Data.Hosts.ForEach(h =>
+                        {
+                            h.ACHTransactions.ForEach(t => t.Included = true);
+                        });
+                        var xml = Utilities.GetXml<ACHResponse>(achExtract.Data);
+                        var args = new XsltArgumentList();
+                        args.AddParam("time", "", e.LastModified.ToString("HHmm"));
+                        args.AddParam("today", "", e.LastModified.ToString("yyMMdd"));
+                        args.AddParam("postingDate", "", e.DepositDate.ToString("yyMMdd"));
+                        var transformed = Utilities.XmlTransform(xml,
+                            $"{_templatePath}{"transformers/extracts/CBT-ACHTransformer.xslt"}", args);
+
+                        transformed = Utilities.Transform(transformed);
+
+                        achExtract.File = new FileDto
+                        {
+                            Data = Encoding.UTF8.GetBytes(transformed),
+                            DocumentExtension = ".txt",
+                            Filename = $"CBT-ACH-Extract-{e.LastModified.ToString("MM/dd/yyyy")}.txt",
+                            MimeType = "application/octet-stream"
+                        };
+                        
+                        _fileRepository.SaveArchiveJson(ArchiveTypes.Extract.GetDbName(), string.Empty, e.Id.ToString(), JsonConvert.SerializeObject(achExtract));
+                    }
+                    else
+                    {
+                        
+                        _fileRepository.SaveArchiveJson(ArchiveTypes.Extract.GetDbName(), string.Empty, e.Id.ToString(), JsonConvert.SerializeObject(extract));
+                        Console.WriteLine("{0}--{1}", e.Id, e.ExtractName);
+                    }
+                    
+                }
+                catch (Exception e1)
+                {
+                    Console.WriteLine("error in filling the files" + e.Id + " --- " + e1);
+                    Console.WriteLine(e1.Message);
+                }
+
+
+            });
+
+            Console.WriteLine("Extract fules created for " + extractName);
+        }
         private static void CreateDemoData(IContainer container)
         {
             using (var scope = container.BeginLifetimeScope())

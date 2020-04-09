@@ -2,7 +2,7 @@
           FROM   INFORMATION_SCHEMA.COLUMNS
           WHERE  TABLE_NAME = 'CompanyRenewal'
                  AND COLUMN_NAME = 'LastRenewed')
-Alter table CompanyRenewal Add LastRenewed datetime;
+Alter table CompanyRenewal Add LastRenewed datetime, LastRenewedBy varchar(max);
 Go
 
 /****** Object:  StoredProcedure [dbo].[GetStaffDashboard]    Script Date: 31/03/2020 6:15:27 PM ******/

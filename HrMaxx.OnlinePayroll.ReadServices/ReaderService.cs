@@ -830,10 +830,18 @@ namespace HrMaxx.OnlinePayroll.ReadServices
 				{
 					paramList.Add(new FilterParam { Key = "includeHistory", Value = request.IncludeHistory.ToString() });
 				}
-			  if (request.State > 0)
-			  {
-					paramList.Add(new FilterParam { Key = "state", Value = request.State.ToString() });
-			  }
+				  if (request.State > 0)
+				  {
+						paramList.Add(new FilterParam { Key = "state", Value = request.State.ToString() });
+				  }
+				if (request.IsReverse)
+				{
+					paramList.Add(new FilterParam { Key = "isReverse", Value = request.IsReverse.ToString() });
+				}
+				if (request.MasterExtractId > 0)
+				{
+					paramList.Add(new FilterParam { Key = "masterExtractId", Value = request.MasterExtractId.ToString() });
+				}
 				var dbReport = GetDataFromStoredProc<Models.ExtractResponseDB>(
 					"GetExtractData", paramList);
 				var returnVal = Mapper.Map<ExtractResponseDB, ExtractResponse>(dbReport);

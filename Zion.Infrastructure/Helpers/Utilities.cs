@@ -161,8 +161,37 @@ namespace HrMaxx.Infrastructure.Helpers
 			strOutput = sb.ToString();
 			return strOutput;
 		}
+		public  static string Transform(string result)
+		{
+			result = result.Replace("\r\n", "");
+			result = result.Replace("\n", "");
+			result = result.Replace("&amp;", "&");
+			result = result.Replace("$$n", Environment.NewLine);
+			result = result.Replace("$$spaces100$$", "".PadRight(100));
+			result = result.Replace("$$spaces20$$", "".PadRight(20));
+			result = result.Replace("$$spaces10$$", "".PadRight(10));
+			result = result.Replace("$$spaces5$$", "".PadRight(5));
+			result = result.Replace("$$spaces2$$", "".PadRight(2));
+			result = result.Replace("$$spaces1$$", "".PadRight(1));
+			result = result.Replace("$$n", Environment.NewLine);
+			if (result.IndexOf("mainCounter", StringComparison.InvariantCulture) > 0)
+			{
+				var lines = result.Split(Environment.NewLine.ToCharArray());
+				var mainCounter = (int)1;
+				result = string.Empty;
+				foreach (var line in lines)
+				{
+					if (!string.IsNullOrWhiteSpace(line))
+					{
+						result += line.Replace("mainCounter", mainCounter++.ToString().PadLeft(8, '0'));
+						result += Environment.NewLine;
+					}
+				}
+			}
+			return result;
+		}
 
-        public static void LogInfo(string message)
+		public static void LogInfo(string message)
         {
             XmlConfigurator.ConfigureAndWatch(new FileInfo(AppDomain.CurrentDomain.BaseDirectory + "log4net.xml"));
             log4net.Config.XmlConfigurator.Configure();
