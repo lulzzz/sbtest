@@ -1,0 +1,717 @@
+﻿<?xml version="1.0"?>
+<ReportResponse xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Host>
+    <Id>75a78be4-7226-466b-86ba-a6e200dcaaac</Id>
+    <UserId>00000000-0000-0000-0000-000000000000</UserId>
+    <UserName>Monica Contreras</UserName>
+    <LastModified>2020-01-14T10:07:09.367</LastModified>
+    <HostIntId>2</HostIntId>
+    <FirmName>GARMENT INDUSTRY INSURANCE GROUP</FirmName>
+    <Url>PAYROLL</Url>
+    <EffectiveDate>2016-12-22T05:27:49.9</EffectiveDate>
+    <TerminationDate xsi:nil="true" />
+    <StatusId>1</StatusId>
+    <CompanyId>50423097-59b6-425b-9964-a6e200dcaaac</CompanyId>
+    <Company>
+      <Id>50423097-59b6-425b-9964-a6e200dcaaac</Id>
+      <UserId>00000000-0000-0000-0000-000000000000</UserId>
+      <UserName>Monica Contreras</UserName>
+      <LastModified>2020-01-14T10:07:09.367</LastModified>
+      <CompanyIntId>2</CompanyIntId>
+      <HostId>75a78be4-7226-466b-86ba-a6e200dcaaac</HostId>
+      <Name>GARMENT INDUSTRY INSURANCE GROUP</Name>
+      <CompanyAddress>
+        <Id>269447c6-e7d7-48dc-8ab1-a6e200dcaaac</Id>
+        <UserId>00000000-0000-0000-0000-000000000000</UserId>
+        <LastModified>2020-01-14T23:07:09.3652849+05:00</LastModified>
+        <AddressLine1>2750 N. BELLFLOWER BLVD STE 200</AddressLine1>
+        <City>LONG BEACH</City>
+        <StateId>1</StateId>
+        <CountryId>1</CountryId>
+        <Zip>90815</Zip>
+        <Type>NA</Type>
+        <StateCode>CA</StateCode>
+        <AddressLine2>LONG BEACH, CA 90815</AddressLine2>
+      </CompanyAddress>
+      <IsVisibleToHost>true</IsVisibleToHost>
+      <StatusId>Active</StatusId>
+      <FileUnderHost>true</FileUnderHost>
+      <IsHostCompany>true</IsHostCompany>
+      <PayrollDaysInPast>0</PayrollDaysInPast>
+      <DirectDebitPayer>true</DirectDebitPayer>
+      <ProfitStarsPayer>false</ProfitStarsPayer>
+      <PayCheckStock>LaserTop</PayCheckStock>
+      <InsuranceGroupNo>2</InsuranceGroupNo>
+      <PayrollSchedule>SemiMonthly</PayrollSchedule>
+      <PayrollScheduleDay>SemiMonthly</PayrollScheduleDay>
+      <MinWage>12.00</MinWage>
+      <Memo />
+      <TaxFilingName>GARMENT INDUSTRY INSURANCE GROUP</TaxFilingName>
+      <IsAddressSame>true</IsAddressSame>
+      <BusinessAddress>
+        <Id>269447c6-e7d7-48dc-8ab1-a6e200dcaaac</Id>
+        <UserId>00000000-0000-0000-0000-000000000000</UserId>
+        <LastModified>2020-01-14T23:07:09.3663168+05:00</LastModified>
+        <AddressLine1>2750 N. BELLFLOWER BLVD STE 200</AddressLine1>
+        <City>LONG BEACH</City>
+        <StateId>1</StateId>
+        <CountryId>1</CountryId>
+        <Zip>90815</Zip>
+        <Type>NA</Type>
+        <StateCode>CA</StateCode>
+        <AddressLine2>LONG BEACH, CA 90815</AddressLine2>
+      </BusinessAddress>
+      <AllowTaxPayments>false</AllowTaxPayments>
+      <AllowEFileFormFiling>false</AllowEFileFormFiling>
+      <FederalEIN>203701204</FederalEIN>
+      <FederalPin>1204</FederalPin>
+      <DepositSchedule>Monthly</DepositSchedule>
+      <IsFiler944>false</IsFiler944>
+      <IsFiler1095>false</IsFiler1095>
+      <LastPayrollDate>2020-04-09T00:00:00</LastPayrollDate>
+      <CompanyCheckPrintOrder>CompanyEmployeeNo</CompanyCheckPrintOrder>
+      <IsRestaurant>false</IsRestaurant>
+      <InsuranceClientNo>1</InsuranceClientNo>
+      <RecurringCharges />
+      <States />
+      <AccumulatedPayTypes />
+      <Deductions />
+      <WorkerCompensations />
+      <CompanyTaxRates />
+      <PayCodes />
+      <CompanyRenewals />
+      <Created>2016-12-20T13:23:25.37</Created>
+      <ParentId xsi:nil="true" />
+      <HasLocations>false</HasLocations>
+      <Locations />
+    </Company>
+    <PTIN>999999</PTIN>
+    <DesigneeName940941>MONICA CONTRERAS</DesigneeName940941>
+    <PIN940941>999999</PIN940941>
+    <HomePage>
+      <Id>75a78be4-7226-466b-86ba-a6e200dcaaac</Id>
+      <UserId>abd258a0-769c-4e62-9ec0-3e1211ddccfc</UserId>
+      <UserName>Jay Shen</UserName>
+      <LastModified>2019-06-04T03:55:18.5702948+05:00</LastModified>
+      <Logo>
+        <Id>6200a56c-bfc0-419b-b898-a6f000cfb0ad</Id>
+        <UserId>00000000-0000-0000-0000-000000000000</UserId>
+        <LastModified>0001-01-01T00:00:00</LastModified>
+        <DocumentName>GIIG Logo GEN2</DocumentName>
+        <DocumentExtension>jpg</DocumentExtension>
+        <MimeType>image/jpeg</MimeType>
+        <DocumentType>Misc</DocumentType>
+      </Logo>
+      <Contact>
+        <Id>74a05082-e2ff-4c73-86c9-aa1c00e2faeb</Id>
+        <UserId>00000000-0000-0000-0000-000000000000</UserId>
+        <LastModified>0001-01-01T00:00:00</LastModified>
+        <DocumentName>page6_img1</DocumentName>
+        <DocumentExtension>jpg</DocumentExtension>
+        <MimeType>image/jpeg</MimeType>
+        <DocumentType>Misc</DocumentType>
+      </Contact>
+      <Profile>&amp;nbsp;Your One Stop Business Support Center.&amp;nbsp;&lt;br&gt;&lt;br&gt;&lt;div&gt;&lt;li&gt;06/03/2019 ***Monthly Bugfree Bonus***&amp;nbsp; From now on if you have NOT made a mistake in the past month, please send me a text or email and you will be awarded a bonus for your diligence and dedication.&lt;/li&gt;&lt;br&gt;&lt;span&gt;&lt;li&gt;05/01/2019 Summer months are here.&amp;nbsp; Staff&amp;nbsp;will start to go on vacations in rotation. Please make sure proper and comprehensive task hand-over before leaving.&amp;nbsp;&amp;nbsp;&lt;/li&gt;&lt;br&gt;&lt;li&gt;01/01/2019 Our system will automatically accrue the State minimum required 0.0333 hr per one hour worked for hourly employees. Salaried employees are given Sick Leave hours according to a full-time 40-hr work week. This accrual method is company-wide and not employee specific. If you already have your own company sick leave policy, you may disable our system by setting values to zero in your Company Page. Use the employee memo field to manually note your accrual values.&lt;/li&gt;&lt;br&gt;&lt;li&gt;01/01/2019 Did you know using a fiscal year basis for any accrual (sick leave, vacation, etc.) is more beneficial and cost effective?&amp;nbsp; Call us if you have any questions.&lt;/li&gt;&lt;/span&gt;&lt;/div&gt;</Profile>
+      <Services>Workers Comp Insurance&lt;br&gt;Liability, Home Auto Insurance&lt;br&gt;Payroll Service &amp;amp; 1099&lt;br&gt;New Company Setups&lt;br&gt;&lt;br&gt;</Services>
+      <Email>sales.paxol@gmail.com</Email>
+      <Telephone>5624252005</Telephone>
+      <Fax>5624252008</Fax>
+      <ContactHours>
+        <ContactHours>
+          <Description>Monday - Friday</Description>
+          <From>2017-01-04T01:34:24.3149299+05:00</From>
+          <To>2017-01-04T01:34:24.3149299+05:00</To>
+          <IsClosed>false</IsClosed>
+        </ContactHours>
+        <ContactHours>
+          <Description>Saturday</Description>
+          <From>2017-01-04T01:34:24.3149299+05:00</From>
+          <To>2017-01-04T01:34:24.3149299+05:00</To>
+          <IsClosed>true</IsClosed>
+        </ContactHours>
+        <ContactHours>
+          <Description>Sunday</Description>
+          <From>0001-01-01T00:00:00</From>
+          <To>0001-01-01T00:00:00</To>
+          <IsClosed>true</IsClosed>
+        </ContactHours>
+      </ContactHours>
+    </HomePage>
+    <IsPeoHost>false</IsPeoHost>
+    <BankCustomerId>203701204</BankCustomerId>
+  </Host>
+  <Company>
+    <Id>50423097-59b6-425b-9964-a6e200dcaaac</Id>
+    <UserId>00000000-0000-0000-0000-000000000000</UserId>
+    <UserName>Monica Contreras</UserName>
+    <LastModified>2020-01-14T10:07:09.367</LastModified>
+    <CompanyIntId>2</CompanyIntId>
+    <HostId>75a78be4-7226-466b-86ba-a6e200dcaaac</HostId>
+    <Name>GARMENT INDUSTRY INSURANCE GROUP</Name>
+    <CompanyAddress>
+      <Id>269447c6-e7d7-48dc-8ab1-a6e200dcaaac</Id>
+      <UserId>00000000-0000-0000-0000-000000000000</UserId>
+      <LastModified>2020-01-14T23:07:09.3652849+05:00</LastModified>
+      <AddressLine1>2750 N. BELLFLOWER BLVD STE 200</AddressLine1>
+      <City>LONG BEACH</City>
+      <StateId>1</StateId>
+      <CountryId>1</CountryId>
+      <Zip>90815</Zip>
+      <Type>NA</Type>
+      <StateCode>CA</StateCode>
+      <AddressLine2>LONG BEACH, CA 90815</AddressLine2>
+    </CompanyAddress>
+    <IsVisibleToHost>true</IsVisibleToHost>
+    <StatusId>Active</StatusId>
+    <FileUnderHost>true</FileUnderHost>
+    <IsHostCompany>true</IsHostCompany>
+    <PayrollDaysInPast>0</PayrollDaysInPast>
+    <DirectDebitPayer>true</DirectDebitPayer>
+    <ProfitStarsPayer>false</ProfitStarsPayer>
+    <PayCheckStock>LaserTop</PayCheckStock>
+    <InsuranceGroupNo>2</InsuranceGroupNo>
+    <PayrollSchedule>SemiMonthly</PayrollSchedule>
+    <PayrollScheduleDay>SemiMonthly</PayrollScheduleDay>
+    <MinWage>12.00</MinWage>
+    <Memo />
+    <TaxFilingName>GARMENT INDUSTRY INSURANCE GROUP</TaxFilingName>
+    <IsAddressSame>true</IsAddressSame>
+    <BusinessAddress>
+      <Id>269447c6-e7d7-48dc-8ab1-a6e200dcaaac</Id>
+      <UserId>00000000-0000-0000-0000-000000000000</UserId>
+      <LastModified>2020-01-14T23:07:09.3663168+05:00</LastModified>
+      <AddressLine1>2750 N. BELLFLOWER BLVD STE 200</AddressLine1>
+      <City>LONG BEACH</City>
+      <StateId>1</StateId>
+      <CountryId>1</CountryId>
+      <Zip>90815</Zip>
+      <Type>NA</Type>
+      <StateCode>CA</StateCode>
+      <AddressLine2>LONG BEACH, CA 90815</AddressLine2>
+    </BusinessAddress>
+    <AllowTaxPayments>false</AllowTaxPayments>
+    <AllowEFileFormFiling>false</AllowEFileFormFiling>
+    <FederalEIN>203701204</FederalEIN>
+    <FederalPin>1204</FederalPin>
+    <DepositSchedule>Monthly</DepositSchedule>
+    <IsFiler944>false</IsFiler944>
+    <IsFiler1095>false</IsFiler1095>
+    <LastPayrollDate>2020-04-09T00:00:00</LastPayrollDate>
+    <CompanyCheckPrintOrder>CompanyEmployeeNo</CompanyCheckPrintOrder>
+    <IsRestaurant>false</IsRestaurant>
+    <InsuranceClientNo>1</InsuranceClientNo>
+    <RecurringCharges />
+    <States />
+    <AccumulatedPayTypes />
+    <Deductions />
+    <WorkerCompensations />
+    <CompanyTaxRates />
+    <PayCodes />
+    <CompanyRenewals />
+    <Created>2016-12-20T13:23:25.37</Created>
+    <ParentId xsi:nil="true" />
+    <HasLocations>false</HasLocations>
+    <Locations />
+  </Company>
+  <CompanyAccumulations>
+    <ExtractType>NA</ExtractType>
+    <Quarter>0</Quarter>
+    <Month>0</Month>
+    <Year>0</Year>
+    <StartDate>0001-01-01T00:00:00</StartDate>
+    <EndDate>0001-01-01T00:00:00</EndDate>
+    <CompanyId>50423097-59b6-425b-9964-a6e200dcaaac</CompanyId>
+    <CompanyName>GARMENT INDUSTRY INSURANCE GROUP</CompanyName>
+    <FEIN>gGCHWHfjsd1dzGIz+4Y9zA==</FEIN>
+    <FPIN>KGam9nwiLjQ=</FPIN>
+    <EmployeeId xsi:nil="true" />
+    <LastCheckCompany xsi:nil="true" />
+    <Rate>0</Rate>
+    <HireDate>0001-01-01T00:00:00</HireDate>
+    <BirthDate>0001-01-01T00:00:00</BirthDate>
+    <HireDateStr>01-01-0001</HireDateStr>
+    <EmpPayType>0</EmpPayType>
+    <CompanyDeductions />
+    <SSNVal />
+    <PayCheckWages>
+      <GrossWage>60810.00</GrossWage>
+      <Salary>45210.00</Salary>
+      <NetWage>43317.78</NetWage>
+      <CheckPay>0.00</CheckPay>
+      <DDPay>43317.78</DDPay>
+      <ACAAmount>0</ACAAmount>
+      <Quarter1FUTA>126.00</Quarter1FUTA>
+      <Quarter2FUTA>0.00</Quarter2FUTA>
+      <Quarter3FUTA>0.00</Quarter3FUTA>
+      <Quarter4FUTA>0.00</Quarter4FUTA>
+      <Quarter1FUTAWage>21000.00</Quarter1FUTAWage>
+      <Quarter2FUTAWage>0.00</Quarter2FUTAWage>
+      <Quarter3FUTAWage>0.00</Quarter3FUTAWage>
+      <Quarter4FUTAWage>0.00</Quarter4FUTAWage>
+      <FUTARate>0.60</FUTARate>
+      <MedicareExtraWages>0.00</MedicareExtraWages>
+      <Immigrants>0</Immigrants>
+      <Twelve1>3</Twelve1>
+      <Twelve2>3</Twelve2>
+      <Twelve3>3</Twelve3>
+      <EmployeeCount>3</EmployeeCount>
+      <DepositAmount>2826.66</DepositAmount>
+      <DepositAmount940>0</DepositAmount940>
+      <DepositAmount941>0</DepositAmount941>
+      <DepositAmountCAPIT>0</DepositAmountCAPIT>
+      <DepositAmountCAUI>0</DepositAmountCAUI>
+    </PayCheckWages>
+    <PayCheckList />
+    <VoidedPayCheckList />
+    <Taxes>
+      <PayCheckTax>
+        <PayCheckId>0</PayCheckId>
+        <TaxId>46</TaxId>
+        <Tax>
+          <Id>46</Id>
+          <Code>FIT</Code>
+          <Name>Federal Income Tax</Name>
+          <CountryId>1</CountryId>
+          <StateId xsi:nil="true" />
+          <DefaultRate xsi:nil="true" />
+          <Rate xsi:nil="true" />
+          <AnnualMax xsi:nil="true" />
+          <IsEmployeeTax>true</IsEmployeeTax>
+          <IsCompanySpecific>false</IsCompanySpecific>
+        </Tax>
+        <TaxableWage>0</TaxableWage>
+        <Amount>0</Amount>
+        <YTDWage>60810.00</YTDWage>
+        <YTD>8508.36</YTD>
+      </PayCheckTax>
+      <PayCheckTax>
+        <PayCheckId>0</PayCheckId>
+        <TaxId>47</TaxId>
+        <Tax>
+          <Id>47</Id>
+          <Code>MD_Employee</Code>
+          <Name>Medicare Employee</Name>
+          <CountryId>1</CountryId>
+          <StateId xsi:nil="true" />
+          <DefaultRate xsi:nil="true" />
+          <Rate>1.45</Rate>
+          <AnnualMax xsi:nil="true" />
+          <IsEmployeeTax>true</IsEmployeeTax>
+          <IsCompanySpecific>false</IsCompanySpecific>
+        </Tax>
+        <TaxableWage>0</TaxableWage>
+        <Amount>0</Amount>
+        <YTDWage>60810.00</YTDWage>
+        <YTD>881.76</YTD>
+      </PayCheckTax>
+      <PayCheckTax>
+        <PayCheckId>0</PayCheckId>
+        <TaxId>48</TaxId>
+        <Tax>
+          <Id>48</Id>
+          <Code>MD_Employer</Code>
+          <Name>Medicare Employer</Name>
+          <CountryId>1</CountryId>
+          <StateId xsi:nil="true" />
+          <DefaultRate xsi:nil="true" />
+          <Rate>1.45</Rate>
+          <AnnualMax xsi:nil="true" />
+          <IsEmployeeTax>false</IsEmployeeTax>
+          <IsCompanySpecific>false</IsCompanySpecific>
+        </Tax>
+        <TaxableWage>0</TaxableWage>
+        <Amount>0</Amount>
+        <YTDWage>60810.00</YTDWage>
+        <YTD>881.76</YTD>
+      </PayCheckTax>
+      <PayCheckTax>
+        <PayCheckId>0</PayCheckId>
+        <TaxId>49</TaxId>
+        <Tax>
+          <Id>49</Id>
+          <Code>SS_Employee</Code>
+          <Name>Social Security Employee</Name>
+          <CountryId>1</CountryId>
+          <StateId xsi:nil="true" />
+          <DefaultRate xsi:nil="true" />
+          <Rate>6.20</Rate>
+          <AnnualMax>137700.00</AnnualMax>
+          <IsEmployeeTax>true</IsEmployeeTax>
+          <IsCompanySpecific>false</IsCompanySpecific>
+        </Tax>
+        <TaxableWage>0</TaxableWage>
+        <Amount>0</Amount>
+        <YTDWage>60810.00</YTDWage>
+        <YTD>3770.22</YTD>
+      </PayCheckTax>
+      <PayCheckTax>
+        <PayCheckId>0</PayCheckId>
+        <TaxId>50</TaxId>
+        <Tax>
+          <Id>50</Id>
+          <Code>SS_Employer</Code>
+          <Name>Social Security Employer</Name>
+          <CountryId>1</CountryId>
+          <StateId xsi:nil="true" />
+          <DefaultRate xsi:nil="true" />
+          <Rate>6.20</Rate>
+          <AnnualMax>137700.00</AnnualMax>
+          <IsEmployeeTax>false</IsEmployeeTax>
+          <IsCompanySpecific>false</IsCompanySpecific>
+        </Tax>
+        <TaxableWage>0</TaxableWage>
+        <Amount>0</Amount>
+        <YTDWage>60810.00</YTDWage>
+        <YTD>3770.22</YTD>
+      </PayCheckTax>
+      <PayCheckTax>
+        <PayCheckId>0</PayCheckId>
+        <TaxId>51</TaxId>
+        <Tax>
+          <Id>51</Id>
+          <Code>FUTA</Code>
+          <Name>Federal Unemployment Tax</Name>
+          <CountryId>1</CountryId>
+          <StateId xsi:nil="true" />
+          <DefaultRate xsi:nil="true" />
+          <Rate>0.60</Rate>
+          <AnnualMax>7000.00</AnnualMax>
+          <IsEmployeeTax>false</IsEmployeeTax>
+          <IsCompanySpecific>false</IsCompanySpecific>
+        </Tax>
+        <TaxableWage>0</TaxableWage>
+        <Amount>0</Amount>
+        <YTDWage>21000.00</YTDWage>
+        <YTD>126.00</YTD>
+      </PayCheckTax>
+      <PayCheckTax>
+        <PayCheckId>0</PayCheckId>
+        <TaxId>52</TaxId>
+        <Tax>
+          <Id>52</Id>
+          <Code>SIT</Code>
+          <Name>CA State Income Tax</Name>
+          <CountryId>1</CountryId>
+          <StateId>1</StateId>
+          <DefaultRate xsi:nil="true" />
+          <Rate xsi:nil="true" />
+          <AnnualMax xsi:nil="true" />
+          <IsEmployeeTax>true</IsEmployeeTax>
+          <IsCompanySpecific>false</IsCompanySpecific>
+        </Tax>
+        <TaxableWage>0</TaxableWage>
+        <Amount>0</Amount>
+        <YTDWage>60810.00</YTDWage>
+        <YTD>3116.46</YTD>
+      </PayCheckTax>
+      <PayCheckTax>
+        <PayCheckId>0</PayCheckId>
+        <TaxId>53</TaxId>
+        <Tax>
+          <Id>53</Id>
+          <Code>SDI</Code>
+          <Name>CA State Disability Insurance</Name>
+          <CountryId>1</CountryId>
+          <StateId>1</StateId>
+          <DefaultRate xsi:nil="true" />
+          <Rate>1.00</Rate>
+          <AnnualMax>122909.00</AnnualMax>
+          <IsEmployeeTax>true</IsEmployeeTax>
+          <IsCompanySpecific>false</IsCompanySpecific>
+        </Tax>
+        <TaxableWage>0</TaxableWage>
+        <Amount>0</Amount>
+        <YTDWage>60810.00</YTDWage>
+        <YTD>608.10</YTD>
+      </PayCheckTax>
+      <PayCheckTax>
+        <PayCheckId>0</PayCheckId>
+        <TaxId>54</TaxId>
+        <Tax>
+          <Id>54</Id>
+          <Code>ETT</Code>
+          <Name>CA Employee Training Tax</Name>
+          <CountryId>1</CountryId>
+          <StateId>1</StateId>
+          <DefaultRate>0.10</DefaultRate>
+          <Rate>0.10</Rate>
+          <AnnualMax>7000.00</AnnualMax>
+          <IsEmployeeTax>false</IsEmployeeTax>
+          <IsCompanySpecific>true</IsCompanySpecific>
+        </Tax>
+        <TaxableWage>0</TaxableWage>
+        <Amount>0</Amount>
+        <YTDWage>21000.00</YTDWage>
+        <YTD>21.01</YTD>
+      </PayCheckTax>
+      <PayCheckTax>
+        <PayCheckId>0</PayCheckId>
+        <TaxId>55</TaxId>
+        <Tax>
+          <Id>55</Id>
+          <Code>SUI</Code>
+          <Name>CA State Unemployment Insurance</Name>
+          <CountryId>1</CountryId>
+          <StateId>1</StateId>
+          <DefaultRate>3.40</DefaultRate>
+          <Rate>3.40</Rate>
+          <AnnualMax>7000.00</AnnualMax>
+          <IsEmployeeTax>false</IsEmployeeTax>
+          <IsCompanySpecific>true</IsCompanySpecific>
+        </Tax>
+        <TaxableWage>0</TaxableWage>
+        <Amount>0</Amount>
+        <YTDWage>21000.00</YTDWage>
+        <YTD>322.61</YTD>
+      </PayCheckTax>
+    </Taxes>
+    <Deductions />
+    <WorkerCompensations />
+    <PayCodes />
+    <Compensations />
+    <Accumulations />
+    <PreviousAccumulations />
+    <States>
+      <ExtractTaxState>
+        <Id>75</Id>
+        <CountryId>1</CountryId>
+        <StateId>1</StateId>
+        <StateCode>CA</StateCode>
+        <StateName>California</StateName>
+        <EIN>rxS0Qz7GLCxmlQlOxKGvBg==</EIN>
+        <Pin>KGam9nwiLjQ=</Pin>
+        <DepositSchedule>2</DepositSchedule>
+      </ExtractTaxState>
+    </States>
+    <DailyAccumulations />
+    <MonthlyAccumulations />
+    <PayCheck1095Summaries />
+    <C1095Months />
+    <IRS940>126.00</IRS940>
+    <IRS941>17812.32</IRS941>
+    <FederalTaxes>17938.32</FederalTaxes>
+    <FullName></FullName>
+    <HasCalifornia>true</HasCalifornia>
+    <HasTexas>false</HasTexas>
+    <HasHawaii>false</HasHawaii>
+    <HasMontana>false</HasMontana>
+    <CaliforniaEmployeeTaxes>3724.56</CaliforniaEmployeeTaxes>
+    <CaliforniaEmployerTaxes>343.62</CaliforniaEmployerTaxes>
+    <CaliforniaTaxes>4068.18</CaliforniaTaxes>
+    <HawaiiEmployeeTaxes>0</HawaiiEmployeeTaxes>
+    <HawaiiEmployerTaxes>0</HawaiiEmployerTaxes>
+    <HawaiiTaxes>0</HawaiiTaxes>
+    <MontanaEmployeeTaxes>0</MontanaEmployeeTaxes>
+    <MontanaEmployerTaxes>0</MontanaEmployerTaxes>
+    <MontanaTaxes>0</MontanaTaxes>
+    <TexasTaxes>0</TexasTaxes>
+    <Overtime>0</Overtime>
+    <Regular>0</Regular>
+    <TotalCompensations>0</TotalCompensations>
+    <ApplicableTaxes>
+      <PayCheckTax>
+        <PayCheckId>0</PayCheckId>
+        <TaxId>46</TaxId>
+        <Tax>
+          <Id>46</Id>
+          <Code>FIT</Code>
+          <Name>Federal Income Tax</Name>
+          <CountryId>1</CountryId>
+          <StateId xsi:nil="true" />
+          <DefaultRate xsi:nil="true" />
+          <Rate xsi:nil="true" />
+          <AnnualMax xsi:nil="true" />
+          <IsEmployeeTax>true</IsEmployeeTax>
+          <IsCompanySpecific>false</IsCompanySpecific>
+        </Tax>
+        <TaxableWage>0</TaxableWage>
+        <Amount>0</Amount>
+        <YTDWage>60810.00</YTDWage>
+        <YTD>8508.36</YTD>
+      </PayCheckTax>
+      <PayCheckTax>
+        <PayCheckId>0</PayCheckId>
+        <TaxId>47</TaxId>
+        <Tax>
+          <Id>47</Id>
+          <Code>MD_Employee</Code>
+          <Name>Medicare Employee</Name>
+          <CountryId>1</CountryId>
+          <StateId xsi:nil="true" />
+          <DefaultRate xsi:nil="true" />
+          <Rate>1.45</Rate>
+          <AnnualMax xsi:nil="true" />
+          <IsEmployeeTax>true</IsEmployeeTax>
+          <IsCompanySpecific>false</IsCompanySpecific>
+        </Tax>
+        <TaxableWage>0</TaxableWage>
+        <Amount>0</Amount>
+        <YTDWage>60810.00</YTDWage>
+        <YTD>881.76</YTD>
+      </PayCheckTax>
+      <PayCheckTax>
+        <PayCheckId>0</PayCheckId>
+        <TaxId>48</TaxId>
+        <Tax>
+          <Id>48</Id>
+          <Code>MD_Employer</Code>
+          <Name>Medicare Employer</Name>
+          <CountryId>1</CountryId>
+          <StateId xsi:nil="true" />
+          <DefaultRate xsi:nil="true" />
+          <Rate>1.45</Rate>
+          <AnnualMax xsi:nil="true" />
+          <IsEmployeeTax>false</IsEmployeeTax>
+          <IsCompanySpecific>false</IsCompanySpecific>
+        </Tax>
+        <TaxableWage>0</TaxableWage>
+        <Amount>0</Amount>
+        <YTDWage>60810.00</YTDWage>
+        <YTD>881.76</YTD>
+      </PayCheckTax>
+      <PayCheckTax>
+        <PayCheckId>0</PayCheckId>
+        <TaxId>49</TaxId>
+        <Tax>
+          <Id>49</Id>
+          <Code>SS_Employee</Code>
+          <Name>Social Security Employee</Name>
+          <CountryId>1</CountryId>
+          <StateId xsi:nil="true" />
+          <DefaultRate xsi:nil="true" />
+          <Rate>6.20</Rate>
+          <AnnualMax>137700.00</AnnualMax>
+          <IsEmployeeTax>true</IsEmployeeTax>
+          <IsCompanySpecific>false</IsCompanySpecific>
+        </Tax>
+        <TaxableWage>0</TaxableWage>
+        <Amount>0</Amount>
+        <YTDWage>60810.00</YTDWage>
+        <YTD>3770.22</YTD>
+      </PayCheckTax>
+      <PayCheckTax>
+        <PayCheckId>0</PayCheckId>
+        <TaxId>50</TaxId>
+        <Tax>
+          <Id>50</Id>
+          <Code>SS_Employer</Code>
+          <Name>Social Security Employer</Name>
+          <CountryId>1</CountryId>
+          <StateId xsi:nil="true" />
+          <DefaultRate xsi:nil="true" />
+          <Rate>6.20</Rate>
+          <AnnualMax>137700.00</AnnualMax>
+          <IsEmployeeTax>false</IsEmployeeTax>
+          <IsCompanySpecific>false</IsCompanySpecific>
+        </Tax>
+        <TaxableWage>0</TaxableWage>
+        <Amount>0</Amount>
+        <YTDWage>60810.00</YTDWage>
+        <YTD>3770.22</YTD>
+      </PayCheckTax>
+      <PayCheckTax>
+        <PayCheckId>0</PayCheckId>
+        <TaxId>51</TaxId>
+        <Tax>
+          <Id>51</Id>
+          <Code>FUTA</Code>
+          <Name>Federal Unemployment Tax</Name>
+          <CountryId>1</CountryId>
+          <StateId xsi:nil="true" />
+          <DefaultRate xsi:nil="true" />
+          <Rate>0.60</Rate>
+          <AnnualMax>7000.00</AnnualMax>
+          <IsEmployeeTax>false</IsEmployeeTax>
+          <IsCompanySpecific>false</IsCompanySpecific>
+        </Tax>
+        <TaxableWage>0</TaxableWage>
+        <Amount>0</Amount>
+        <YTDWage>21000.00</YTDWage>
+        <YTD>126.00</YTD>
+      </PayCheckTax>
+      <PayCheckTax>
+        <PayCheckId>0</PayCheckId>
+        <TaxId>52</TaxId>
+        <Tax>
+          <Id>52</Id>
+          <Code>SIT</Code>
+          <Name>CA State Income Tax</Name>
+          <CountryId>1</CountryId>
+          <StateId>1</StateId>
+          <DefaultRate xsi:nil="true" />
+          <Rate xsi:nil="true" />
+          <AnnualMax xsi:nil="true" />
+          <IsEmployeeTax>true</IsEmployeeTax>
+          <IsCompanySpecific>false</IsCompanySpecific>
+        </Tax>
+        <TaxableWage>0</TaxableWage>
+        <Amount>0</Amount>
+        <YTDWage>60810.00</YTDWage>
+        <YTD>3116.46</YTD>
+      </PayCheckTax>
+      <PayCheckTax>
+        <PayCheckId>0</PayCheckId>
+        <TaxId>53</TaxId>
+        <Tax>
+          <Id>53</Id>
+          <Code>SDI</Code>
+          <Name>CA State Disability Insurance</Name>
+          <CountryId>1</CountryId>
+          <StateId>1</StateId>
+          <DefaultRate xsi:nil="true" />
+          <Rate>1.00</Rate>
+          <AnnualMax>122909.00</AnnualMax>
+          <IsEmployeeTax>true</IsEmployeeTax>
+          <IsCompanySpecific>false</IsCompanySpecific>
+        </Tax>
+        <TaxableWage>0</TaxableWage>
+        <Amount>0</Amount>
+        <YTDWage>60810.00</YTDWage>
+        <YTD>608.10</YTD>
+      </PayCheckTax>
+      <PayCheckTax>
+        <PayCheckId>0</PayCheckId>
+        <TaxId>54</TaxId>
+        <Tax>
+          <Id>54</Id>
+          <Code>ETT</Code>
+          <Name>CA Employee Training Tax</Name>
+          <CountryId>1</CountryId>
+          <StateId>1</StateId>
+          <DefaultRate>0.10</DefaultRate>
+          <Rate>0.10</Rate>
+          <AnnualMax>7000.00</AnnualMax>
+          <IsEmployeeTax>false</IsEmployeeTax>
+          <IsCompanySpecific>true</IsCompanySpecific>
+        </Tax>
+        <TaxableWage>0</TaxableWage>
+        <Amount>0</Amount>
+        <YTDWage>21000.00</YTDWage>
+        <YTD>21.01</YTD>
+      </PayCheckTax>
+      <PayCheckTax>
+        <PayCheckId>0</PayCheckId>
+        <TaxId>55</TaxId>
+        <Tax>
+          <Id>55</Id>
+          <Code>SUI</Code>
+          <Name>CA State Unemployment Insurance</Name>
+          <CountryId>1</CountryId>
+          <StateId>1</StateId>
+          <DefaultRate>3.40</DefaultRate>
+          <Rate>3.40</Rate>
+          <AnnualMax>7000.00</AnnualMax>
+          <IsEmployeeTax>false</IsEmployeeTax>
+          <IsCompanySpecific>true</IsCompanySpecific>
+        </Tax>
+        <TaxableWage>0</TaxableWage>
+        <Amount>0</Amount>
+        <YTDWage>21000.00</YTDWage>
+        <YTD>322.61</YTD>
+      </PayCheckTax>
+    </ApplicableTaxes>
+    <ApplicableWages>488670.00</ApplicableWages>
+    <OutOfStateUIWages>-467670.00</OutOfStateUIWages>
+    <ApplicableAmounts>22006.50</ApplicableAmounts>
+  </CompanyAccumulations>
+</ReportResponse>

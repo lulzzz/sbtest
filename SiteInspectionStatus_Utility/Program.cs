@@ -220,7 +220,7 @@ namespace SiteInspectionStatus_Utility
 
                 try
                 {
-                    var _templatePath = "C:\\Dev\\EDPI\\Source\\Zion\\HrMaxxAPI\\templates\\";
+                    var _templatePath = "";
                     if (e.ExtractName.Equals("ACH"))
                     {
                         var achExtract = reportservice.GetACHReport(reportrequest);

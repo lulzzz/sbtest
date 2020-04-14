@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.40629.0
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30002.166
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Client", "Client", "{DE52562D-9DF6-44ED-B142-34CF2A8FEDF6}"
 EndProject
@@ -13,6 +13,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{F5E59BFA-5E34-42E7-9BB1-2298BC090D54}"
 	ProjectSection(SolutionItems) = preProject
 		Connections.config = Connections.config
+		DBZip and Move to GDrive.ps1 = DBZip and Move to GDrive.ps1
 		InvociePaymentJob.ps1 = InvociePaymentJob.ps1
 		Persits.PDF.dll = Persits.PDF.dll
 		SolutionInfo.cs = SolutionInfo.cs
@@ -403,5 +404,8 @@ Global
 		{A2EA6FCA-A8B2-445F-B8B8-4FF4D60034D3} = {9464E643-893E-4882-ADC2-D72A4C04775D}
 		{B264D7C7-CA68-41FC-A16B-B90A56DE6794} = {4C335120-3047-4B73-9B91-FA76CF8FF8AC}
 		{ACE111A2-3502-4AFE-80BA-CADC4249D12B} = {DE52562D-9DF6-44ED-B142-34CF2A8FEDF6}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {17B99F2F-B106-4CFD-AA24-A45D27F1D0FF}
 	EndGlobalSection
 EndGlobal
