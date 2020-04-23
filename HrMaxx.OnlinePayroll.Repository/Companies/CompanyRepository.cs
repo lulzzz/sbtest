@@ -490,6 +490,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 				dbEmployee.HireDate = me.HireDate; 
 				dbEmployee.SickLeaveHireDate = me.SickLeaveHireDate;
 				dbEmployee.CarryOver = me.CarryOver;
+				dbEmployee.SickLeaveCashPaidHours = me.SickLeaveCashPaidHours;
 				dbEmployee.Gender = me.Gender;
 				dbEmployee.EmployeeNo = me.EmployeeNo;
 				dbEmployee.Memo = me.Memo;

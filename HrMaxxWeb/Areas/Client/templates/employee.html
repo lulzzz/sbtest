@@ -128,8 +128,8 @@
 										</div>
 										<div class="col-sm-2">
 											<div class="form-group" ng-hide="!selected.id">
-												<label>SL Carry Over</label>
-												<input type="text" name="slco" placeholder="Carry Over" class="form-control" ng-model="selected.carryOver" data-parsley-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" data-parsley-type="number" convert-to-decimal />
+												<label>Employee No</label>
+												<input type="text" name="empno" placeholder="Employee No" class="form-control" ng-model="selected.employeeNo" ng-disabled="true" />
 											</div>
 										</div>
 										<div class="col-sm-4">
@@ -150,10 +150,11 @@
 									<div class="row">
 										<div class="col-sm-2">
 											<div class="form-group" ng-hide="!selected.id">
-												<label>Employee No</label>
-												<input type="text" name="empno" placeholder="Employee No" class="form-control" ng-model="selected.employeeNo" ng-disabled="true" />
+												<label>SL Carry Over</label>
+												<input type="text" name="slco" placeholder="Carry Over" class="form-control" ng-model="selected.carryOver" data-parsley-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" data-parsley-type="number" convert-to-decimal />
 											</div>
 										</div>
+										
 										<div class="col-sm-2">
 											<div class="form-group">
 												<label>Employee No (Company)</label>
@@ -173,6 +174,14 @@
 											</div>
 										</div>
 
+									</div>
+									<div class="row">
+										<div class="col-sm-2">
+											<div class="form-group" ng-hide="!selected.id">
+												<label>SL Cash Paid Hours</label>
+												<input type="text" name="slcph" placeholder="Cash Paid Hours" class="form-control" ng-model="selected.sickLeaveCashPaidHours" data-parsley-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" data-parsley-type="number" convert-to-decimal />
+											</div>
+										</div>
 									</div>
 									
 								</fieldset>
@@ -624,9 +633,9 @@
 								<div class="stats-icon stats-icon-lg"><i class="fa fa-caret-left fa-fw"></i></div>
 								<div class="stats-title">{{ag.key.payTypeName}}</div>
 								<div class="stats-desc">Available</div>
-								<div class="stats-number">{{calculateAvailableWage(ag.key) | currency:'$'}} for {{ag.key.available | currency:''}} hrs.</div>
-								<div class="stats-desc">Accumulated - Used - CarryOver</div>
-								<div class="stats-number">{{ag.key.ytdFiscal | currency:''}} hrs. - {{ag.key.ytdUsed | currency:''}} hrs. - {{ag.key.carryOver | currency:''}} hrs.</div>
+								<div class="stats-number">{{calculateAvailableWage(ag.key) | currency:'$'}} for {{ag.key.available - selected.sickLeaveCashPaidHours | currency:''}} hrs.</div>
+								<div class="stats-desc">Accumulated + CarryOver - Used - PaidCash</div>
+								<div class="stats-number2">{{ag.key.ytdFiscal | currency:''}} hrs. + {{ag.key.carryOver | currency:''}} hrs. - {{ag.key.ytdUsed | currency:''}} hrs. - {{selected.sickLeaveCashPaidHours | currency:''}} hrs.</div>
 								<div class="stats-progress progress">
 									<div class="progress-bar" style="width: 100%;"></div>
 								</div>

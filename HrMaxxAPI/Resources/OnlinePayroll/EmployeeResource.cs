@@ -42,6 +42,7 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 		public DateTime SickLeaveHireDate { get; set; }
 		public DateTime? TerminationDate { get; set; }
 		public decimal CarryOver { get; set; }
+		public decimal SickLeaveCashPaidHours { get; set; }
 		public string Department { get; set; }
 		[Required]
 		public StatusOption StatusId { get; set; }

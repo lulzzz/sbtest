@@ -394,7 +394,7 @@ common.directive('employee', ['zionAPI', '$timeout', '$window', 'version', '$uib
 						if (paytype) {
 							
 								var accumulated = 0;
-								var hrs = paytype.available;
+								var hrs = paytype.available - $scope.selected.sickLeaveCashPaidHours;
 								if ($scope.selected.payType === 1 || $scope.selected.payType === 3) {
 									return hrs * $scope.selected.rate;
 								}

@@ -180,10 +180,10 @@
                         </div>
                     </div>
                     <div class="col-sm-12">
-                        <div class="col-sm-9 text-left">
+                        <div class="col-sm-8 text-left">
                             <i class="fa fa-arrow-right"></i>({{pt.fiscalStart | date:'MM/dd/yyyy'}} - {{pt.fiscalEnd | date:'MM/dd/yyyy'}})
                         </div>
-                        <div class="col-sm-3 text-right">{{pt.available}} hrs</div>
+                        <div class="col-sm-4 text-right">{{pt.available}} hrs</div>
                     </div>
                 </script>
                 <script type="text/ng-template" id="wages.html">
@@ -304,7 +304,7 @@
 
                         @*<div class="alert" ng-bind-html="message">
 
-                            </div>*@
+                </div>*@
                     </div>
                     <div class="modal-footer text-center">
                         <a href="javascript:;" class="btn btn-circle" ng-click="ok()" ng-class="getButtonClass()"><i class="fa fa-check fa-lg" /></a>
@@ -854,13 +854,13 @@
                             </select>
                         </div>
                         @*<a href="#!/" ng-if="data.selectedHost && data.selectedHost.homePage.logo" style="background-color:transparent" class="pull-right">
-                                <img ng-src="{{getDocumentUrl(logo)}}" err-src="https://upload.wikimedia.org/wikipedia/commons/a/ac/No_image_available.svg" style="width:150px;height:40px" />
-                            </a>*@
+                            <img ng-src="{{getDocumentUrl(logo)}}" err-src="https://upload.wikimedia.org/wikipedia/commons/a/ac/No_image_available.svg" style="width:150px;height:40px" />
+                        </a>*@
                         <div class="col-sm-4 pull-left" ng-show="data.selectedCompany && data.selectedCompany.id"><h5 class="pull-right"><em>You are viewing company: {{data.selectedCompany.name}} <span class="show-red" ng-show="data.selectedCompany.isLocation">(is a location)</span></em></h5></div>
 
 
                     </div>
-                    
+                    <div class="col-sm-12 visible-print" ng-show="data.selectedCompany && data.selectedCompany.id && data.showCompanies"><h5><em><u>{{data.selectedCompany.name}}</u></em></h5></div>
                     <div ng-view></div>
 
 

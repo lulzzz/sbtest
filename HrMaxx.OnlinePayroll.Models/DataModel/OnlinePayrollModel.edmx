@@ -364,6 +364,7 @@
           <Property Name="ClockId" Type="varchar(max)" />
           <Property Name="IsTipped" Type="bit" Nullable="false" />
           <Property Name="TerminationDate" Type="datetime" />
+          <Property Name="SickLeaveCashPaidHours" Type="decimal" Precision="18" Scale="2" Nullable="false" />
         </EntityType>
         <EntityType Name="EmployeeACA">
           <Key>
@@ -2478,6 +2479,7 @@
           <NavigationProperty Name="EmployeeACAs" Relationship="HrMaxxModel.FK_EmployeeACA_Employee" FromRole="Employee" ToRole="EmployeeACA" />
           <Property Name="IsTipped" Type="Boolean" Nullable="false" />
           <Property Name="TerminationDate" Type="DateTime" Precision="3" />
+          <Property Name="SickLeaveCashPaidHours" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
         </EntityType>
         <Association Name="FK_Employee_Status">
           <End Type="HrMaxxModel.Status" Role="Status" Multiplicity="1" />
@@ -3657,6 +3659,7 @@
           <EntitySetMapping Name="Employees">
             <EntityTypeMapping TypeName="HrMaxxModel.Employee">
               <MappingFragment StoreEntitySet="Employee">
+                <ScalarProperty Name="SickLeaveCashPaidHours" ColumnName="SickLeaveCashPaidHours" />
                 <ScalarProperty Name="TerminationDate" ColumnName="TerminationDate" />
                 <ScalarProperty Name="IsTipped" ColumnName="IsTipped" />
                 <ScalarProperty Name="ClockId" ColumnName="ClockId" />

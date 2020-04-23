@@ -700,7 +700,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
                         if (employeeAccumulation.Accumulations != null)
                         {
                             var globalValue = employeeAccumulation.Accumulations
-                                .Where(ac => ac.PayTypeId == payType.PayType.Id).Sum(ac => ac.YTDFiscal);
+                                .Where(ac => ac.PayTypeId == payType.PayType.Id).Sum(ac => ac.YTDFiscal) - paycheck.Employee.SickLeaveCashPaidHours;
                             if ((globalValue + accumulationValue) >= payType.GlobalLimit.Value)
                             {
                                 accumulationValue = Math.Max(payType.GlobalLimit.Value - globalValue, 0);
@@ -2749,7 +2749,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("sclytd-"+accumulationCounter, scl.YTDFiscal.ToString()));
 					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("sclused-" + accumulationCounter, scl.YTDUsed.ToString()));
 					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("sclco-" + accumulationCounter, scl.CarryOver.ToString()));
-					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("sclnet-"+accumulationCounter, scl.Available.ToString()));
+					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("sclnet-"+accumulationCounter, (scl.Available - payCheck.Employee.SickLeaveCashPaidHours).ToString()));
 					accumulationCounter++;
 				});
 				
@@ -3141,7 +3141,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("sclytd-" + accumulationCounter, scl.YTDFiscal.ToString()));
 					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("sclused-" + accumulationCounter, scl.YTDUsed.ToString()));
 					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("sclco-" + accumulationCounter, scl.CarryOver.ToString()));
-					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("sclnet-" + accumulationCounter, scl.Available.ToString()));
+					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("sclnet-" + accumulationCounter, (scl.Available - payCheck.Employee.SickLeaveCashPaidHours).ToString()));
 					accumulationCounter++;
 				});
 
@@ -3330,7 +3330,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("sclytd-1", scl.YTDFiscal.ToString()));
 					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("sclused-1", scl.YTDUsed.ToString()));
 					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("sclco-1", scl.CarryOver.ToString()));
-					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("sclnet-1", scl.Available.ToString()));
+					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("sclnet-1", (scl.Available - payCheck.Employee.SickLeaveCashPaidHours).ToString()));
 				}
 
 				

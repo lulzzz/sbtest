@@ -107,6 +107,7 @@
 				<th class="text-center">Current</th>
 				<th class="text-center">YTD Acc</th>
 				<th class="text-center">Carry Over</th>
+				<th class="text-center">Paid Cash</th>
 				<th class="text-center">Available</th>
 				<th ng-show="showControls"></th>
 			</tr>
@@ -119,7 +120,7 @@
 					<span ng-show="rowform.$visible">
 						<date-ctrl name="fiscalStart" model="pt.fiscalStart" />
 					</span>
-					
+
 				</td>
 				<td>
 					<span ng-show="!rowform.$visible">
@@ -143,13 +144,13 @@
 					<span e-ng-change="pt.accumulatedValue = $data;" editable-number="pt.accumulatedValue" e-name="accumulatedValue" e-form="rowform" e-ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" e-step="0.01" e-style="width:7em;">
 						{{ pt.accumulatedValue }}
 					</span>
-					
+
 				</td>
 				<td class="text-right">
 					<span e-ng-change="pt.ytdFiscal = $data;" editable-number="pt.ytdFiscal" e-name="ytdFiscal" e-form="rowform" e-ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" e-step="0.01" e-style="width:7em;">
 						{{ pt.ytdFiscal }}
 					</span>
-					
+
 				</td>
 				<td class="text-right">
 					<span e-ng-change="pt.carryOver = $data;" editable-number="pt.carryOver" e-name="carryOver" e-form="rowform" e-ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" e-step="0.01" e-style="width:5em;">
@@ -157,28 +158,31 @@
 					</span>
 				</td>
 				<td class="text-right">
+					{{ check.employee.sickLeaveCashPaidHours | currency:''}}
+				</td>
+				<td class="text-right">
 					<span ng-show="!rowform.$visible">
-						{{pt.available  | currency:''}}
+						{{pt.available - check.employee.sickLeaveCashPaidHours  | currency:''}}
 					</span>
 					<span ng-show="rowform.$visible">
-						{{ (pt.carryOver + pt.ytdFiscal - pt.ytdUsed) | currency:''}}
+						{{ (pt.carryOver + pt.ytdFiscal - pt.ytdUsed - check.employee.sickLeaveCashPaidHours) | currency:''}}
 					</span>
-					
+
 				</td>
 				<td style="white-space: nowrap" ng-show="showControls">
 					<!-- form -->
 					<form editable-form id="rowform" name="rowform" onbeforesave="saveAccumulation()" class="form-buttons form-inline" shown="selected==pt">
 						<button type="button" ng-show="!rowform.$visible" class="btn btn-primary" ng-click="rowform.$show();setSelected($index)">
-							<i class="fa fa-pencil m-r-5"></i> 
+							<i class="fa fa-pencil m-r-5"></i>
 						</button>
-						
+
 						<button type="submit" ng-disabled="rowform.$waiting || !isItemValid(pt)" ng-show="rowform.$visible" class="btn btn-success">
-							<i class="fa fa-check m-r-5"></i> 
+							<i class="fa fa-check m-r-5"></i>
 						</button>
 						<button type="button" ng-disabled="rowform.$waiting" ng-show="rowform.$visible" ng-click="rowform.$cancel();cancel($index)" class="btn btn-default">
-							<i class="fa fa-undo m-r-5"></i> 
+							<i class="fa fa-undo m-r-5"></i>
 						</button>
-						
+
 					</form>
 				</td>
 			</tr>

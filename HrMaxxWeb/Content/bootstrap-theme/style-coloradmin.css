@@ -3801,6 +3801,11 @@ body .fc button:active {
     font-weight: 300;
     margin-bottom: 10px;
 }
+.widget-stats .stats-number2 {
+    font-size: 16px;
+    font-weight: 300;
+    margin-bottom: 10px;
+}
 .widget-stats .stats-progress {
     background: url('../img/transparent/black-0.2.png');
     background: rgba(0,0,0,0.2);
