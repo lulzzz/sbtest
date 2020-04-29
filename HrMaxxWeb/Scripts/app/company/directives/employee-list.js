@@ -122,7 +122,8 @@ common.directive('employeeList', ['$uibModal','zionAPI', '$timeout', '$window', 
 							paymentMethod: 1,
 							bankAccounts:[],
 							companyEmployeeNo: null,
-							carryOver: 0
+							carryOver: 0,
+							sickLeaveCashPaidHours: 0
 						};
 						
 						$scope.set(selected);

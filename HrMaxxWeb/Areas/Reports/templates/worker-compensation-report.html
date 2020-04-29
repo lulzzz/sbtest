@@ -20,18 +20,24 @@
             <div class="col-sm-8 col-sm-offset-2 hidden-print" ng-show="data.response.companyAccumulations && data.response.companyAccumulations.workerCompensations.length>0">
                 <table class="table table-condensed">
                     
-                        <tr>
-                            <th>Code</th>
-                            <th>Description</th>
-                            <th class="text-right">Current Rate</th>
-                            <th class="text-right">WC Wage</th>
-                            <th class="text-right">WC Amount</th>
-                        </tr>
+                    <tr>
+                        <th>Code</th>
+                        <th>Description</th>
+                        <th>Gross Regular Pay</th>
+                        <th>Gross OT Pay</th>
+                        <th>Gross Pay</th>
+                        <th class="text-right">Current Rate</th>
+                        <th class="text-right">WC Wage</th>
+                        <th class="text-right">WC Amount</th>
+                    </tr>
                     
                     <tbody>
                         <tr ng-repeat="wc in data.response.companyAccumulations.workerCompensations" ng-class="{'success' : (selected && wc.workerCompensationId===selected.workerCompensationId)}">
                             <td>{{wc.companyWorkerCompensation.code}}</td>
                             <td>{{wc.companyWorkerCompensation.description}}</td>
+                            <td>{{wc.regularPay | currency:'$'}}</td>
+                            <td>{{wc.overTimePay | currency:'$'}}</td>
+                            <td>{{wc.grossPay | currency:'$'}}</td>
                             <td class="text-right">{{wc.companyWorkerCompensation.rate}}%</td>
                             <td class="text-right">{{wc.ytdWage | currency:'$'}}</td>
                             <td class="text-right"><a href="" ng-click="set(wc)" class="text-warning text-bold">{{wc.ytd | currency:'$'}}</a></td>
@@ -44,26 +50,32 @@
                     <strong><em>Details By Employee for {{selected.companyWorkerCompensation.code + ' - ' + selected.companyWorkerCompensation.description}}</em></strong>
                     <i class="pull-right fa fa-lg fa-print hidden-print" ng-click="print()"></i>
                 </div>
-                <div class="col-sm-6">
+                <div class="col-sm-12">
                     <div class="row p-5 visible-print">
                         <table class="table  table-responsive">
 
                             <tr>
                                 <th>Code</th>
                                 <th>Description</th>
+                                <th>Gross Regular Pay</th>
+                                <th>Gross OT Pay</th>
+                                <th>Gross Pay</th>
                                 <th class="text-right">Current Rate</th>
                                 <th class="text-right">WC Wage</th>
                                 <th class="text-right">WC Amount</th>
                             </tr>
 
                             <tbody>
-                            <tr >
-                                <td>{{selected.companyWorkerCompensation.code}}</td>
-                                <td>{{selected.companyWorkerCompensation.description}}</td>
-                                <td class="text-right">{{selected.companyWorkerCompensation.rate}}%</td>
-                                <td class="text-right">{{selected.ytdWage | currency:'$'}}</td>
-                                <td class="text-right">{{selected.ytd | currency:'$'}}</td>
-                            </tr>
+                                <tr>
+                                    <td>{{selected.companyWorkerCompensation.code}}</td>
+                                    <td>{{selected.companyWorkerCompensation.description}}</td>
+                                    <td>{{selected.regularPay | currency:'$'}}</td>
+                                    <td>{{selected.overTimePay | currency:'$'}}</td>
+                                    <td>{{selected.grossPay | currency:'$'}}</td>
+                                    <td class="text-right">{{selected.companyWorkerCompensation.rate}}%</td>
+                                    <td class="text-right">{{selected.ytdWage | currency:'$'}}</td>
+                                    <td class="text-right">{{selected.ytd | currency:'$'}}</td>
+                                </tr>
                             </tbody>
                         </table>
                     </div>
@@ -81,6 +93,15 @@
                             </td>
                             <td data-title=" 'Hire Date' " class="col-sm-1">
                                 {{item.hireDate | date:'MM/dd/yyyy'}}
+                            </td>
+                            <td data-title=" 'Regular Pay' " class="col-sm-1 text-right">
+                                {{item.wcRegularPay | currency:'$'}}
+                            </td>
+                            <td data-title=" 'OverTime Pay' " class="col-sm-1 text-right">
+                                {{item.wcOverTimePay | currency:'$'}}
+                            </td>
+                            <td data-title=" 'Gross Pay' " class="col-sm-1 text-right">
+                                {{item.wcGrossPay | currency:'$'}}
                             </td>
                             <td data-title=" 'WC Wage' " class="col-sm-1 text-right">
                                 {{item.workerCompensationWage | currency:'$'}}
@@ -106,31 +127,7 @@
 
                     </script>
                 </div>
-                <div class="col-sm-6" ng-show="selectedEmployee && employeePayChecks.length>0">
-
-                    <table class="table">
-                        
-                        <tr>
-                            <th colspan="3" class="text-center text-bold">
-                                Pay Checks Details for {{selectedEmployee.fullName}} with {{selected.companyWorkerCompensation.code + ' - ' + selected.companyWorkerCompensation.description}}
-                            </th>
-                        </tr>
-                        <tr>
-                            <th>Pay Day</th>
-                            <th class="text-right">Employee Wage</th>
-                            <th class="text-right">Employer Withheld</th>
-                        </tr>
-                        
-                        <tbody>
-                        <tr ng-repeat="pc in employeePayChecks">
-                            <td>{{pc.payDay | date:'MM/dd/yyyy'}}</td>
-                            <td class="text-right">{{pc.employeeWage | currency:'$'}}</td>
-                            <td class="text-right">{{pc.employeeWithheld | currency:'$'}}</td>
-
-                        </tr>
-                        </tbody>
-                    </table>
-                </div>
+                
 
             </div>
 

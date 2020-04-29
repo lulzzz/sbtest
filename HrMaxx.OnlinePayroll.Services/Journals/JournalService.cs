@@ -39,9 +39,10 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 		private readonly IFileRepository _fileRepository;
 		private readonly IReaderService _readerService;
 		private readonly IMetaDataRepository _metaDataRepository;
+		private readonly IEmailService _emailService;
 		public IBus Bus { get; set; }
 
-		public JournalService(IJournalRepository journalRepository, ICompanyService companyService, IPDFService pdfService, IMementoDataService mementoDataService, ICommonService commonService, IFileRepository fileRepository, IReaderService readerService, IMetaDataRepository metaDataRepository)
+		public JournalService(IJournalRepository journalRepository, ICompanyService companyService, IPDFService pdfService, IMementoDataService mementoDataService, ICommonService commonService, IFileRepository fileRepository, IReaderService readerService, IMetaDataRepository metaDataRepository, IEmailService emailService)
 		{
 			_journalRepository = journalRepository;
 			_companyService = companyService;
@@ -51,6 +52,7 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 			_commonService = commonService;
 			_readerService = readerService;
 			_metaDataRepository = metaDataRepository;
+			_emailService = emailService;
 		}
 
 		public Journal SaveJournalForPayroll(Journal journal, Company company)
@@ -588,6 +590,48 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 				return _pdfService.Print(string.Format("{0}-{1}-{2}.pdf", report.ReportName, report.StartDate.ToString("MMddyyyy"), report.StartDate.ToString("MMddyyyy")), models);
 				
 				
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, " print Journals with id=" + journals.Aggregate(string.Empty, (current, m) => current + m + ", "));
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
+		public List<KeyValuePair<string, string>> EmailExtractClients(List<int> journals, ReportRequest report)
+		{
+			try
+			{
+				var returnval = new List<KeyValuePair<string, string>>();
+				const string emailBodyTemplate =
+				"Dear {0}, <br/><br/> To pay the <i>{1}</i> of your recent payrolls, the {1} will take {2} from your bank account no later than {3} for the filing period of {4}. <br/><br/>" +
+				"Please ensure you have sufficient funds in your bank account.<br/><br/>" +
+				"If you have any questions, please contact your CPA or Paxol Support Team.<br/><br/>";
+				var emailSubject = $"Paxol: Notice of Your Impending {report.Description} Payment";
+				journals.ForEach(j =>
+				{
+					var journal = _readerService.GetJournals(id: j, includePayrolls: false, includeDetails: false).First();
+					var company = _readerService.GetCompany(journal.CompanyId);
+					
+					var contact = _commonService.GetAllTargets<Contact>(EntityTypeEnum.Contact).FirstOrDefault();
+					if (contact != null && !string.IsNullOrWhiteSpace(contact.Email) && contact.Email.ToLower()!="na@na.com")
+					{
+						var emailBody = string.Format(emailBodyTemplate, contact.FullName, journal.PayeeName, journal.Amount.ToString("c"), report.DepositDate.Value.ToString("MM/dd/yyyy")
+							, report.StartDate.ToString("MM/dd/yyyy") + " - " + report.EndDate.ToString("MM/dd/yyyy"));
+						_emailService.SendEmail(contact.Email, emailSubject, emailBody);
+						returnval.Add(new KeyValuePair<string, string>( company.Name, $"Email sent to {contact.Email}"));
+					}
+					else
+					{
+						returnval.Add(new KeyValuePair<string, string>(company.Name, $"Error: Email not sent to {contact.Email}"));
+					}
+					
+				
+				});
+
+				return returnval;
+
+
 			}
 			catch (Exception e)
 			{

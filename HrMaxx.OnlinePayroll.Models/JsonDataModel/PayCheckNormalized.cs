@@ -98,7 +98,9 @@ namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
 		public decimal Amount { get; set; }
 		public decimal YTD { get; set; }
         public decimal YTDWage { get; set; }
-
+		public decimal RegularPay { get; set; }
+		public decimal OverTimePay { get; set; }
+		public decimal GrossPay { get; set; }
         public Models.CompanyWorkerCompensation WorkerCompensation
 		{
 			get { return !string.IsNullOrWhiteSpace(WorkerCompensationFlat) ? JsonConvert.DeserializeObject<Models.CompanyWorkerCompensation>(WorkerCompensationFlat) : default(Models.CompanyWorkerCompensation); }

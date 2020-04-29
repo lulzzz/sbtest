@@ -700,7 +700,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
                         if (employeeAccumulation.Accumulations != null)
                         {
                             var globalValue = employeeAccumulation.Accumulations
-                                .Where(ac => ac.PayTypeId == payType.PayType.Id).Sum(ac => ac.YTDFiscal) - paycheck.Employee.SickLeaveCashPaidHours;
+                                .Where(ac => ac.PayTypeId == payType.PayType.Id).Sum(ac => ac.YTDFiscal) ;
                             if ((globalValue + accumulationValue) >= payType.GlobalLimit.Value)
                             {
                                 accumulationValue = Math.Max(payType.GlobalLimit.Value - globalValue, 0);
@@ -2749,7 +2749,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("sclytd-"+accumulationCounter, scl.YTDFiscal.ToString()));
 					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("sclused-" + accumulationCounter, scl.YTDUsed.ToString()));
 					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("sclco-" + accumulationCounter, scl.CarryOver.ToString()));
-					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("sclnet-"+accumulationCounter, (scl.Available - payCheck.Employee.SickLeaveCashPaidHours).ToString()));
+					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("sclnet-"+accumulationCounter, (scl.Available ).ToString()));
 					accumulationCounter++;
 				});
 				
@@ -3141,7 +3141,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("sclytd-" + accumulationCounter, scl.YTDFiscal.ToString()));
 					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("sclused-" + accumulationCounter, scl.YTDUsed.ToString()));
 					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("sclco-" + accumulationCounter, scl.CarryOver.ToString()));
-					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("sclnet-" + accumulationCounter, (scl.Available - payCheck.Employee.SickLeaveCashPaidHours).ToString()));
+					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("sclnet-" + accumulationCounter, (scl.Available ).ToString()));
 					accumulationCounter++;
 				});
 
@@ -3330,7 +3330,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("sclytd-1", scl.YTDFiscal.ToString()));
 					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("sclused-1", scl.YTDUsed.ToString()));
 					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("sclco-1", scl.CarryOver.ToString()));
-					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("sclnet-1", (scl.Available - payCheck.Employee.SickLeaveCashPaidHours).ToString()));
+					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("sclnet-1", (scl.Available ).ToString()));
 				}
 
 				
@@ -4398,6 +4398,61 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 					txn.Complete();
 				}
 				return mapped;
+
+			}
+			catch (Exception e)
+			{
+				var message = string.Format("Failed to update employee accumulations");
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+
+		}
+		public void RemoveAllPreviousAccumulations(List<PayCheckPayTypeAccumulation> previouos, PayCheckPayTypeAccumulation current, Employee employee)
+		{
+			try
+			{
+				var payChecks = _readerService.GetPayChecks(employeeId: employee.Id);
+				using (var txn = TransactionScopeHelper.Transaction())
+				{
+					if (current != null)
+					{
+						payChecks.Where(pc => pc.Accumulations != null && pc.Accumulations.Any(ac => ac.PayType.PayType.Id == current.PayTypeId && ac.FiscalStart.Date == current.FiscalStart.Date && ac.FiscalEnd.Date == current.FiscalEnd.Date)).ToList().ForEach(
+						pc =>
+						{
+							pc.Accumulations.Where(ac => ac.PayType.PayType.Id == current.PayTypeId && ac.FiscalStart.Date == current.FiscalStart.Date && ac.FiscalEnd.Date == current.FiscalEnd.Date).ToList().ForEach(
+								ac =>
+								{
+									ac.CarryOver = 0;
+								});
+							_payrollRepository.UpdatePayCheckSickLeaveAccumulation(pc);
+						});
+					}
+					
+					if (previouos != null)
+					{
+						payChecks.Where(pc => pc.Accumulations != null && pc.Accumulations.Any(ac => ac.PayType.PayType.Id == 6 && previouos.Any(pa => pa.FiscalStart.Date == ac.FiscalStart.Date && pa.FiscalEnd.Date == ac.FiscalEnd.Date))).ToList().ForEach(
+												pc =>
+												{
+													pc.Accumulations.Where(ac => ac.PayType.PayType.Id == 6 && previouos.Any(pa => pa.FiscalStart.Date == ac.FiscalStart.Date && pa.FiscalEnd.Date == ac.FiscalEnd.Date)).ToList().ForEach(
+														ac =>
+														{
+															ac.CarryOver = 0;
+															ac.AccumulatedValue = 0;
+															ac.Used = 0;
+															ac.YTDFiscal = 0;
+															ac.YTDUsed = 0;															
+														});
+													_payrollRepository.UpdatePayCheckSickLeaveAccumulation(pc);
+												});
+					}
+					
+					employee.CarryOver = 0;
+					employee.SickLeaveCashPaidHours = 0;
+					_companyService.SaveEmployee(employee, false, false);
+					txn.Complete();
+				}
+				
 
 			}
 			catch (Exception e)

@@ -171,12 +171,56 @@ namespace SiteInspectionStatus_Utility
                 case 37:
                     FillExtract(container);
                     break;
+                case 38:
+                    ClearPriorYearAccumulations(container);
+                    break;
                 default:
 					break;
 			}
 
 			Console.WriteLine("Utility run finished for ");
 		}
+        private static void ClearPriorYearAccumulations(IContainer container)
+        {
+            using (var scope = container.BeginLifetimeScope())
+            {
+                var readerservice = scope.Resolve<IReaderService>();
+                var payrollService = scope.Resolve<IPayrollService>();
+                var repository = scope.Resolve<IPayrollRepository>();
+
+                var company = readerservice.GetCompany(new Guid("1055128A-9F23-4E9F-8D42-A6ED014C4A4E"));
+                var employees = readerservice.GetEmployees(company: company.Id);
+                var payType = company.AccumulatedPayTypes.First();
+                
+                employees.ForEach(e =>
+                {
+
+                    var fiscalStartDate = CalculateFiscalStartDate(e.SickLeaveHireDate, DateTime.Today, payType);
+                    var fiscalEndDate = fiscalStartDate.AddYears(1).AddDays(-1);
+                    var previousAccumulations = e.Accumulations != null &&
+                                                                        e.Accumulations.Any(
+                                                                            ac =>
+                                                                                ac.PayTypeId == payType.PayType.Id && ac.FiscalStart < fiscalStartDate &&
+                                                                                ac.FiscalEnd < fiscalEndDate) ? e.Accumulations.Where(
+                            ac => ac.PayTypeId == payType.PayType.Id && ac.FiscalStart < fiscalStartDate && ac.FiscalEnd < fiscalEndDate)
+                            .ToList()
+                        : null;
+                    var currentAccumulaiton = e.Accumulations != null &&
+                                              e.Accumulations.Any(
+                                                  ac =>
+                                                      ac.PayTypeId == payType.PayType.Id && ac.FiscalStart == fiscalStartDate &&
+                                                      ac.FiscalEnd == fiscalEndDate)
+                        ? e.Accumulations.Where(
+                            ac => ac.PayTypeId == payType.PayType.Id && ac.FiscalStart == fiscalStartDate && ac.FiscalEnd == fiscalEndDate)
+                            .OrderBy(ac => ac.FiscalStart)
+                            .Last()
+                        : null;
+                    payrollService.RemoveAllPreviousAccumulations(previousAccumulations, currentAccumulaiton, e);
+                });
+                
+            }
+
+        }
         private static void FillExtract(IContainer scope)
         {
             var reader = scope.Resolve<IReaderService>();

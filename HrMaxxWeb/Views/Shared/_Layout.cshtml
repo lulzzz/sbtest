@@ -112,6 +112,34 @@
                     </div>
 
                 </script>
+                <script type="text/ng-template" id="popover/wcdetails.html">
+                    <div class="modal-header alert alert-info">
+                        <h4 class="modal-title">Pay Checks Details for {{selectedEmployee.fullName}} with {{selected.companyWorkerCompensation.code + ' - ' + selected.companyWorkerCompensation.description}}</h4>
+                    </div>
+                    <div class="modal-body">
+                        <table class="table">
+                            <tr>
+                                <th>Pay Day</th>
+                                <th class="text-right">Employee Wage</th>
+                                <th class="text-right">Employer Withheld</th>
+                            </tr>
+
+                            <tbody>
+                                <tr ng-repeat="pc in employeePayChecks">
+                                    <td>{{pc.payDay | date:'MM/dd/yyyy'}}</td>
+                                    <td class="text-right">{{pc.employeeWage | currency:'$'}}</td>
+                                    <td class="text-right">{{pc.employeeWithheld | currency:'$'}}</td>
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="modal-footer">
+                        <a href="javascript:;" class="btn btn-sm btn-white" ng-click="cancel()">Close</a>
+
+                    </div>
+
+                </script>
                 <script type="text/ng-template" id="popover/minwages.html">
                     <div class="modal-header alert alert-inverse">
                         <h4 class="modal-title">{{company.name}} - Min Wage(s) for {{modal[0].year}}</h4>
@@ -854,8 +882,8 @@
                             </select>
                         </div>
                         @*<a href="#!/" ng-if="data.selectedHost && data.selectedHost.homePage.logo" style="background-color:transparent" class="pull-right">
-                            <img ng-src="{{getDocumentUrl(logo)}}" err-src="https://upload.wikimedia.org/wikipedia/commons/a/ac/No_image_available.svg" style="width:150px;height:40px" />
-                        </a>*@
+                    <img ng-src="{{getDocumentUrl(logo)}}" err-src="https://upload.wikimedia.org/wikipedia/commons/a/ac/No_image_available.svg" style="width:150px;height:40px" />
+                </a>*@
                         <div class="col-sm-4 pull-left" ng-show="data.selectedCompany && data.selectedCompany.id"><h5 class="pull-right"><em>You are viewing company: {{data.selectedCompany.name}} <span class="show-red" ng-show="data.selectedCompany.isLocation">(is a location)</span></em></h5></div>
 
 

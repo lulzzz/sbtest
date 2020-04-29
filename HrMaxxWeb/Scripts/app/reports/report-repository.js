@@ -332,6 +332,20 @@ common.factory('reportRepository', [
 				});
 				
 			},
+			emailExtractClients: function (journals, report) {
+				var deferred = $q.defer();
+				reportServer.all('EmailExtractClients').post({
+					journals: journals,
+					report: report
+				}).then(function (response) {
+					deferred.resolve(response);
+				}, function (error) {
+					deferred.reject(error);
+				});
+
+				return deferred.promise;
+
+			},
 
 			getDashboardData: function (report, startdate, enddate, criteria, onlyActive) {
 				var deferred = $q.defer();

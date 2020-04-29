@@ -133,6 +133,9 @@ namespace HrMaxx.OnlinePayroll.Models
 
 		public decimal Overtime { get { return Math.Round(PayCodes.Sum(pc => pc.YTDOvertime), 2, MidpointRounding.AwayFromZero); } set { } }
 		public decimal Regular { get { return Math.Round(PayCodes.Sum(pc => pc.YTDAmount), 2, MidpointRounding.AwayFromZero); } set { } }
+		public decimal WCRegularPay { get { return Math.Round(WorkerCompensations.Sum(w => w.RegularPay), 2, MidpointRounding.AwayFromZero); } }
+		public decimal WCOverTimePay { get { return Math.Round(WorkerCompensations.Sum(w => w.OverTimePay), 2, MidpointRounding.AwayFromZero); } }
+		public decimal WCGrossPay { get { return Math.Round(WorkerCompensations.Sum(w => w.GrossPay), 2, MidpointRounding.AwayFromZero); } }
 		public decimal TotalCompensations { get { return Math.Round(Compensations.Sum(pc => pc.YTD), 2, MidpointRounding.AwayFromZero); } set { } }
 
 		public List<PayCheckTax> ApplicableTaxes

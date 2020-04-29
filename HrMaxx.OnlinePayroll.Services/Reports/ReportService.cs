@@ -1717,7 +1717,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			args.ForEach(a => argList.AddParam(a.Key, string.Empty, a.Value));
 			var transformed = XmlTransform(xml, $"{_templatePath}{template}", argList);
 			
-			_fileRepository.SaveFile(directory, host.HostCompany.Name.Replace(".", string.Empty).Replace(",",string.Empty), extension, transformed);
+			_fileRepository.SaveFile(directory, host.HostCompany.TaxFilingName.Replace(".", string.Empty).Replace(",",string.Empty), extension, transformed);
 		}
 
 		private Extract Get1099Extract(ReportRequest request)
@@ -2414,7 +2414,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 				startdate: request.StartDate, enddate: request.EndDate, type: AccumulationType.Employee, includeWorkerCompensations:true, includeHistory: request.IncludeHistory, 
 				includeClients: request.IncludeClients, includeTaxDelayed: request.IncludeTaxDelayed).Where(e => e.PayCheckWages.GrossWage > 0 && e.WorkerCompensationAmount>0).ToList();
 			response.CompanyAccumulations = _readerService.GetTaxAccumulations(company: request.CompanyId,
-				startdate: request.StartDate, enddate: request.EndDate, type: AccumulationType.Company, includeWorkerCompensations: true, includeHistory: request.IncludeHistory, 
+				startdate: request.StartDate, enddate: request.EndDate, type: AccumulationType.Company, includeWorkerCompensations: true,  includeHistory: request.IncludeHistory, 
 				includeClients: request.IncludeClients, includeTaxDelayed: request.IncludeTaxDelayed, report: request.ReportName).First();
 			
 			return response;

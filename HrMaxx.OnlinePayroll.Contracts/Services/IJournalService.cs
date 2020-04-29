@@ -31,5 +31,6 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 		void DeleteJournals(List<Journal> toList);
 		void FixMasterExtract<T>(T extract);
 		Journal ClearJournal(Journal journal, Guid guid, string fullName);
-	}
+		List<KeyValuePair<string, string>> EmailExtractClients(List<int> journals, ReportRequest report);
+    }
 }

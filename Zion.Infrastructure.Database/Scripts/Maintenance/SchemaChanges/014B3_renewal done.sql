@@ -128,7 +128,7 @@ BEGIN
 				
 			and ((@host is not null and c.HostId=@host) or (@host is null))
 			) a
-			where DATEAdd(day, -1*ReminderDays, DueDate) between dateadd(day, -15, getdate()) and dateadd(day, 15, getdate())
+			where DATEAdd(day, -1*ReminderDays, DueDate) between dateadd(day, -90, getdate()) and dateadd(day, 90, getdate())
 			for xml path('CompanyDueDateJson'), elements, type
 		) RenewalDue
 

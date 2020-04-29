@@ -628,6 +628,21 @@ common.controller('bankDetailsCtrl', function ($scope, $uibModalInstance, bank) 
 
 
 });
+common.controller('workerCompDetailsCtrl', function ($scope, $uibModalInstance, selectedEmployee, employeePayChecks, selected) {
+	$scope.selectedEmployee = selectedEmployee;
+	$scope.employeePayChecks = employeePayChecks;
+	$scope.selected = selected;
+
+	$scope.cancel = function () {
+		$uibModalInstance.close($scope);
+	};
+
+	$scope.ok = function () {
+		$uibModalInstance.close($scope);
+	};
+
+
+});
 common.controller('minWagesCtrl', function ($scope, $uibModalInstance, minWages, company) {
 	$scope.model = [];
 	$scope.company = company;

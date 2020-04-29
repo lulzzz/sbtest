@@ -107,7 +107,6 @@
 				<th class="text-center">Current</th>
 				<th class="text-center">YTD Acc</th>
 				<th class="text-center">Carry Over</th>
-				<th class="text-center">Paid Cash</th>
 				<th class="text-center">Available</th>
 				<th ng-show="showControls"></th>
 			</tr>
@@ -157,15 +156,13 @@
 						{{ pt.carryOver }}
 					</span>
 				</td>
-				<td class="text-right">
-					{{ check.employee.sickLeaveCashPaidHours | currency:''}}
-				</td>
+				
 				<td class="text-right">
 					<span ng-show="!rowform.$visible">
-						{{pt.available - check.employee.sickLeaveCashPaidHours  | currency:''}}
+						{{pt.available | currency:''}}
 					</span>
 					<span ng-show="rowform.$visible">
-						{{ (pt.carryOver + pt.ytdFiscal - pt.ytdUsed - check.employee.sickLeaveCashPaidHours) | currency:''}}
+						{{ (pt.carryOver + pt.ytdFiscal - pt.ytdUsed) | currency:''}}
 					</span>
 
 				</td>

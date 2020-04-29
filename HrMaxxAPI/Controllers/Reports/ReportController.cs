@@ -242,6 +242,14 @@ namespace HrMaxxAPI.Controllers.Reports
 			var returnExtract = MakeServiceCall(() => _journalService.PrintChecks(resource.Journals, resource.Report), "Print Checks for extract" , true);
 			return Printed(returnExtract);
 		}
+		[HttpPost]
+		[Route(ReportRoutes.EmailExtractClients)]
+		[DeflateCompression]
+		public List<KeyValuePair<string, string>> EmailExtractClients(ExtractPrintResource resource)
+		{
+			return MakeServiceCall(() => _journalService.EmailExtractClients(resource.Journals, resource.Report), "Email clients for extract");
+			
+		}
 
 		[HttpGet]
 		[Route(ReportRoutes.ExtractList)]

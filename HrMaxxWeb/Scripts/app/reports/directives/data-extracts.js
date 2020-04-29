@@ -899,6 +899,18 @@ common.controller('extractViewCtrl', function ($scope, $uibModalInstance, extrac
 		});
 
 	};
+	$scope.emailClients = function () {
+		reportRepository.emailExtractClients($scope.masterExtract.journals, $scope.masterExtract.extract.report).then(function (data) {
+			var message = "";
+			$.each(data, function (i, m) {
+				message += m.key + ": " + m.value + " <br/>";
+			});
+			$scope.mainData.showMessagesByBreak(message, 'success');
+		}, function (erorr) {
+			$scope.mainData.handleError('', erorr, 'danger');
+		});
+
+	};
 	$scope.regenerateFile = function() {
 		reportRepository.downloadExtractFile($scope.masterExtract.extract).then(function (data) {
 			var a = document.createElement('a');
