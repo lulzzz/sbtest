@@ -18,6 +18,7 @@
 			</div>
 		</div>
 		<div class="panel-body text">
+			<div class="col-sm-12 visible-print" ng-show="mainData.selectedCompany && mainData.selectedCompany.id && mainData.showCompanies"><h5><em><u>{{mainData.selectedCompany.name}}</u></em></h5></div>
 			<div class="row hidden-print">
 				<report-filter filter="mainData.reportFilter" callback="getReport()" show-dates="true" show-periods="false" show-history="true" show-include-clients="showincludeclients" show-include-client-employees="showincludeclients" show-include-tax-delayed="showIncludeTaxDelayed" />
 			</div>

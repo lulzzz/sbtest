@@ -4,9 +4,10 @@
 		<div class="panel-heading hidden-print" ng-click="data.isBodyOpen=!data.isBodyOpen">
 			<h4 class="panel-title">Payroll Register<i class="pull-right fa fa-lg fa-print" ng-click="print1()"></i></h4>			
 		</div>
-		<div class="panel-body" >
+		<div class="panel-body">
+			<div class="col-sm-12 visible-print" ng-show="mainData.selectedCompany && mainData.selectedCompany.id && mainData.showCompanies"><h5><em><u>{{mainData.selectedCompany.name}}</u></em></h5></div>
 			<div class="row hidden-print">
-				<report-filter filter="mainData.reportFilter" callback="getReport()" show-include-clients="showincludeclients" />	
+				<report-filter filter="mainData.reportFilter" callback="getReport()" show-include-clients="showincludeclients" />
 			</div>
 			<div ng-show="list.length===0" class="table table-bordered">
 				No register entries found
@@ -39,18 +40,18 @@
 					</tbody>
 				</table>
 				<table ng-table="tableParams" class="table" show-filter="true" template-pagination="custom/pager">
-					<tr ng-repeat="item in tableData track by $index"  ng-class="{'danger':item.isVoid}">
+					<tr ng-repeat="item in tableData track by $index" ng-class="{'danger':item.isVoid}">
 						<td data-title="' Name'" filter="{'employeeName': 'text'}" sortable="'employeeName'" class="col-sm-2 text-center text-bold text-warning cursor-pointer" ng-click="print(item)">
 							{{item.employeeName}}
 						</td>
 						<td data-title=" 'Department' " filter="{'department': 'text'}" sortable=" 'department' " class="col-sm-1 text-center">
 							{{item.department}}
 						</td>
-						
+
 						<td data-title=" 'Date' " sortable=" 'payDay' " class="col-sm-1 text-center">
 							{{item.payDay | date:'MM/dd/yyyy'}}
 						</td>
-						
+
 						<td data-title=" 'Gross Pay' " sortable=" 'grossWage' " class="col-sm-1 text-center">
 							{{item.grossWage | currency:'$'}}
 						</td>
@@ -60,7 +61,7 @@
 						<td data-title=" 'Deductions' " class="col-sm-1 text-center">
 							{{item.deductionAmount | currency:'$'}}
 						</td>
-						<td data-title=" 'Total Taxes' "  class="col-sm-1 text-center">
+						<td data-title=" 'Total Taxes' " class="col-sm-1 text-center">
 							{{item.employeeTaxes + item.employerTaxes | currency:'$'}}
 						</td>
 						<td data-title=" 'Check No' " sortable=" 'checkNumber' " class="col-sm-1 text-center">
@@ -72,17 +73,17 @@
 						<td data-title=" 'History?' " sortable=" 'isHistory' " class="col-sm-1 text-center">
 							{{item.isHistory ? 'Yes' : ''}}
 						</td>
-						
+
 					</tr>
 
 				</table>
-				
-				
+
+
 				<script type="text/ng-template" id="custom/pager">
 					<ul class="pager ng-cloak">
 						<li ng-repeat="page in pages"
-								ng-class="{'disabled': !page.active, 'previous': page.type == 'prev', 'next': page.type == 'next'}"
-								ng-show="page.type == 'prev' || page.type == 'next'" ng-switch="page.type">
+							ng-class="{'disabled': !page.active, 'previous': page.type == 'prev', 'next': page.type == 'next'}"
+							ng-show="page.type == 'prev' || page.type == 'next'" ng-switch="page.type">
 							<a ng-switch-when="prev" ng-click="params.page(page.number)" href="" class="marginned">&laquo; Previous</a>
 							<a ng-switch-when="next" ng-click="params.page(page.number)" href="" class="marginned">Next &raquo;</a>
 						</li>
@@ -97,7 +98,7 @@
 					</ul>
 				</script>
 			</div>
-			
+
 			<!-- end panel -->
 		</div>
 	</div>

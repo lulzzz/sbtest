@@ -8,6 +8,7 @@
 			</div>
 		</div>
         <div class="panel-body">
+            <div class="col-sm-12 visible-print" ng-show="mainData.selectedCompany && mainData.selectedCompany.id && mainData.showCompanies"><h5><em><u>{{mainData.selectedCompany.name}}</u></em></h5></div>
             <div class="row hidden-print">
                 <report-filter filter="mainData.reportFilter" callback="getReport()" show-history="true" show-include-clients="showincludeclients" show-include-tax-delayed="showIncludeTaxDelayed" />
             </div>
@@ -19,7 +20,7 @@
             </div>
             <div class="col-sm-8 col-sm-offset-2 hidden-print" ng-show="data.response.companyAccumulations && data.response.companyAccumulations.workerCompensations.length>0">
                 <table class="table table-condensed">
-                    
+
                     <tr>
                         <th>Code</th>
                         <th>Description</th>
@@ -30,7 +31,7 @@
                         <th class="text-right">WC Wage</th>
                         <th class="text-right">WC Amount</th>
                     </tr>
-                    
+
                     <tbody>
                         <tr ng-repeat="wc in data.response.companyAccumulations.workerCompensations" ng-class="{'success' : (selected && wc.workerCompensationId===selected.workerCompensationId)}">
                             <td>{{wc.companyWorkerCompensation.code}}</td>
@@ -79,7 +80,7 @@
                             </tbody>
                         </table>
                     </div>
-                    
+
                     <table ng-table="tableParams" class="table" show-filter="true" template-pagination="custom/nopager" ng-show="list.length>0">
                         <tr ng-repeat="item in tableData track by $index" ng-class="{'success':(selectedEmployee && item.employeeId===selectedEmployee.employeeId)}">
                             <td data-title="' Name'" filter="{ 'fullName': 'text' }" sortable="'fullName'" class="col-sm-2 text-bold text-warning cursor-pointer" ng-click="viewDetails(item)">
@@ -127,7 +128,7 @@
 
                     </script>
                 </div>
-                
+
 
             </div>
 
