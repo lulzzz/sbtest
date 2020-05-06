@@ -50,8 +50,9 @@ namespace HrMaxx.OnlinePayroll.Services
 				var deductiontypes = _metaDataRepository.GetDeductionTypes();
 				var paytypes = _metaDataRepository.GetAccumulablePayTypes();
 				var insurancegroups = _commonService.GetInsuranceGroups();
+				var minWages = _taxationService.GetMinWageTable();
 				
-				return new CompanyMetaData(){Countries = countries, Taxes = taxes, DeductionTypes = deductiontypes, PayTypes = paytypes, InsuranceGroups= insurancegroups};
+				return new CompanyMetaData(){Countries = countries, Taxes = taxes, DeductionTypes = deductiontypes, PayTypes = paytypes, InsuranceGroups= insurancegroups, MinWages = minWages};
 			}
 			catch (Exception e)
 			{
@@ -66,9 +67,9 @@ namespace HrMaxx.OnlinePayroll.Services
 			try
 			{
 				const string sql = "select " +
-												 "(select * from DocumentType for xml auto, elements, type) Types, " +
+												 "(select * from DocumentType where Id<6 for xml auto, elements, type) Types, " +
 												 "(select *, (select * from DocumentType where Id=Type for Xml path('DocumentType'), elements, type) from CompanyDocumentSubType where CompanyId='{0}' for xml path('CompanyDocumentSubType'), elements, type) CompanyDocumentSubTypes, " +
-												 "(select * from Document where SourceEntityId='{0}' and SourceEntityTypeId=2 for xml path('Document'), elements, type) Docs " +
+												 "(select * from Document where SourceEntityId='{0}' and SourceEntityTypeId=2 and Type<>6 for xml path('Document'), elements, type) Docs " +
 												 "for Xml path('DocumentServiceMetaData') , elements, type";
 				
 				//var docs =_metaDataRepository.GetDocumentServiceMetaData(companyId);
@@ -134,7 +135,8 @@ namespace HrMaxx.OnlinePayroll.Services
 			{
 				var paytypes = _metaDataRepository.GetAllPayTypes();
 				var agencies = _metaDataRepository.GetGarnishmentAgencies();
-				return new EmployeeMetaData { PayTypes = paytypes, Agencies = agencies };
+				var minWages = _taxationService.GetMinWageTable();
+				return new EmployeeMetaData { PayTypes = paytypes, Agencies = agencies, MinWages = minWages };
 			}
 			catch (Exception e)
 			{
@@ -170,7 +172,8 @@ namespace HrMaxx.OnlinePayroll.Services
 				//var maxCheckNumber = _metaDataRepository.GetMaxCheckNumber((request.InvoiceSetup != null && request.InvoiceSetup.InvoiceType == CompanyInvoiceType.PEOASOCoCheck) ? request.HostCompanyIntId : request.CompanyIntId, (request.InvoiceSetup != null && request.InvoiceSetup.InvoiceType == CompanyInvoiceType.PEOASOCoCheck));
 				var importMap = _metaDataRepository.GetCompanyTsImportMap(request.CompanyId);
 				var agencies = _metaDataRepository.GetGarnishmentAgencies();
-				return new { PayTypes = paytypes, StartingCheckNumber = maxCheckNumber, PayrollAccount = bankAccount, HostPayrollAccount = hostAccount, ImportMap = importMap, Agencies = agencies };
+				var minWages = _taxationService.GetMinWageTable();
+				return new { PayTypes = paytypes, StartingCheckNumber = maxCheckNumber, PayrollAccount = bankAccount, HostPayrollAccount = hostAccount, ImportMap = importMap, Agencies = agencies, MinWages = minWages };
 			}
 			catch (Exception e)
 			{
@@ -229,11 +232,14 @@ namespace HrMaxx.OnlinePayroll.Services
 			}
 		}
 
-		public IList<DeductionType> GetDeductionTypes()
+		public object GetDeductionTypes()
 		{
 			try
 			{
-				return _metaDataRepository.GetDeductionTypes();
+				var types = _metaDataRepository.GetDeductionTypes();
+				var precedence = _metaDataRepository.GetDeductionTaxPrecendence();
+				var precGroups = precedence.GroupBy(p => p.DeductionTypeId).Select(g => new { TypeId= g.Key, List= g.ToList().GroupBy(p1 => p1.StateCode).Select(g2 => new { State = g2.Key, List = g2.ToList() }).ToList()}).ToList();
+				return new { Types = types, Precedence = precGroups };
 			}
 			catch (Exception e)
 			{
@@ -332,11 +338,14 @@ namespace HrMaxx.OnlinePayroll.Services
 					"GetAccessMetaData", new List<FilterParam>(), new XmlRootAttribute("AccessList"));
 		}
 
-		public DeductionType SaveDeductionType(DeductionType dt)
+		public DeductionType SaveDeductionType(DeductionType dt, List<PreTaxDeduction> precedence)
 		{
 			try
 			{
-				return _metaDataRepository.SaveDeductionType(dt);
+				var dedType = _metaDataRepository.SaveDeductionType(dt);
+				_metaDataRepository.SaveDeductionPrecedence(precedence);
+				_taxationService.UpdateTaxDeductionPrecedence(precedence);
+				return dedType;
 			}
 			catch (Exception e)
 			{

@@ -37,7 +37,7 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 		public int InsuranceGroupNo { get; set; }
 		public PayrollSchedule PayrollSchedule { get; set; }
 		public PayrollScheduleSubType PayrollScheduleDay { get; set; }
-		public decimal MinWage { get; set; }
+		public decimal? MinWage { get; set; }
 		public string Memo { get; set; }
 		public string DashboardNotes { get; set; }
 		public string Notes { get; set; }
@@ -62,7 +62,7 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 
 		public DateTime? LastPayrollDate { get; set; }
 		public DateTime? Created { get; set; }
-
+		public bool IsRestaurant { get; set; }
 		public string InsuranceClientNo { get; set; }
 		public InsuranceGroupDto InsuranceGroup { get; set; }
 		public Contact Contact { get; set; }
@@ -75,6 +75,7 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 		public List<CompanyWorkerCompensationResource> WorkerCompensations { get; set; }
 		public ContractDetailsResource Contract { get; set; }
 		public List<CompanyPayCodeResource> PayCodes { get; set; }
+		public List<CompanyRenewal> CompanyRenewals { get; set; }
 		public List<CompanyLocation> Locations { get; set; } 
 		public Guid? ParentId { get; set; }
 
@@ -161,11 +162,13 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 		public string Description { get; set; }
 		public decimal? FloorPerCheck { get; set; }
 		public bool ApplyInvoiceCredit { get; set; }
-		public decimal AnnualMax { get; set; }
+		public decimal? AnnualMax { get; set; }
 		public string W2_12 { get; set; }
 		public string W2_13R { get; set; }
 		public string R940_R { get; set; }
-        public decimal EmployeeWithheld { get; set; }
+		public DateTime? StartDate { get; set; }
+		public DateTime? EndDate { get; set; }
+		public decimal EmployeeWithheld { get; set; }
         public decimal EmployerWithheld { get; set; }
     }
 
@@ -185,6 +188,7 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 		public bool IsLumpSum { get; set; }
 		public bool IsEmployeeSpecific { get; set; }
 		public AccumulatedPayTypeOption Option { get; set; }
+		public string Name { get; set; }
 	}
 
 	public class CompanyTaxStateResource
@@ -197,6 +201,7 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 		[Required]
 		public string StatePin { get; set; }
         public string StateUIAccount { get; set; }
+		public DepositSchedule941 DepositSchedule { get; set; }
 	}
 
 	public class CompanyTaxRateResource
@@ -220,13 +225,16 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 		public string Description { get; set; }
 		[Required]
 		public decimal HourlyRate { get; set; }
-
+		[Required]
+		public PayCodeRateType RateType { get; set; }
+		
 		public string DropDownDisplay
 		{
-			get { return string.Format("{0}:{1} ({2} per hour)", Code, Description, HourlyRate.ToString("c")); }
+			get { return $"{Code}:{Description} ({(RateType == PayCodeRateType.Flat ? (HourlyRate.ToString("c") + " per hour") : (HourlyRate.ToString() + " x default rate"))})"; }
+				
 		}
 	}
-
+	
 	public class CompanyLocationResource
 	{
 		public Guid Id { get; set; }
@@ -253,7 +261,8 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 		public bool PrintClientName { get; set; }
 		public bool PaysByAch { get; set; }
 		public List<RecurringChargeResource> RecurringCharges { get; set; }
-		public SalesRepResource SalesRep { get; set; } 
+		public List<SalesRepResource> SalesReps { get; set; } 
+		public SalesRepResource SalesRep { get; set; }
 	}
 
 	public class RecurringChargeResource

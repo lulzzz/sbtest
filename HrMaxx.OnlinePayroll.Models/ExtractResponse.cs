@@ -142,6 +142,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public string StatePIN { get { return Crypto.Decrypt(Pin); } }
 
         public string UIAccountNumber { get; set; }
+		public int DepositSchedule { get; set; }
 	}
 	public class ExtractCompany
 	{
@@ -275,7 +276,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public Guid? ParentId { get; set; }
 		public decimal MinWage { get; set; }
 		public int CompanyCheckPrintOrder { get; set; }
-
+		public bool IsRestaurant { get; set; }
 		public List<EmployeeMinifiedJson> Employees { get; set; } 
 
 		public List<ExtractTaxState> States { get; set; }

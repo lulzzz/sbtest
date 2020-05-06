@@ -1,89 +1,245 @@
 ﻿<div class="row">
-	<div class="row">
+	<div class="col-sm-12">
 		<span ng-show="!data.isDataLoaded">No data loaded</span> <button class="btn btn-success btn-icon btn-circle btn-sm" title="Re-Load" ng-click="loadData()"><i class="fa fa-lg fa-refresh"></i></button>
 	</div>
 	<div class="row" ng-if="data.isDataLoaded">
 		<!-- begin col-3 -->
 		<div class="col-md-3 col-sm-6">
-			<div class="widget widget-stats bg-green">
-				<div class="stats-icon">941</div>
-				<div class="stats-title">Last Deposit - {{data.dashboard.last941Extract.depositDate | date:'MM/dd/yyyy'}}</div>
-				<div class="stats-number">{{data.dashboard.last941Extract.amount | currency}}</div>
-				<div class="stats-progress progress">
-					<div class="progress-bar" style="width: 100%;"></div>
+			<div class="card border-0 text-truncate mb-3 bg-dark-darker text-white">
+				<!-- begin card-body -->
+				<div class="card-body">
+					<!-- begin title -->
+					<div class="mb-3 text-white">
+						<b class="mb-3">Federal 941</b>
+						<a href="javascript:;" class="btn btn-sm btn-icon btn-circle btn-primary" ng-click="showChart(1)"><i class="fa fa-info text-white"></i></a>
+					</div>
+					<!-- end title -->
+					<div class="progress progress-xs rounded-lg bg-grey-darker m-b-5">
+						<div class="progress-bar progress-bar-striped rounded-right bg-teal"></div>
+					</div>
+					<div class="d-flex mb-2">
+						<div class="d-flex align-items-center">
+							<i class="fa fa-circle text-green f-s-8 mr-2"></i>
+							Last Deposit - {{data.dashboard.last941Extract ? (data.dashboard.last941Extract.depositDate | date:'MM/dd/yyyy') : 'No Deposits'}}
+						</div>
+						<div class="d-flex align-items-center ml-auto">
+
+							<div class=" text-right pl-2 f-w-600">{{data.dashboard.last941Extract ? (data.dashboard.last941Extract.amount | currency) : '0.00'}}</div>
+						</div>
+					</div>
+					<div class="d-flex mb-2">
+						<div class="d-flex align-items-center">
+							<i class="fa fa-circle text-green f-s-8 mr-2"></i>
+							YTD Deposit
+						</div>
+						<div class="d-flex align-items-center ml-auto">
+							<div class=" text-right pl-2 f-w-600">{{data.dashboard.ytd941Extract | currency}}</div>
+
+						</div>
+					</div>
+					<div class="d-flex mb-2">
+						<div class="d-flex align-items-center">
+							<i class="fa fa-circle text-warning f-s-8 mr-2"></i>
+							Pending
+						</div>
+						<div class="d-flex align-items-center ml-auto">
+							<div class=" text-right pl-2 f-w-600">{{data.dashboard.pending941Amount | currency}}</div>
+
+						</div>
+					</div>
+					<div class="d-flex mb-2">
+						<div class="d-flex align-items-center">
+							<i class="fa fa-circle text-danger f-s-8 mr-2"></i>
+							Delayed
+						</div>
+						<div class="d-flex align-items-center ml-auto">
+							<div class=" text-right pl-2 f-w-600">{{data.dashboard.pendingDelayed941Amount | currency}}</div>
+
+						</div>
+					</div>
+					
 				</div>
-				<div class="stats-title">YTD Deposit</div>
-				<div class="stats-number">{{data.dashboard.ytd941Extract | currency}}</div>
-				<div class="stats-progress progress">
-					<div class="progress-bar" style="width: 100%;"></div>
-				</div>
-				<div class="stats-title">Pending</div>
-				<div class="stats-number">{{data.dashboard.pending941Amount | currency}}<i class="fa fa-lg fa-exclamation-triangle" style="color:red"></i></div>
-				<div class="stats-link">
-					<a href="javascript:;" ng-click="showChart(1)">View Detail <i class="fa fa-arrow-circle-o-right"></i></a>
-				</div>
+				<!-- end card-body -->
 			</div>
+			
 		</div>
 		<div class="col-md-3 col-sm-6">
-			<div class="widget widget-stats bg-blue">
-				<div class="stats-icon">940</div>
-				<div class="stats-title">Last Deposit - {{data.dashboard.last940Extract.depositDate | date:'MM/dd/yyyy'}}</div>
-				<div class="stats-number">{{data.dashboard.last940Extract.amount | currency}}</div>
-				<div class="stats-progress progress">
-					<div class="progress-bar" style="width: 100%;"></div>
+			<div class="card border-0 text-truncate mb-3 bg-dark-darker text-white">
+				<!-- begin card-body -->
+				<div class="card-body">
+					<!-- begin title -->
+					<div class="mb-3 text-white">
+						<b class="mb-3">Federal 940</b>
+						<a href="javascript:;" class="btn btn-sm btn-icon btn-circle btn-primary" ng-click="showChart(2)"><i class="fa fa-info text-white"></i></a>
+					</div>
+					<!-- end title -->
+					<div class="progress progress-xs rounded-lg bg-grey-darker m-b-5">
+						<div class="progress-bar progress-bar-striped rounded-right bg-info"></div>
+					</div>
+					<div class="d-flex mb-2">
+						<div class="d-flex align-items-center">
+							<i class="fa fa-circle text-green f-s-8 mr-2"></i>
+							Last Deposit - {{data.dashboard.last940Extract ? (data.dashboard.last940Extract.depositDate | date:'MM/dd/yyyy') : 'No Deposits'}}
+						</div>
+						<div class="d-flex align-items-center ml-auto">
+
+							<div class=" text-right pl-2 f-w-600">{{data.dashboard.last940Extract ? (data.dashboard.last940Extract.amount | currency) : '0.00'}}</div>
+						</div>
+					</div>
+					<div class="d-flex mb-2">
+						<div class="d-flex align-items-center">
+							<i class="fa fa-circle text-green f-s-8 mr-2"></i>
+							YTD Deposit
+						</div>
+						<div class="d-flex align-items-center ml-auto">
+							<div class=" text-right pl-2 f-w-600">{{data.dashboard.ytd940Extract | currency}}</div>
+
+						</div>
+					</div>
+					<div class="d-flex mb-2">
+						<div class="d-flex align-items-center">
+							<i class="fa fa-circle text-warning f-s-8 mr-2"></i>
+							Pending
+						</div>
+						<div class="d-flex align-items-center ml-auto">
+							<div class=" text-right pl-2 f-w-600">{{data.dashboard.pending940Amount | currency}}</div>
+
+						</div>
+					</div>
+					<div class="d-flex mb-2">
+						<div class="d-flex align-items-center">
+							<i class="fa fa-circle text-danger f-s-8 mr-2"></i>
+							Delayed
+						</div>
+						<div class="d-flex align-items-center ml-auto">
+							<div class=" text-right pl-2 f-w-600">{{data.dashboard.pendingDelayed940Amount | currency}}</div>
+
+						</div>
+					</div>
+					
 				</div>
-				<div class="stats-title">YTD Deposit</div>
-				<div class="stats-number">{{data.dashboard.ytd940Extract | currency}}</div>
-				<div class="stats-progress progress">
-					<div class="progress-bar" style="width: 100%;"></div>
-				</div>
-				<div class="stats-title">Pending</div>
-				<div class="stats-number">{{data.dashboard.pending940Amount | currency}}<i class="fa fa-lg fa-exclamation-triangle" style="color:red"></i></div>
-				<div class="stats-link">
-					<a href="javascript:;" ng-click="showChart(2)">View Detail <i class="fa fa-arrow-circle-o-right"></i></a>
-				</div>
+				<!-- end card-body -->
 			</div>
+			
 		</div>
 		<div class="col-md-3 col-sm-6">
-			<div class="widget widget-stats bg-purple">
-				<div class="stats-icon">PIT & DI</div>
-				<div class="stats-title">Last Deposit - {{data.dashboard.lastCAPITExtract.depositDate | date:'MM/dd/yyyy'}}</div>
-				<div class="stats-number">{{data.dashboard.lastCAPITExtract.amount | currency}}</div>
-				<div class="stats-progress progress">
-					<div class="progress-bar" style="width: 100%;"></div>
+			<div class="card border-0 text-truncate mb-3 bg-dark-darker text-white">
+				<!-- begin card-body -->
+				<div class="card-body">
+					<!-- begin title -->
+					<div class="mb-3 text-white">
+						<b class="mb-3">California PIT & DI</b>
+						<a href="javascript:;" class="btn btn-sm btn-icon btn-circle btn-primary" ng-click="showChart(3)"><i class="fa fa-info text-white"></i></a>
+					</div>
+					<!-- end title -->
+					<div class="progress progress-xs rounded-lg bg-grey-darker m-b-5">
+						<div class="progress-bar progress-bar-striped rounded-right bg-teal"></div>
+					</div>
+					<div class="d-flex mb-2">
+						<div class="d-flex align-items-center">
+							<i class="fa fa-circle text-green f-s-8 mr-2"></i>
+							Last Deposit - {{data.dashboard.lastCAPITExtract ? (data.dashboard.lastCAPITExtract.depositDate | date:'MM/dd/yyyy') : 'No Deposits'}}
+						</div>
+						<div class="d-flex align-items-center ml-auto">
+
+							<div class=" text-right pl-2 f-w-600">{{data.dashboard.lastCAPITExtract ? (data.dashboard.lastCAPITExtract.amount | currency) : '0.00'}}</div>
+						</div>
+					</div>
+					<div class="d-flex mb-2">
+						<div class="d-flex align-items-center">
+							<i class="fa fa-circle text-green f-s-8 mr-2"></i>
+							YTD Deposit
+						</div>
+						<div class="d-flex align-items-center ml-auto">
+							<div class=" text-right pl-2 f-w-600">{{data.dashboard.ytdCAPITExtract | currency}}</div>
+
+						</div>
+					</div>
+					<div class="d-flex mb-2">
+						<div class="d-flex align-items-center">
+							<i class="fa fa-circle text-warning f-s-8 mr-2"></i>
+							Pending
+						</div>
+						<div class="d-flex align-items-center ml-auto">
+							<div class=" text-right pl-2 f-w-600">{{data.dashboard.pendingPitAmount | currency}}</div>
+
+						</div>
+					</div>
+					<div class="d-flex mb-2">
+						<div class="d-flex align-items-center">
+							<i class="fa fa-circle text-danger f-s-8 mr-2"></i>
+							Delayed
+						</div>
+						<div class="d-flex align-items-center ml-auto">
+							<div class=" text-right pl-2 f-w-600">{{data.dashboard.pendingDelayedPitAmount | currency}}</div>
+
+						</div>
+					</div>
+					
 				</div>
-				<div class="stats-title">YTD Deposit</div>
-				<div class="stats-number">{{data.dashboard.ytdCAPITExtract | currency}}</div>
-				<div class="stats-progress progress">
-					<div class="progress-bar" style="width: 100%;"></div>
-				</div>
-				<div class="stats-title">Pending</div>
-				<div class="stats-number">{{data.dashboard.pendingPitAmount | currency}}<i class="fa fa-lg fa-exclamation-triangle" style="color:red"></i></div>
-				<div class="stats-link">
-					<a href="javascript:;" ng-click="showChart(3)">View Detail <i class="fa fa-arrow-circle-o-right"></i></a>
-				</div>
+				<!-- end card-body -->
 			</div>
+			
 		</div>
 
 		<div class="col-md-3 col-sm-6">
-			<div class="widget widget-stats bg-black">
-				<div class="stats-icon">UI & ETT</div>
-				<div class="stats-title">Last Deposit - {{data.dashboard.lastCAUIETTExtract.depositDate | date:'MM/dd/yyyy'}}</div>
-				<div class="stats-number">{{data.dashboard.lastCAUIETTExtract.amount | currency}}</div>
-				<div class="stats-progress progress">
-					<div class="progress-bar" style="width: 100%;"></div>
+			<div class="card border-0 text-truncate mb-3 bg-dark-darker text-white">
+				<!-- begin card-body -->
+				<div class="card-body">
+					<!-- begin title -->
+					<div class="mb-3 text-white">
+						<b class="mb-3">California UI & ETT</b>
+						<a href="javascript:;" class="btn btn-sm btn-icon btn-circle btn-primary" ng-click="showChart(4)"><i class="fa fa-info text-white"></i></a>
+					</div>
+					<!-- end title -->
+					<div class="progress progress-xs rounded-lg bg-grey-darker m-b-5">
+						<div class="progress-bar progress-bar-striped rounded-right bg-teal"></div>
+					</div>
+					<div class="d-flex mb-2">
+						<div class="d-flex align-items-center">
+							<i class="fa fa-circle text-green f-s-8 mr-2"></i>
+							Last Deposit - {{data.dashboard.lastCAUIETTExtract ? (data.dashboard.lastCAUIETTExtract.depositDate | date:'MM/dd/yyyy') : 'No Deposits'}}
+						</div>
+						<div class="d-flex align-items-center ml-auto">
+
+							<div class=" text-right pl-2 f-w-600">{{data.dashboard.lastCAUIETTExtract ? (data.dashboard.lastCAUIETTExtract.amount | currency) : '0.00'}}</div>
+						</div>
+					</div>
+					<div class="d-flex mb-2">
+						<div class="d-flex align-items-center">
+							<i class="fa fa-circle text-green f-s-8 mr-2"></i>
+							YTD Deposit
+						</div>
+						<div class="d-flex align-items-center ml-auto">
+							<div class=" text-right pl-2 f-w-600">{{data.dashboard.ytdCAUIETTExtract | currency}}</div>
+
+						</div>
+					</div>
+					<div class="d-flex mb-2">
+						<div class="d-flex align-items-center">
+							<i class="fa fa-circle text-warning f-s-8 mr-2"></i>
+							Pending
+						</div>
+						<div class="d-flex align-items-center ml-auto">
+							<div class=" text-right pl-2 f-w-600">{{data.dashboard.pendingUiEttAmount | currency}}</div>
+
+						</div>
+					</div>
+					<div class="d-flex mb-2">
+						<div class="d-flex align-items-center">
+							<i class="fa fa-circle text-danger f-s-8 mr-2"></i>
+							Delayed
+						</div>
+						<div class="d-flex align-items-center ml-auto">
+							<div class=" text-right pl-2 f-w-600">{{data.dashboard.pendingDelayedUiEttAmount | currency}}</div>
+
+						</div>
+					</div>
+					
 				</div>
-				<div class="stats-title">YTD Deposit</div>
-				<div class="stats-number">{{data.dashboard.ytdCAUIETTExtract | currency}}</div>
-				<div class="stats-progress progress">
-					<div class="progress-bar" style="width: 100%;"></div>
-				</div>
-				<div class="stats-title">Pending</div>
-				<div class="stats-number">{{data.dashboard.pendingUiEttAmount | currency}} <i class="fa fa-lg fa-exclamation-triangle" style="color:red"></i></div>
-				<div class="stats-link">
-					<a href="javascript:;" ng-click="showChart(4)">View Detail <i class="fa fa-arrow-circle-o-right"></i></a>
-				</div>
+				<!-- end card-body -->
 			</div>
+			
 
 		</div>
 
@@ -96,37 +252,50 @@
 	<!-- begin row -->
 	<div class="row" ng-if="data.isDataLoaded">
 		<!-- begin col-8 -->
-		<div class="col-md-12" ng-show="data.showChart">
+		<div class="col-md-8" ng-show="data.showChart">
 
-			<div class="widget-chart with-sidebar bg-black col-md-8">
+			<div class="widget-chart with-sidebar bg-dark-darker text-white">
 				<div class="widget-chart-content">
 					<h4 class="chart-title">
 						{{data.chartTitle}} - Paid
 					</h4>
 					<div id="extract-paid" class="morris-inverse" style="height: 260px;"></div>
 				</div>
-				<div class="widget-chart-sidebar bg-black-darker">
+				<div class="widget-chart-sidebar bg-dark-darker">
 					<div class="chart-number">
 						{{data.donutChartTotal | currency}}
 					</div>
 					<div id="extract-donut" style="height: 160px"></div>
 					<ul class="chart-legend">
 						<li><i class="fa fa-circle-o fa-fw text-success m-r-5"></i> {{data.donutPaidPercentage | currency:''}}% <span>Paid</span></li>
-						<li><i class="fa fa-circle-o fa-fw text-primary m-r-5"></i> {{data.donutPendingPercentage | currency:''}}% <span>Pending</span></li>
+						<li><i class="fa fa-circle-o fa-fw text-warning m-r-5"></i> {{data.donutPendingPercentage | currency:''}}% <span>Pending</span></li>
+						<li><i class="fa fa-circle-o fa-fw text-danger m-r-5"></i> {{data.donutDelayedPercentage | currency:''}}% <span>Delayed</span></li>
 					</ul>
 				</div>
 			</div>
 
+			<div class="widget-chart bg-dark-darker">
+				<div class="widget-chart-content">
+					<h4 class="chart-title">
+						{{data.chartTitle}} - Pending
+					</h4>
+					<div id="extract-pending" class="morris-inverse" style="height: 260px;"></div>
+				</div>
+			</div>
+
+			
 
 
-			<div class="panel panel-success scrollableContainer col-md-4 p-t-0" style="height: 320px;" data-sortable-id="index-8">
-				<div class="panel-heading">
+		</div>
+		<div class="col-md-4 col-sm-4" ng-if="data.chartShown">
+			<div class="panel panel-success scrollableContainer p-t-0" style="height: {{data.viewpanel===1 ? 320 : 50}}px;" data-sortable-id="index-8">
+				<div class="panel-heading" ng-click="changePanel(1)">
 					<div class="panel-heading-btn">
 
 					</div>
-					<h4 class="panel-title">{{data.chartTitle}} - Paid </h4>
+					<h4 class="panel-title">{{data.chartTitle}} - Paid <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': data.viewpanel===1, 'glyphicon-chevron-right': data.viewpanel!==1}"></i></h4>
 				</div>
-				<div class="panel-body p-0 scrollArea">
+				<div class="panel-body p-0 scrollArea" ng-show="data.viewpanel===1">
 					<ul class="todolist">
 						<li ng-repeat="item in data.filteredExtracts">
 							<a href="javascript:;" class="todolist-container active" data-click="todolist">
@@ -139,70 +308,82 @@
 				</div>
 			</div>
 
-
-		</div>
-		<div class="col-md-12" ng-show="data.showChart">
-			<div class="widget-chart bg-black col-md-8">
-				<div class="widget-chart-content">
-					<h4 class="chart-title">
-						{{data.chartTitle}} - Pending
-					</h4>
-					<div id="extract-pending" class="morris-inverse" style="height: 260px;"></div>
-				</div>
-			</div>
-			<div class="panel panel-danger scrollableContainer col-md-2 p-t-0 p-r-0" style="height: 320px;">
-				<div class="panel-heading">
+			
+			<div class="panel panel-danger scrollableContainer p-t-0 " style="height: {{data.viewpanel===2 ? 320 : 50}}px;">
+				<div class="panel-heading" ng-click="changePanel(2)">
 					<div class="panel-heading-btn">
 
 					</div>
-					<h4 class="panel-title">Pending By Date</h4>
+					<h4 class="panel-title">Pending By Schedule and Company<i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': data.viewpanel===2, 'glyphicon-chevron-right': data.viewpanel!==2}"></i></h4>
 				</div>
-				<div class="panel-body p-0 scrollArea">
+				<div class="panel-body p-0 scrollArea" ng-show="data.viewpanel===2">
+					<div id="jstree-default2">
+						<ul>
+							<li data-jstree='{"opened":false}' ng-repeat="item4 in data.filteredPendingExtractsBySchedule">
+								{{item4.scheduleText}}
+								<ul>
+									<li data-jstree='{"opened":false}' ng-repeat="item5 in item4.details">
+										{{item5.depositDate | date:'MM/dd/yyyy'}}
+										<ul>
+											<li ng-repeat="item6 in item5.details">
+												{{item6.companyName}} - {{item6.amount | currency}}
+											</li>
+										</ul>
+
+
+									</li>
+
+								</ul>
+						</ul>
+
+
+
+						</li>
+
+						</ul>
+					</div>
+
+				</div>
+			</div>
+			<div class="panel panel-danger scrollableContainer p-t-0 " style="height: {{data.viewpanel===3 ? 320 : 50}}px;">
+				<div class="panel-heading" ng-click="changePanel(3)">
+					<div class="panel-heading-btn">
+
+					</div>
+					<h4 class="panel-title">Delayed By Schedule and Company<i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': data.viewpanel===3, 'glyphicon-chevron-right': data.viewpanel!==3}"></i></h4>
+				</div>
+				<div class="panel-body p-0 scrollArea" ng-show="data.viewpanel===3">
 					<div id="jstree-default">
 						<ul>
-							<li data-jstree='{"opened":false}' ng-repeat="item2 in data.filteredPendingExtractsByDate">
-								{{item2.depositDate | date:'MM/dd/yyyy'}}
+							<li data-jstree='{"opened":false}' ng-repeat="item7 in data.filteredDelayedExtractsBySchedule">
+								{{item7.scheduleText}}
 								<ul>
-									<li ng-repeat="item3 in item2.details">
-										{{item3.companyName}} - {{item3.amount | currency}}
+									<li data-jstree='{"opened":false}' ng-repeat="item8 in item7.details">
+										{{item8.depositDate | date:'MM/dd/yyyy'}}
+										<ul>
+											<li ng-repeat="item9 in item8.details">
+												{{item9.companyName}} - {{item9.amount | currency}}
+											</li>
+										</ul>
+
 
 									</li>
 
 								</ul>
-							</li>
+						</ul>
+
+
+
+						</li>
 
 						</ul>
 					</div>
 
 				</div>
 			</div>
-			<div class="panel panel-danger scrollableContainer col-md-2 p-t-0 p-l-0" style="height: 320px;">
-				<div class="panel-heading">
-					<div class="panel-heading-btn">
 
-					</div>
-					<h4 class="panel-title">Pending By Company</h4>
-				</div>
-				<div class="panel-body p-0 scrollArea">
-					<div id="jstree-default1">
-						<ul>
-							<li data-jstree='{"opened":false}' ng-repeat="item in data.filteredPendingExtractsByCompany">
-								{{item.companyName}}
-								<ul>
-									<li ng-repeat="item1 in item.details">
-										{{item1.depositDate | date:'MM/dd/yyyy'}} - {{item1.amount | currency}}
 
-									</li>
 
-								</ul>
-							</li>
-
-						</ul>
-					</div>
-
-				</div>
-			</div>
-			
 
 		</div>
 	

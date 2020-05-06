@@ -44,7 +44,7 @@ namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
 		public bool IsFiler1095 { get; set; }
 		public string ControlId { get; set; }
 		public DateTime? LastPayrollDate { get; set; }
-		public decimal MinWage { get; set; }
+		public decimal? MinWage { get; set; }
 		public bool IsHostCompany { get; set; }
 		public string Memo { get; set; }
 		public string ClientNo { get; set; }
@@ -58,6 +58,8 @@ namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
 		public string PayrollMessage { get; set; }
 		public string Contact { get; set; }
 		public bool HasLocations { get; set; }
+
+		public bool IsRestaurant { get; set; }
 
 		public List<CompanyTaxRate> CompanyTaxRates { get; set; }
 
@@ -74,6 +76,7 @@ namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
 		public List<CompanyAccumlatedPayType> CompanyAccumlatedPayTypes { get; set; }
 
 		public List<CompanyPayCode> CompanyPayCodes { get; set; }
+		public List<CompanyRenewal> CompanyRenewals { get; set; }
 
 		public InsuranceGroup InsuranceGroup { get; set; }
 
@@ -113,7 +116,7 @@ namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
 		public string EIN { get; set; }
 		public string Pin { get; set; }
         public string UIAccountNumber { get; set; }
-
+		public int DepositSchedule { get; set; }
     }
 	public class CompanyContract
 	{
@@ -141,7 +144,10 @@ namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
 		public decimal? FloorPerCheck { get; set; }
 		public bool ApplyInvoiceCredit { get; set; }
 		public DeductionType DeductionType { get; set; }
-        public decimal EmployeeWithheld { get; set; }
+
+		public DateTime? StartDate { get; set; }
+		public DateTime? EndDate { get; set; }
+		public decimal EmployeeWithheld { get; set; }
         public decimal EmployerWithheld { get; set; }
     }
 	
@@ -182,6 +188,7 @@ namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
 		public bool IsEmployeeSpecific { get; set; }
 		public PayType PayType { get; set; }
 		public int Option { get; set; }
+		public string Name { get; set; }
 	}
 	
 	public class PayType
@@ -192,7 +199,8 @@ namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
 		public string Description { get; set; }
 		public bool IsTaxable { get; set; }
 		public bool IsAccumulable { get; set; }
-
+		public bool IsTip { get; set; }
+		public bool PaidInCash { get; set; }
 	}
 	public class InsuranceGroup
 	{
@@ -203,7 +211,17 @@ namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
 
 		
 	}
-
+	public class CompanyRenewal
+	{
+		public int Id { get; set; }
+		public Guid CompanyId { get; set; }
+		public string Description { get; set; }
+		public int Month { get; set; }
+		public int Day { get; set; }
+		public int ReminderDays { get; set; }
+		public DateTime? LastRenewed { get; set; }
+		public string LastRenewedBy { get; set; }
+	}
 	
 	public class CompanyPayCode
 	{
@@ -212,7 +230,8 @@ namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
 		public string Code { get; set; }
 		public string Description { get; set; }
 		public decimal HourlyRate { get; set; }
-
+		public int RateType { get; set; }
+		
 	}
 	public class CompanyRecurringCharge
 	{

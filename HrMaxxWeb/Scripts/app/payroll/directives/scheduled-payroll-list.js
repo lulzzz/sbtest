@@ -241,7 +241,24 @@ common.directive('scheduledPayrollList', ['zionAPI', '$timeout', '$window', 'ver
 						
 						$scope.data.isBodyOpen = true;
 					}
-					
+					$scope.deletePayroll = function (event, schedule) {
+						event.stopPropagation();
+						$scope.cancel();
+						$scope.mainData.confirmDialog('This schedule will be deleted.', 'danger', function () {
+							payrollRepository.deleteSchedulePayroll(schedule).then(function (data) {
+								if (data) {
+									$scope.list.splice($scope.list.indexOf(schedule), 1);
+									$scope.tableParams.reload();
+									$scope.fillTableData($scope.tableParams);
+									
+								}
+							}, function (erorr) {
+								$scope.mainData.handleError('error: ', erorr, 'danger');
+							});
+						}
+						);
+
+					}
 					$scope.save = function (item, checks) {
 						$scope.selected.data = item;
 						$scope.selected.scheduleStartDate = item.startDate;
@@ -262,7 +279,7 @@ common.directive('scheduledPayrollList', ['zionAPI', '$timeout', '$window', 'ver
 								
 							}, function (error) {
 								$scope.set($scope.selected);
-								$scope.mainData.showMessage('error saving scheduled payroll', 'danger');
+								$scope.mainData.handleError('', error, 'danger');
 							});
 						}, function () {
 							$scope.set(item);

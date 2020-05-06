@@ -95,6 +95,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 				dbCompany.CompanyCheckPrintOrder = dbMappedCompany.CompanyCheckPrintOrder;
 				dbCompany.City = dbMappedCompany.City;
 				dbCompany.ControlId = dbMappedCompany.ControlId;
+				dbCompany.IsRestaurant = dbMappedCompany.IsRestaurant;
 			}
 			_dbContext.SaveChanges();
 			if (!ignoreEinCheck)
@@ -154,6 +155,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 				dbState.EIN = existingState.EIN;
 				dbState.Pin = existingState.Pin;
                 dbState.UIAccountNumber = existingState.UIAccountNumber;
+				dbState.DepositSchedule = existingState.DepositSchedule;
 			}
 
 			_dbContext.SaveChanges();
@@ -217,6 +219,8 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 					dbdeduction.AnnualMax = mappeddeduction.AnnualMax;
 					dbdeduction.FloorPerCheck = mappeddeduction.FloorPerCheck;
 					dbdeduction.ApplyInvoiceCredit = mappeddeduction.ApplyInvoiceCredit;
+					dbdeduction.StartDate = mappeddeduction.StartDate;
+					dbdeduction.EndDate = mappeddeduction.EndDate;
 				}
 			}
 			_dbContext.SaveChanges();
@@ -260,13 +264,14 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 		public AccumulatedPayType SaveAccumulatedPayType(AccumulatedPayType mappedAccPayType)
 		{
 			var mappedwc = _mapper.Map<AccumulatedPayType, Models.DataModel.CompanyAccumlatedPayType>(mappedAccPayType);
-			if (mappedwc.Id == 0 && !_dbContext.CompanyAccumlatedPayTypes.Any(cat=>cat.CompanyId==mappedwc.CompanyId && cat.PayTypeId==mappedwc.PayTypeId))
+			if (mappedwc.Id == 0 )
 			{
-				_dbContext.CompanyAccumlatedPayTypes.Add(mappedwc);
+				var re =_dbContext.CompanyAccumlatedPayTypes.Add(mappedwc);
+				mappedwc.Id = re.Id;
 			}
 			else
 			{
-				var wc = _dbContext.CompanyAccumlatedPayTypes.FirstOrDefault(cd => cd.Id == mappedwc.Id || (cd.CompanyId==mappedwc.CompanyId && cd.PayTypeId==mappedwc.PayTypeId));
+				var wc = _dbContext.CompanyAccumlatedPayTypes.FirstOrDefault(cd => cd.Id == mappedwc.Id );
 				if (wc != null)
 				{
 					wc.RatePerHour = mappedwc.RatePerHour;
@@ -276,10 +281,12 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 					wc.IsLumpSum = mappedwc.IsLumpSum;
 					wc.IsEmployeeSpecific = mappedwc.IsEmployeeSpecific;
 					wc.Option = mappedwc.Option;
+					wc.Name = mappedwc.Name;
 				}
 			}
 			_dbContext.SaveChanges();
 			var ret = _mapper.Map<Models.DataModel.CompanyAccumlatedPayType, AccumulatedPayType>(mappedwc);
+			
 			ret.PayType = mappedAccPayType.PayType;
 			return ret;
 		}
@@ -299,10 +306,35 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 					wc.Code = mappedpc.Code;
 					wc.Description = mappedpc.Description;
 					wc.HourlyRate = mappedpc.HourlyRate;
+					wc.RateType = mappedpc.RateType;
+				
 				}
 			}
 			_dbContext.SaveChanges();
 			return _mapper.Map<Models.DataModel.CompanyPayCode, CompanyPayCode>(mappedpc);
+		}
+
+		public Models.CompanyRenewal SaveRenewal(Models.CompanyRenewal renewal)
+		{
+			var mappedpc = _mapper.Map<Models.CompanyRenewal, Models.DataModel.CompanyRenewal>(renewal);
+			if (mappedpc.Id == 0)
+			{
+				_dbContext.CompanyRenewals.Add(mappedpc);
+			}
+			else
+			{
+				var wc = _dbContext.CompanyRenewals.FirstOrDefault(cd => cd.Id == mappedpc.Id);
+				if (wc != null)
+				{
+					
+					wc.Description = mappedpc.Description;
+					wc.Month = mappedpc.Month;
+					wc.Day = mappedpc.Day;
+					wc.ReminderDays = mappedpc.ReminderDays;
+				}
+			}
+			_dbContext.SaveChanges();
+			return _mapper.Map<Models.DataModel.CompanyRenewal, Models.CompanyRenewal>(mappedpc);
 		}
 
 		public List<VendorCustomer> GetVendorCustomers(Guid? companyId, bool isVendor)
@@ -458,6 +490,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 				dbEmployee.HireDate = me.HireDate; 
 				dbEmployee.SickLeaveHireDate = me.SickLeaveHireDate;
 				dbEmployee.CarryOver = me.CarryOver;
+				dbEmployee.SickLeaveCashPaidHours = me.SickLeaveCashPaidHours;
 				dbEmployee.Gender = me.Gender;
 				dbEmployee.EmployeeNo = me.EmployeeNo;
 				dbEmployee.Memo = me.Memo;
@@ -486,6 +519,8 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 				dbEmployee.StatusId = me.StatusId;
 				dbEmployee.PayTypeAccruals = me.PayTypeAccruals;
 				dbEmployee.ClockId = me.ClockId;
+				dbEmployee.IsTipped = me.IsTipped;
+				dbEmployee.TerminationDate = me.TerminationDate;
 
 				var removeCounter = 0;
 				for (removeCounter = 0; removeCounter < dbEmployee.EmployeeBankAccounts.Count; removeCounter++)
@@ -566,6 +601,8 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 					dbdeduction.Priority = mappeddeduction.Priority;
 					dbdeduction.CeilingMethod = mappeddeduction.CeilingMethod;
                     dbdeduction.Note = mappeddeduction.Note;
+					dbdeduction.StartDate = mappeddeduction.StartDate;
+					dbdeduction.EndDate = mappeddeduction.EndDate;
 				}
 			}
 			_dbContext.SaveChanges();
@@ -672,31 +709,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 			return _mapper.Map<List<Models.DataModel.Company>, List<Models.Company>>(companies.ToList());
 		}
 
-		public void UpdateMinWage(decimal minWage, List<Employee> selectEmployees, List<Company> selectedCompanies)
-		{
-			var companies = _dbContext.Companies.ToList();
-			companies.ForEach(c =>
-			{
-				var comp = selectedCompanies.FirstOrDefault(c1 => c1.Id == c.Id);
-				if (comp != null)
-				{
-					c.MinWage = 10;
-				}
-			});
-			_dbContext.Employees.ToList().ForEach(e1 =>
-			{
-				var e = selectEmployees.FirstOrDefault(e2 => e2.Id == e1.Id);
-				if (e != null)
-				{
-					e1.Rate = 10;
-					e1.PayCodes = JsonConvert.SerializeObject(e.PayCodes);
-				}
-				
-			});
-			
-			_dbContext.SaveChanges();
-		}
-
+		
 		public void CopyEmployees(Guid sourceCompanyId, Guid targetCompanyId, List<Guid> employeeIds, string user, bool keepEmployeeNumbers)
 		{
 			using (var con = new SqlConnection(_sqlCon))
@@ -789,6 +802,24 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 			using (var conn = GetConnection())
 			{
 				conn.Execute(sql, new {CompanyId = id, PayrollSchedule = (int) payrollSchedule});
+			}
+		}
+		public void UpdateEmployeePayCodes(List<Employee> employees)
+		{
+			const string sql = "update Employee set PayCodes=@PayCodes where Id=@Id";
+			var mapped = Mapper.Map<List<Employee>, List<Models.DataModel.Employee>>(employees);
+			using (var conn = GetConnection())
+			{
+				conn.Execute(sql, mapped);
+			}
+		}
+
+		public void SaveRenewalDate(Guid companyId, int renewalId, string fullName)
+		{
+			const string sql = "update CompanyRenewal set LastRenewed=getdate() , LastRenewedBy=@User where Id=@Id";
+			using (var conn = GetConnection())
+			{
+				conn.Execute(sql, new { Id=renewalId, User=fullName});
 			}
 		}
 	}

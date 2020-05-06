@@ -10,6 +10,7 @@
         </div>
         
         <div class="panel-body">
+            <div class="col-sm-12 visible-print" ng-show="mainData.selectedCompany && mainData.selectedCompany.id && mainData.showCompanies"><h5><em><u>{{mainData.selectedCompany.name}}</u></em></h5></div>
             <div class="row hidden-print">
                 <report-filter filter="mainData.reportFilter" callback="getReport()" show-history="true" show-include-clients="showincludeclients" show-include-tax-delayed="showIncludeTaxDelayed" />
             </div>
@@ -21,14 +22,14 @@
             </div>
             <div class="col-sm-8 col-sm-offset-2 hidden-print" ng-show="data.response.companyAccumulations && data.response.companyAccumulations.deductions.length>0">
                 <table class="table table-responsive">
-                    
+
                     <tr>
                         <th>Description</th>
                         <th>Definition</th>
                         <th class="text-right">Employee Withheld</th>
                         <th class="text-right">Employer Withheld</th>
                     </tr>
-                    
+
                     <tbody>
                         <tr ng-repeat="ded in data.response.companyAccumulations.deductions | orderBy:'companyDeduction.description'" ng-class="{'success' : (selected && ded.companyDeductionId===selected.companyDeductionId)}">
                             <td>{{ded.companyDeduction.description}}</td>
@@ -58,12 +59,12 @@
                             </tr>
 
                             <tbody>
-                            <tr >
-                                <td>{{selected.companyDeduction.description}}</td>
-                                <td>{{selected.companyDeduction.deductionType.name}}</td>
-                                <td class="text-right">{{selected.ytd | currency:'$'}}</td>
-                                <td class="text-right">{{selected.ytdEmployer | currency:'$'}}</td>
-                            </tr>
+                                <tr>
+                                    <td>{{selected.companyDeduction.description}}</td>
+                                    <td>{{selected.companyDeduction.deductionType.name}}</td>
+                                    <td class="text-right">{{selected.ytd | currency:'$'}}</td>
+                                    <td class="text-right">{{selected.ytdEmployer | currency:'$'}}</td>
+                                </tr>
                             </tbody>
                         </table>
                     </div>
@@ -106,24 +107,24 @@
 
                     <table class="table  table-responsive">
                         <thead>
-                        <tr>
-                            <th colspan="7" class="text-center text-bold">
-                                Pay Checks Details for {{selectedEmployee.fullName}} with {{selected.companyDeduction.description + ' - ' + selected.companyDeduction.type.name}}
-                            </th>
-                        </tr>
-                        <tr>
-                            <th>Pay Day</th>
-                            <th class="text-right">Employee Withheld</th>
-                            <th class="text-right">Employer Withheld</th>
-                        </tr>
+                            <tr>
+                                <th colspan="7" class="text-center text-bold">
+                                    Pay Checks Details for {{selectedEmployee.fullName}} with {{selected.companyDeduction.description + ' - ' + selected.companyDeduction.type.name}}
+                                </th>
+                            </tr>
+                            <tr>
+                                <th>Pay Day</th>
+                                <th class="text-right">Employee Withheld</th>
+                                <th class="text-right">Employer Withheld</th>
+                            </tr>
                         </thead>
                         <tbody>
-                        <tr ng-repeat="pc in employeePayChecks">
-                            <td>{{pc.payDay | date:'MM/dd/yyyy'}}</td>
-                            <td class="text-right">{{pc.employeeWithheld | currency:'$'}}</td>
-                            <td class="text-right">{{pc.employerWithheld | currency:'$'}}</td>
+                            <tr ng-repeat="pc in employeePayChecks">
+                                <td>{{pc.payDay | date:'MM/dd/yyyy'}}</td>
+                                <td class="text-right">{{pc.employeeWithheld | currency:'$'}}</td>
+                                <td class="text-right">{{pc.employerWithheld | currency:'$'}}</td>
 
-                        </tr>
+                            </tr>
                         </tbody>
                     </table>
                 </div>

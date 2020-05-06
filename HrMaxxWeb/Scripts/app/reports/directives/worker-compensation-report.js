@@ -1,7 +1,7 @@
 ﻿'use strict';
 
-common.directive('workerCompensationReport', ['zionAPI', '$timeout', '$window', 'version',
-	function (zionAPI, $timeout, $window, version) {
+common.directive('workerCompensationReport', ['zionAPI', '$timeout', '$window', 'version', '$uibModal',
+	function (zionAPI, $timeout, $window, version, $modal) {
 		return {
 			restrict: 'E',
 			replace: true,
@@ -71,7 +71,23 @@ common.directive('workerCompensationReport', ['zionAPI', '$timeout', '$window', 
                     $scope.viewDetails = function (empAccumulation) {
                         $scope.selectedEmployee = empAccumulation;
                         $scope.employeePayChecks = $filter('filter')($scope.selected.payChecks, { employeeId: empAccumulation.employeeId });
-
+						var modalInstance = $modal.open({
+							templateUrl: 'popover/wcdetails.html',
+							controller: 'workerCompDetailsCtrl',
+							size: 'sm',
+							windowClass: 'my-modal-popup',
+							resolve: {
+								selectedEmployee: function () {
+									return $scope.selectedEmployee;
+								},
+								employeePayChecks: function () {
+									return $scope.employeePayChecks;
+								},
+								selected: function () {
+									return $scope.selected;
+								}
+							}
+						});
 
                     }
                     $scope.print = function () {

@@ -43,7 +43,8 @@ namespace HrMaxx.Common.Services.Security
 				mail.IsBodyHtml = true;
 				mail.Subject = message.Subject;
 				mail.Body = message.Body;
-				client.Send(mail);
+                if(Convert.ToInt32(ConfigurationManager.AppSettings["EmailServiceSwitch"])==1)
+				    client.Send(mail);
 				await Task.FromResult(0);
 
 			}

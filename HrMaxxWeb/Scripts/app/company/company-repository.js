@@ -183,6 +183,16 @@ common.factory('companyRepository', [
 
 				return deferred.promise;
 			},
+			saveRenewalDate: function (input) {
+				var deferred = $q.defer();
+				companyServer.all('Renewal').post(input).then(function (data) {
+					deferred.resolve(data);
+				}, function (error) {
+					deferred.reject(error);
+				});
+
+				return deferred.promise;
+			},
 			getVendorCustomers: function (companyId, isVendor) {
 				var deferred = $q.defer();
 				if (companyId) {
@@ -295,6 +305,16 @@ common.factory('companyRepository', [
 			saveTaxRates: function (rates) {
 				var deferred = $q.defer();
 				companyServer.all('SaveTaxRates').post(rates).then(function (data) {
+					deferred.resolve(data);
+				}, function (error) {
+					deferred.reject(error);
+				});
+
+				return deferred.promise;
+			},
+			saveRenewalDone: function (companyId, renewalId) {
+				var deferred = $q.defer();
+				companyServer.one('SaveRenewalDate').one(companyId, renewalId).get().then(function (data) {
 					deferred.resolve(data);
 				}, function (error) {
 					deferred.reject(error);

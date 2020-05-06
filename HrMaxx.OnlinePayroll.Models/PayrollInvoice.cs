@@ -61,8 +61,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public decimal DDPay { get; set; }
 		public decimal NetPay { get; set; }
 
-		public Guid? SalesRep { get; set; }
-		public decimal Commission { get; set; }
+		public List<PayrollInvoiceCommission> Commissions { get; set; }
 		public bool CommissionClaimed { get; set; }
 		public bool TaxesDelayed { get; set; }
 
@@ -82,6 +81,7 @@ namespace HrMaxx.OnlinePayroll.Models
 			EmployeeTaxes = new List<PayrollTax>();
 			MiscCharges = new List<MiscFee>();
 			InvoicePayments = new List<InvoicePayment>();
+			Commissions = new List<PayrollInvoiceCommission>();
 			Deductions = new List<PayrollDeduction>();
 			PayChecks = new List<int>();
 			VoidedCreditedChecks = new List<int>();
@@ -136,20 +136,25 @@ namespace HrMaxx.OnlinePayroll.Models
 
 		public void CalculateCommission()
 		{
-			SalesRep = CompanyInvoiceSetup.SalesRep != null ? CompanyInvoiceSetup.SalesRep.User.UserId : default(Guid?);
-			if (CompanyInvoiceSetup.SalesRep != null)
+			var commission = (decimal)0;
+			if (CompanyInvoiceSetup.SalesReps!=null && CompanyInvoiceSetup.SalesReps.Any())
 			{
-				if (CompanyInvoiceSetup.SalesRep.Method == DeductionMethod.Amount)
-					Commission = CompanyInvoiceSetup.SalesRep.Rate;
-				else
+				CompanyInvoiceSetup.SalesReps.ForEach(SalesRep =>
 				{
-					Commission = Math.Round(AdminFee * CompanyInvoiceSetup.SalesRep.Rate / 100, 2, MidpointRounding.AwayFromZero);
-				}
+					if (SalesRep.Method == DeductionMethod.Amount)
+						commission = SalesRep.Rate;
+					else
+					{
+						commission = Math.Round(AdminFee * SalesRep.Rate / 100, 2, MidpointRounding.AwayFromZero);
+					}
+					Commissions.Add(new PayrollInvoiceCommission
+					{
+						Id = 0, InvoiceId = Id, Amount=commission, SalesRep = SalesRep.User.UserId
+					});
+					
+				});
 			}
-			else
-			{
-				Commission = 0;
-			}
+			
 		}
 
 		private void ApplyWCMinWage()
@@ -492,7 +497,13 @@ namespace HrMaxx.OnlinePayroll.Models
 		public decimal OriginalAmount { get; set; }
 
 	}
-
+	public class PayrollInvoiceCommission
+	{
+		public int Id { get; set; }
+		public Guid InvoiceId { get; set; }
+		public Guid SalesRep { get; set; }
+		public decimal Amount { get; set; }
+	}
 	public class PayrollInvoiceMiscCharges
 	{
 		public Guid Id { get; set; }

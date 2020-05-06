@@ -23,6 +23,7 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
         public string EIN { get; set; }
         public string Pin { get; set; }
         public string UIAccountNumber { get; set; }
+        public Nullable<int> DepositSchedule { get; set; }
     
         public virtual Company Company { get; set; }
     }

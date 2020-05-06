@@ -1,20 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Data.Entity.Core.Metadata.Edm;
 using System.Linq;
+using System.Xml.Serialization;
 using HrMaxx.Infrastructure.Mapping;
+using HrMaxx.Infrastructure.Repository;
 using HrMaxx.OnlinePayroll.Models;
 using HrMaxx.OnlinePayroll.Models.DataModel;
 using Newtonsoft.Json;
 
 namespace HrMaxx.OnlinePayroll.Repository.Host
 {
-	public class HostRepository : IHostRepository
+	public class HostRepository : BaseDapperRepository, IHostRepository
 	{
 		private readonly OnlinePayrollEntities _dbContext;
 		private readonly IMapper _mapper;
 		private string _domain;
-		public HostRepository(IMapper mapper, OnlinePayrollEntities dbContext, string domain)
+		public HostRepository(IMapper mapper, OnlinePayrollEntities dbContext, string domain, DbConnection connection):base(connection)
 		{
 			_dbContext = dbContext;
 			_mapper = mapper;
@@ -23,18 +26,52 @@ namespace HrMaxx.OnlinePayroll.Repository.Host
 
 		public IList<Models.Host> GetHostList(Guid host)
 		{
-			var hosts = _dbContext.Hosts.AsQueryable();
+			//var hosts = _dbContext.Hosts.AsQueryable();
+			var sql = $"select *," +
+				$"(select CompanyJson.*, case when exists(select 'x' from company where parentid = CompanyJson.Id) then 1 else 0 end HasLocations," +
+				$"(select *, (select * from DeductionType where Id = CompanyDeduction.TypeId for Xml path('DeductionType'), elements, type) from(select * from CompanyDeduction left outer join DeductionCompanyWithheld on Id = CompanyDeductionId where CompanyId = CompanyJson.Id) CompanyDeduction for xml auto, elements, type) CompanyDeductions," +
+				$"(select * from CompanyWorkerCompensation Where CompanyId = CompanyJson.Id for Xml auto, elements, type) CompanyWorkerCompensations," +
+				$"(select *, (select * from PayType Where Id = CompanyAccumlatedPayType.PayTypeId for xml path('PayType'), elements, type) from CompanyAccumlatedPayType Where CompanyId = CompanyJson.Id for xml auto, elements, type) CompanyAccumlatedPayTypes, " +
+				$"(select * from CompanyContract Where CompanyId = CompanyJson.Id for xml path('CompanyContract'), elements, type), " +
+				$"(select * from CompanyRecurringCharge Where CompanyId = CompanyJson.Id for xml auto, elements, type) RecurringCharges, " +
+				$"(select *, (select * from Tax where Id = CompanyTaxRate.TaxId for xml path('Tax'), elements, type) from CompanyTaxRate Where CompanyId = CompanyJson.Id for xml auto, elements, type) CompanyTaxRates, " +
+				$"(select * from CompanyTaxState Where CompanyId = CompanyJson.Id for xml auto, elements, type) CompanyTaxStates, " +
+				$"(select * from CompanyPayCode Where CompanyId = CompanyJson.Id for xml auto, elements, type) CompanyPayCodes," +
+				$"(select * from CompanyRenewal Where CompanyId = CompanyJson.Id for xml auto, elements, type) CompanyRenewals,	" +
+				$"(select * from Company Where ParentId = CompanyJson.Id for xml path('CompanyJson'), elements, type) Locations, " +
+				$"(select * from InsuranceGroup Where Id = CompanyJson.InsuranceGroupNo for xml auto, elements, type), " +
+				$"(select top(1) TargetObject from EntityRelation Where SourceEntityTypeId = 2 and SourceEntityId = CompanyJson.Id and TargetEntityTypeId = 4 order by EntityRelation.EntityRelationId desc) Contact " +
+				$"From Company CompanyJson		where CompanyJson.Id = Host.CompanyId for Xml path('Company'), elements, type)	" +
+				$"from Host for xml auto, elements, type, root('HostList')";
+			var hosts = QueryXmlList<List<Models.JsonDataModel.Host>>(sql, rootAttribute: new XmlRootAttribute("HostList"));
 			if (host != Guid.Empty)
-				hosts = hosts.Where(h => h.Id == host);
-			return _mapper.Map<List<Models.DataModel.Host>, List<Models.Host>>(hosts.ToList());
+				hosts = hosts.Where(h => h.Id == host).ToList();
+			return _mapper.Map<List<Models.JsonDataModel.Host>, List<Models.Host>>(hosts);
 		}
 
 		public Models.Host GetHost(Guid cpaId)
 		{
-			var cpa = _dbContext.Hosts.FirstOrDefault(c => c.Id.Equals(cpaId));
-			if(cpa==null)
+			//var cpa = _dbContext.Hosts.FirstOrDefault(c => c.Id.Equals(cpaId));
+			var sql = $"select *," +
+				$"(select CompanyJson.*, case when exists(select 'x' from company where parentid = CompanyJson.Id) then 1 else 0 end HasLocations," +
+				$"(select *, (select * from DeductionType where Id = CompanyDeduction.TypeId for Xml path('DeductionType'), elements, type) from(select * from CompanyDeduction left outer join DeductionCompanyWithheld on Id = CompanyDeductionId where CompanyId = CompanyJson.Id) CompanyDeduction for xml auto, elements, type) CompanyDeductions," +
+				$"(select * from CompanyWorkerCompensation Where CompanyId = CompanyJson.Id for Xml auto, elements, type) CompanyWorkerCompensations," +
+				$"(select *, (select * from PayType Where Id = CompanyAccumlatedPayType.PayTypeId for xml path('PayType'), elements, type) from CompanyAccumlatedPayType Where CompanyId = CompanyJson.Id for xml auto, elements, type) CompanyAccumlatedPayTypes, " +
+				$"(select * from CompanyContract Where CompanyId = CompanyJson.Id for xml path('CompanyContract'), elements, type), " +
+				$"(select * from CompanyRecurringCharge Where CompanyId = CompanyJson.Id for xml auto, elements, type) RecurringCharges, " +
+				$"(select *, (select * from Tax where Id = CompanyTaxRate.TaxId for xml path('Tax'), elements, type) from CompanyTaxRate Where CompanyId = CompanyJson.Id for xml auto, elements, type) CompanyTaxRates, " +
+				$"(select * from CompanyTaxState Where CompanyId = CompanyJson.Id for xml auto, elements, type) CompanyTaxStates, " +
+				$"(select * from CompanyPayCode Where CompanyId = CompanyJson.Id for xml auto, elements, type) CompanyPayCodes," +
+				$"(select * from CompanyRenewal Where CompanyId = CompanyJson.Id for xml auto, elements, type) CompanyRenewals,	" +
+				$"(select * from Company Where ParentId = CompanyJson.Id for xml path('CompanyJson'), elements, type) Locations, " +
+				$"(select * from InsuranceGroup Where Id = CompanyJson.InsuranceGroupNo for xml auto, elements, type), " +
+				$"(select top(1) TargetObject from EntityRelation Where SourceEntityTypeId = 2 and SourceEntityId = CompanyJson.Id and TargetEntityTypeId = 4 order by EntityRelation.EntityRelationId desc) Contact " +
+				$"From Company CompanyJson		where CompanyJson.Id = Host.CompanyId for Xml path('Company'), elements, type)	" +
+				$"from Host where Id=@Id for xml auto, elements, type, root('HostList')";
+			var hosts = QueryXmlList<List<Models.JsonDataModel.Host>>(sql, new { Id=cpaId}, rootAttribute: new XmlRootAttribute("HostList"));
+			if (hosts==null || !hosts.Any())
 				return new Models.Host();
-			return _mapper.Map<Models.DataModel.Host, Models.Host>(cpa);
+			return _mapper.Map<Models.JsonDataModel.Host, Models.Host>(hosts.First());
 		}
 
 		public Models.Host Save(Models.Host cpa)
@@ -120,7 +157,8 @@ namespace HrMaxx.OnlinePayroll.Repository.Host
 
 		public Models.Host GetHostById(int hostId)
 		{
-			var cpa = _dbContext.Hosts.FirstOrDefault(c => c.HostIntId.Equals(hostId));
+			//var cpa = _dbContext.Hosts.FirstOrDefault(c => c.HostIntId.Equals(hostId));
+			var cpa = QueryObject<Models.DataModel.Host>("select * from Host where HostIntId=@HostIntId", new { HostIntId=hostId});
 			if (cpa == null)
 				return new Models.Host();
 			return _mapper.Map<Models.DataModel.Host, Models.Host>(cpa);

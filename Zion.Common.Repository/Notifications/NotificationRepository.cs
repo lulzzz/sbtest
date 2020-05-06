@@ -4,15 +4,19 @@ using System.Linq;
 using HrMaxx.Common.Models.Dtos;
 using HrMaxx.Infrastructure.Mapping;
 using HrMaxx.Common.Models.DataModel;
+using HrMaxx.Infrastructure.Repository;
+using System.Data.Common;
+using Dapper;
 
 namespace HrMaxx.Common.Repository.Notifications
 {
-	public class NotificationRepository : INotificationRepository
+	public class NotificationRepository : BaseDapperRepository, INotificationRepository
 	{
 		private readonly CommonEntities _dbContext;
 		private readonly IMapper _mapper;
 		
-		public NotificationRepository(IMapper mapper, CommonEntities commonEntities)
+
+		public NotificationRepository(IMapper mapper, CommonEntities commonEntities, DbConnection connection) : base(connection)
 		{
 			_mapper = mapper;
 			_dbContext = commonEntities;
@@ -21,49 +25,59 @@ namespace HrMaxx.Common.Repository.Notifications
 
 		public List<NotificationDto> GetNotifications(string LoginId)
 		{
-			DateTime sevenDaysBefore = DateTime.Now.AddDays(-7);
-			List<Notification> userNotifications = _dbContext.Notifications
-				.Where(notifications => notifications.LoginId.Equals(LoginId)
-																&& notifications.IsVisible
-				                        && (notifications.IsRead == false || notifications.CreatedOn >= sevenDaysBefore)
-				)
-				.OrderByDescending(notification => notification.CreatedOn).ToList();
-			return _mapper.Map<List<Notification>, List<NotificationDto>>(userNotifications);
+			DateTime sevenDaysBefore = DateTime.Now.AddDays(-7).Date;
+			const string sql = "select * from Notifications where LoginId=@LoginId and IsVisible=1 and (IsRead=0 or CreatedOn>=@Date) order by CreatedOn desc";
+			var result = Query<Notification>(sql, new { LoginId = LoginId, Date = sevenDaysBefore });
+			return _mapper.Map<List<Notification>, List<NotificationDto>>(result.ToList());
+			
 		}
 
 		public void CreateNotifications(List<NotificationDto> notificationList)
 		{
 			var newNotifications =
 				_mapper.Map<List<NotificationDto>, List<Notification>>(notificationList);
-			foreach (var notification in newNotifications)
+			const string sql = "insert into Notifications (NotificationId, Type, Text, MetaData, LoginId, IsRead, CreatedOn, IsVisible) values(@NotificationId, @Type, @Text, @MetaData, @LoginId, @IsRead, @CreatedOn, 1)";
+			using (var conn = GetConnection())
 			{
-				notification.IsVisible = true;
-				_dbContext.Notifications.Add(notification);
+				conn.Execute(sql, notificationList);
 			}
-			_dbContext.SaveChanges();
+			//foreach (var notification in newNotifications)
+			//{
+			//	notification.IsVisible = true;
+			//	_dbContext.Notifications.Add(notification);
+			//}
+			//_dbContext.SaveChanges();
 		}
 
 		public void NotificationRead(Guid notificationId)
 		{
-			var selectedNotification =
-				_dbContext.Notifications.FirstOrDefault(notification => notification.NotificationId.Equals(notificationId));
-			if (selectedNotification != null) selectedNotification.IsRead = true;
-			_dbContext.SaveChanges();
+			using (var conn = GetConnection())
+			{
+				const string sql = "update Notifications set IsRead=1 where NotificationId=@NotificationId";
+				conn.Execute(sql, new { NotificationId = notificationId });
+			}
+			
 		}
 
 		public void ClearAllNotiifications(string userId)
 		{
-			var notifications = _dbContext.Notifications.Where(n => n.LoginId == userId).ToList();
-			notifications.ForEach(n=>n.IsVisible=false);
-			_dbContext.SaveChanges();
+			using(var conn = GetConnection())
+			{
+				const string sql = "update Notifications set IsVisible=0 where LoginId=@LoginId";
+				conn.Execute(sql, new { LoginId = userId });
+			}
+			
 		}
 
 		public void DeleteOldNotifications()
 		{
-			DateTime sevenDaysBefore = DateTime.Now.AddDays(-7);
-			var notifications = _dbContext.Notifications.Where(n => n.CreatedOn <= sevenDaysBefore.Date);
-			_dbContext.Notifications.RemoveRange(notifications);
-			_dbContext.SaveChanges();
+			using (var conn = GetConnection())
+			{
+				DateTime sevenDaysBefore = DateTime.Now.AddDays(-7).Date;
+				const string sql = "delete from Notifications where CreatedOn<=@Date";
+				conn.Execute(sql, new { Date = sevenDaysBefore });
+			}
+			
 		}
 	}
 }

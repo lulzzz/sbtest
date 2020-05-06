@@ -1,13 +1,14 @@
 ﻿'use strict';
 
-common.directive('company', ['zionAPI', '$timeout', '$window', 'version',
-	function (zionAPI, $timeout, $window, version) {
+common.directive('company', ['$uibModal', 'zionAPI', '$timeout', '$window', 'version',
+	function ($modal, zionAPI, $timeout, $window, version) {
 		return {
 			restrict: 'E',
 			replace: true,
 			scope: {
 				mainData: "=mainData",
 				selectedCompany: "=company",
+				companyMetaData: "=companyMetaData",
 				isPopup: "=isPopup",
 				showControls: "=showControls"
 			},
@@ -17,7 +18,8 @@ common.directive('company', ['zionAPI', '$timeout', '$window', 'version',
 				function ($scope, $rootScope, $element, $location, $filter, companyRepository, EntityTypes, ClaimTypes) {
 					var dataSvc = {
 						sourceTypeId: EntityTypes.Company,
-						companyMetaData: null,
+						companyMetaData: $scope.companyMetaData,
+						availableStates: [],
 						viewVersions: $scope.mainData.hasClaim(ClaimTypes.CompanyVersions, 1),
 						viewContract: $scope.mainData.hasClaim(ClaimTypes.CompanyContract, 1),
 						enablePayrollDaysInPast: $scope.mainData.hasClaim(ClaimTypes.CompanyPayrollDaysinPast, 1),
@@ -25,7 +27,7 @@ common.directive('company', ['zionAPI', '$timeout', '$window', 'version',
 					}
 
 					$scope.data = dataSvc;
-					
+					$scope.hostCompany = $filter('filter')($scope.mainData.hostCompanies, { isHostCompany: true })[0];
 					$scope.isFileUnderHostDisabled = function () {
 						if ($scope.mainData.selectedHost.isPeoHost || ($scope.selectedCompany.lastPayrollDate && moment($scope.selectedCompany.lastPayrollDate).year() === moment().year()))
 							return true;
@@ -34,7 +36,15 @@ common.directive('company', ['zionAPI', '$timeout', '$window', 'version',
 						}
 					}
 
-
+					$scope.getApplicableMinimumWage = function () {
+						var minWage = $filter('filter')(dataSvc.companyMetaData.minWages, { stateId: null, year: (new Date()).getFullYear() })[0];
+						$.each($scope.selectedCompany.states, function (i, st) {
+							var matching = $filter('filter')(dataSvc.companyMetaData.minWages, { stateId: st.state.stateId, year: (new Date()).getFullYear() })[0];
+							if (matching && matching.minWage < minWage.minWage)
+								minWage = matching;
+						});
+						return minWage.minWage;
+					}
 					$scope.cancel = function () {
 						if (!$scope.isPopup)
 							$scope.$parent.$parent.cancel();
@@ -56,23 +66,9 @@ common.directive('company', ['zionAPI', '$timeout', '$window', 'version',
 							$scope.selectedCompany.taxFilingName = $scope.selectedCompany.name;
 						}
 					}
-					$scope.availableStates = function () {
-						var states = [];
-						if (dataSvc.companyMetaData) {
-							$.each(dataSvc.companyMetaData.countries[0].states, function (index, state1) {
-								if (state1.taxesEnabled) {
-									var statematch = $filter('filter')($scope.selectedCompany.states, { state: { stateId: state1.stateId } });
-									if (statematch.length === 0) {
-										states.push(state1);
-									}
-								}
-								
-							});
-						}
-
-						return states;
-					}
+					
 					$scope.addState = function () {
+						
 						var st = {
 							state: {},
 							stateEin: '',
@@ -89,7 +85,29 @@ common.directive('company', ['zionAPI', '$timeout', '$window', 'version',
 					$scope.removeState = function (state) {
 						$scope.selectedCompany.states.splice($scope.selectedCompany.states.indexOf(state), 1);
 					}
+					$scope.greaterThan = function (val) {
+						return function (item) {
+							return item.role.roleId > val;
+						}
+					}
+					$scope.availableStates = function () {
+						var states = [];
+						if (dataSvc.companyMetaData) {
+							$.each(dataSvc.companyMetaData.countries[0].states, function (index, state1) {
+								if (state1.taxesEnabled) {
+									var statematch = $filter('filter')($scope.selectedCompany.states, { state: { stateId: state1.stateId } });
+									var hostcompanymatch = $scope.hostCompany ? $filter('filter')($scope.hostCompany.companyTaxStates, { state: { stateId: state1.stateId } }) : [];
+									if (statematch.length === 0 && (($scope.selectedCompany.fileUnderHost && hostcompanymatch.length===1) || !$scope.selectedCompany.fileUnderHost)) {
+										
+										states.push(state1);
+									}
+								}
+								
+							});
+						}
 
+						return states;
+					}
 					$scope.isStateAvailable = function () {
 						var stateAvailable = false;
 						$.each(dataSvc.companyMetaData.countries[0].states, function (index, state1) {
@@ -181,8 +199,10 @@ common.directive('company', ['zionAPI', '$timeout', '$window', 'version',
 						}
 					}
 					var validateStep2 = function () {
+						
 						var c = $scope.selectedCompany;
-						if (c.payrollDaysInPast === null || !c.minWage || c.minWage < 10)
+						
+						if (c.payrollDaysInPast === null || (c.minWage && c.minWage < $scope.getApplicableMinimumWage()))
 							return false;
 						else
 							return true;
@@ -364,22 +384,7 @@ common.directive('company', ['zionAPI', '$timeout', '$window', 'version',
 							var errors = $('.parsley-error');
 							return false;
 						}
-							
-						//if ($scope.selectedCompany.contract.billingOption !== 3)
-						//	$scope.selectedCompany.contract.invoiceSetup = null;
-						//if ($scope.selectedCompany.contract.billingOption === 0 || $scope.selectedCompany.contract.billingOption === 3) {
-						//	$scope.selectedCompany.contract.creditCardDetails = null;
-						//	$scope.selectedCompany.contract.bankDetails = null;
-						//}
-						//else if ($scope.selectedCompany.contract.billingOption === 1) {
-						//	$scope.selectedCompany.contract.bankDetails = null;
-						//} else {
-						//	$scope.selectedCompany.contract.creditCardDetails = null;
-						//	if ($scope.selectedCompany.contract.bankDetails) {
-						//		$scope.selectedCompany.contract.bankDetails.sourceTypeId = $scope.sourceTypeId;
-						//		$scope.selectedCompany.contract.bankDetails.sourceId = $scope.selectedCompany.id;
-						//	}
-						//}
+												
 						if ($scope.selectedCompany.contract.bankDetails) {
 							$scope.selectedCompany.contract.bankDetails.sourceTypeId = $scope.sourceTypeId;
 							$scope.selectedCompany.contract.bankDetails.sourceId = $scope.selectedCompany.id;
@@ -414,7 +419,7 @@ common.directive('company', ['zionAPI', '$timeout', '$window', 'version',
 							confirmMessage = "This company is under a PEO Host. Are you sure you want to change the invoice setup?";
 						}
 						if (confirmMessage) {
-							$scope.$parent.$parent.$parent.$parent.confirmDialog(confirmMessage, 'info', function () {
+							$scope.mainData.confirmDialog(confirmMessage, 'warning', function () {
 								saveCompany();
 							});
 						} else {
@@ -428,7 +433,7 @@ common.directive('company', ['zionAPI', '$timeout', '$window', 'version',
 
 							if (!$scope.isPopup) {
 								$scope.$parent.$parent.save(result);
-								$scope.tab = 2;
+								
 							} else {
 								$scope.$parent.save(result);
 							}
@@ -437,8 +442,11 @@ common.directive('company', ['zionAPI', '$timeout', '$window', 'version',
 							$scope.mainData.handleError('Error is saving company: ' , error, 'danger');
 						});
 					}
+					
 					var ready = function () {
-						
+						////$scope.selectedCompany.insuranceGroup = dataSvc.companyMetaData.insuranceGroups.length > 0 ? dataSvc.companyMetaData.insuranceGroups[0] : null;
+						////$scope.selectedCompany.insuranceGroupNo = dataSvc.companyMetaData.insuranceGroups.length > 0 ? dataSvc.companyMetaData.insuranceGroups[0].id : null;
+						////$scope.selectedCompany.insuranceClientNo = '0';
 						if ($scope.selectedCompany.contract.billingOption === 3 && !$scope.selectedCompany.contract.invoiceSetup) {
 							$scope.selectedCompany.contract.invoiceSetup = {
 								invoiceType: 1,
@@ -463,21 +471,25 @@ common.directive('company', ['zionAPI', '$timeout', '$window', 'version',
 										if (ui.index == 0) {
 											// step-1 validation
 											if (false === $('form[name="form-wizard"]').parsley().validate('wizard-step-1') || false === validateStep1()) {
+												
 												return false;
 											}
 										} else if (ui.index == 1) {
 											// step-2 validation
 											if (false === $('form[name="form-wizard"]').parsley().validate('wizard-step-2') || false === validateStep2()) {
+												
 												return false;
 											}
 										} else if (ui.index == 2) {
 											// step-3 validation
 											if (false === $('form[name="form-wizard"]').parsley().validate('wizard-step-3') || false === validateStep3()) {
+												
 												return false;
 											}
 										} else if (ui.index == 3) {
 											// step-3 validation
 											if (false === $('form[name="form-wizard"]').parsley().validate('wizard-step-4') || false === validateStep4()) {
+												
 												return false;
 											}
 										} else
@@ -498,28 +510,52 @@ common.directive('company', ['zionAPI', '$timeout', '$window', 'version',
 					
 					$scope.addSalesRep = function () {
 
-						$scope.selectedCompany.contract.invoiceSetup.salesRep = {
+						var salesRep = {
 							user: null,
 							method: 1,
 							rate: 25
 						};
+						$scope.selectedCompany.contract.invoiceSetup.salesReps.push(salesRep);
 					}
-					
+					$scope.removeSalesRep = function (index) {
+						$scope.selectedCompany.contract.invoiceSetup.salesReps.splice(index, 1);
+					}
+					$scope.showMinWages = function ($event) {
+						$event.stopPropagation();
+						var modalInstance = $modal.open({
+							templateUrl: 'popover/minwages.html',
+							controller: 'minWagesCtrl',
+							size: 'sm',
+							windowClass: 'my-modal-popup',
+							resolve: {
+								minWages: function () {
+									return dataSvc.companyMetaData.minWages;
+								},
+								company: function() {
+									return $scope.selectedCompany;
+								}
+							}
+						});
+					}
 					var init = function () {
 						if ($scope.selectedCompany.contract.contractOption === 2 && $scope.selectedCompany.contract.billingOption===3)
 							$scope.selectedCompany.contract.invoiceSetup.adminFeeThreshold = $scope.selectedCompany.contract.invoiceSetup.adminFeeThreshold ? $scope.selectedCompany.contract.invoiceSetup.adminFeeThreshold : 35;
 						$scope.original = angular.copy($scope.selectedCompany);
-						companyRepository.getCompanyMetaData().then(function (data) {
-							dataSvc.companyMetaData = data;
-							if (!$scope.selectedCompany.id) {
-								$scope.selectedCompany.insuranceGroup = dataSvc.companyMetaData.insuranceGroups.length > 0 ? dataSvc.companyMetaData.insuranceGroups[0] : null;
-								$scope.selectedCompany.insuranceGroupNo= dataSvc.companyMetaData.insuranceGroups.length > 0 ? dataSvc.companyMetaData.insuranceGroups[0].id : null;
-								$scope.selectedCompany.insuranceClientNo = '0';
-							}
+						if (!dataSvc.companyMetaData) {
+							companyRepository.getCompanyMetaData().then(function (data) {
+								dataSvc.companyMetaData = data;
+								if (!$scope.selectedCompany.id) {
+									$scope.selectedCompany.insuranceGroup = dataSvc.companyMetaData.insuranceGroups.length > 0 ? dataSvc.companyMetaData.insuranceGroups[0] : null;
+									$scope.selectedCompany.insuranceGroupNo = dataSvc.companyMetaData.insuranceGroups.length > 0 ? dataSvc.companyMetaData.insuranceGroups[0].id : null;
+									$scope.selectedCompany.insuranceClientNo = '0';
+								}
+								ready();
+							}, function (error) {
+								$scope.mainData.showMessage('error getting company meta data', 'danger');
+							});
+						}
+						else
 							ready();
-						}, function (error) {
-							$scope.mainData.showMessage('error getting company meta data', 'danger');
-						});
                         
 					}
 					init();

@@ -36,5 +36,8 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 		void UpdateUserRoleVersion(string id, int roleVersion);
 		void RefreshPEOMaxCheckNumber();
 		void EnsureTaxTablesForPayDay(int year);
-	}
+		List<MinWageYearRow> GetMinWageTable();
+		MinWageYearRow GetTippedMinimumWage(int stateId, int year);
+        void UpdateTaxDeductionPrecedence(List<PreTaxDeduction> precedence);
+    }
 }

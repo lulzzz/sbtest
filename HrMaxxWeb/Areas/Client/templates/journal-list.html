@@ -1,6 +1,6 @@
 ﻿<div class="row">
 	<!-- begin panel -->
-	<div class="panel panel-inverse" data-sortable-id="form-stuff-4" ng-if="mainData.selectedCompany">
+	<div class="panel panel-inverse hidden-print" data-sortable-id="form-stuff-4" ng-if="mainData.selectedCompany">
 		<div class="panel-heading" ng-click="data.isBodyOpen=!data.isBodyOpen">
 			<h4 class="panel-title">Checkbook<i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': data.isBodyOpen, 'glyphicon-chevron-right': !data.isBodyOpen}"></i>
 				<i class="pull-right glyphicon glyphicon-refresh" ng-click="refresh()"></i></h4>
@@ -56,6 +56,7 @@
 						<button class="btn btn-sm btn-info pull-right m-5" ng-click="add(3, false)">Record a Deposit</button>
 						<button class="btn btn-sm btn-info pull-right m-5" ng-click="add(2, true)">Record an EFT</button>
 						<button class="btn btn-sm btn-info pull-right m-5" ng-click="add(2, false)">Write a Check</button>
+						<button class="btn btn-sm btn-info pull-right m-5" ng-click="add(8, false)">Customer Invoice</button>
 
 
 					</div>
@@ -139,46 +140,51 @@
 						</div>
 						<div class="col-sm-2 pull-right">
 							<button class="btn btn-sm btn-success" ng-show="!selected.isVoid" ng-click="markPrinted(selected)"><i class="fa fa-print m-r-5"></i> print</button>
-							<button class="btn btn-sm btn-default" ng-click="cancel()"><i class="fa fa-remove m-r-5"></i> Cancel</button>
+							<button class="btn btn-sm btn-default" ng-click="cancel()"><i class="fa fa-undo m-r-5"></i> Cancel</button>
 						</div>
 
 
 					</div>
-					<paycheck check-id="selected.payrollPayCheckId" main-data="mainData"/>
+					<paycheck check-id="selected.payrollPayCheckId" main-data="mainData" />
 					<div class="col-sm-12 pull-right">
-						<button class="btn btn-sm btn-default" ng-click="cancel()"><i class="fa fa-remove m-r-5"></i> Cancel</button>
+						<button class="btn btn-sm btn-default" ng-click="cancel()"><i class="fa fa-undo m-r-5"></i> Cancel</button>
 					</div>
 				</div>
 
 			</div>
 			<div class="panel panel-info" ng-if="selected && selected.transactionType===2">
 				<div class="panel-body tab-content">
-					<regular-check item="selected" datasvc="data" company="mainData.selectedCompany" show-controls="true" />
+					<regular-check item="selected" datasvc="data" company="mainData.selectedCompany" show-controls="true" main-data="mainData" />
 
 				</div>
 
 			</div>
 			<div class="panel panel-info" ng-if="selected && (selected.transactionType===5 || selected.transactionType===6)">
 				<div class="panel-body tab-content">
-					<tax-payment item="selected" datasvc="data" company="mainData.selectedCompany" show-controls="true" />
+					<tax-payment item="selected" datasvc="data" company="mainData.selectedCompany" show-controls="true" main-data="mainData" />
 
 				</div>
 
 			</div>
 			<div class="panel panel-info" ng-if="selected && (selected.transactionType===3 || selected.transactionType===7)">
 				<div class="panel-body tab-content">
-					<deposit-ticket item="selected" datasvc="data" company="mainData.selectedCompany" show-controls="true" />
+					<deposit-ticket item="selected" datasvc="data" company="mainData.selectedCompany" show-controls="true" main-data="mainData" />
 				</div>
 
 			</div>
 			<div class="panel panel-info" ng-if="selected && selected.transactionType===4">
 				<div class="panel-body tab-content">
-					<account-adjustment item="selected" datasvc="data" company="mainData.selectedCompany" show-controls="true" />
+					<account-adjustment item="selected" datasvc="data" company="mainData.selectedCompany" show-controls="true" main-data="mainData" />
 				</div>
 
 			</div>
+			<div class="panel panel-info" ng-if="selected && selected.transactionType===8">
+				<div class="panel-body tab-content">
+					<customer-invoice item="selected" datasvc="data" company="mainData.selectedCompany" show-controls="true" main-data="mainData" />
+				</div>
+			</div>
 		</div>
-		<div class="col-sm-2" ng-if="selected.id" ng-show="mainData.userRole==='SuperUser' || mainData.userRole==='Master'">
+		<div class="col-sm-2 hidden-print" ng-if="selected.id" ng-show="mainData.userRole==='SuperUser' || mainData.userRole==='Master'">
 			<memento-list main-data="mainData" source-type-id="selected.entityType1" memento-id="selected.mementoId" heading="'Check Versions'" data="data" />
 		</div>
 		

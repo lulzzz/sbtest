@@ -20,6 +20,7 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
             this.InvoicePayments = new HashSet<InvoicePayment>();
             this.PayrollPayChecks = new HashSet<PayrollPayCheck>();
             this.CommissionExtracts = new HashSet<CommissionExtract>();
+            this.PayrollInvoiceCommissions = new HashSet<PayrollInvoiceCommission>();
         }
     
         public System.Guid Id { get; set; }
@@ -62,8 +63,6 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
         public decimal NetPay { get; set; }
         public decimal CheckPay { get; set; }
         public decimal DDPay { get; set; }
-        public Nullable<System.Guid> SalesRep { get; set; }
-        public Nullable<decimal> Commission { get; set; }
         public Nullable<bool> TaxesDelayed { get; set; }
         public string SpecialRequest { get; set; }
     
@@ -75,5 +74,7 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
         public virtual ICollection<PayrollPayCheck> PayrollPayChecks { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<CommissionExtract> CommissionExtracts { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<PayrollInvoiceCommission> PayrollInvoiceCommissions { get; set; }
     }
 }

@@ -97,14 +97,14 @@ namespace HrMaxx.OnlinePayroll.Services.ScheduledJobs
 			try
 			{
 				const string query = "select * from ScheduledPayroll;";
-				var scheduledPayrolls = _readerService.GetQueryData<ScheduledPayrollJson, SchedulePayroll>(query).Where(sp => DateTime.Today == GetPayrollNextRunDate(sp)).ToList();
+				var scheduledPayrolls = _readerService.GetQueryData<ScheduledPayrollJson, SchedulePayroll>(query).Where(sp => GetPayrollNextRunDate(sp)).ToList();
 				Log.Info($"Starting Running Scheduled Payrolls - {scheduledPayrolls.Count}");
 				scheduledPayrolls.ForEach(sp =>
 				{
 					
 					var payroll = sp.Data;
-					payroll.PayDay = DateTime.Today;
-					payroll.TaxPayDay = DateTime.Today;
+					payroll.PayDay = sp.NextPayrollDate;
+					payroll.TaxPayDay = sp.NextPayrollDate;
 					if (sp.LastPayrollDate.HasValue)
 					{
 						var lastPayroll = _readerService.GetPayroll(sp.LastPayrollId.Value);
@@ -147,13 +147,16 @@ namespace HrMaxx.OnlinePayroll.Services.ScheduledJobs
 			}
 		}
 
-		private DateTime GetPayrollNextRunDate(SchedulePayroll sp)
+		private bool GetPayrollNextRunDate(SchedulePayroll sp)
 		{
-			if (!sp.LastPayrollDate.HasValue)
-				return sp.PayDateStart.Date;
-			int days = sp.PaySchedule == PayrollSchedule.Weekly ? 7 : sp.PaySchedule == PayrollSchedule.BiWeekly ? 14 : sp.PaySchedule == PayrollSchedule.SemiMonthly ? 15 : 30;
-			return sp.PaySchedule == PayrollSchedule.Monthly ? sp.LastPayrollDate.Value.Date.AddMonths(1).Date : sp.LastPayrollDate.Value.Date.AddDays(days).Date;
+			var nextPayDay = sp.NextPayrollDate;
+			
+			if (sp.Data.PayChecks.Any(pc => pc.PaymentMethod == EmployeePaymentMethod.ProfitStars))
+			{
+				nextPayDay = _achService.GetProfitStarsMinRunDate(sp.NextPayrollDate);
 
+			}
+			return nextPayDay.Date==DateTime.Today.Date;
 
 		}
 		public void FillACHData()

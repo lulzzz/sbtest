@@ -190,7 +190,7 @@ html {
     height: 100%;
 }
 body {
-    background: #f4f6f7;
+    background: #d9e0e7;
     font-size: 12px;
     font-family: 'Open Sans', "Helvetica Neue",Helvetica,Arial,sans-serif;
     color: #707478;
@@ -275,22 +275,32 @@ label {
 
 
 /* 2.2 Page Loader */
-
 #page-loader {
     position: fixed;
     top: 0;
     left: 0;
     bottom: 0;
     right: 0;
-    background: #E6E8EC;
-    z-index: 9999;
+    background-color: rgba(255,255,255,0.7);
+    z-index: 9999
 }
-#page-loader.fade {
-    display: none;
-}
-#page-loader.fade.in {
-    display: block;
-}
+
+    #page-loader.fade {
+        display: none
+    }
+
+        #page-loader.fade.in,
+        #page-loader.fade.show {
+            display: block
+        }
+
+        #page-loader.fade.d-none .spinner {
+            -webkit-animation: none;
+            -moz-animation: none;
+            -ms-animation: none;
+            -o-animation: none;
+            animation: none
+        }
 @-webkit-keyframes rotation {
    from {-webkit-transform: rotate(0deg);}
    to {-webkit-transform: rotate(359deg);}
@@ -307,18 +317,42 @@ label {
    from {transform: rotate(0deg);}
    to {transform: rotate(359deg);}
 }
-.spinner, 
-.spinner-small {
-    height: 40px;
-    width: 40px;
-    margin: 0px auto;
+.spinner {
+    height: 36px;
+    width: 36px;
+    margin: 0 auto;
     position: absolute;
     top: 50%;
     left: 50%;
-    margin: -20px 0 0 -20px;
-    border: 2px solid #fff;
-    border-top: 2px solid #24B498;
-    border-radius: 100%;
+    margin: -18px 0 0 -18px;
+    border: 2px solid rgba(45, 53, 60, .85);
+    border-top: 2px solid #fff;
+    -webkit-border-radius: 36px;
+    border-radius: 36px;
+    -webkit-animation: rotation .6s infinite linear;
+    -moz-animation: rotation .6s infinite linear;
+    -ms-animation: rotation .6s infinite linear;
+    -o-animation: rotation .6s infinite linear;
+    animation: rotation .6s infinite linear
+}
+
+.spinner-small {
+    height: 28px;
+    width: 28px;
+    margin: 0 auto;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin: -15px 0 0 -15px;
+    border: 2px solid rgba(45, 53, 60, .85);
+    border-top: 2px solid #fff;
+    -webkit-border-radius: 30px;
+    border-radius: 30px;
+    -webkit-animation: rotation .6s infinite linear;
+    -moz-animation: rotation .6s infinite linear;
+    -ms-animation: rotation .6s infinite linear;
+    -o-animation: rotation .6s infinite linear;
+    animation: rotation .6s infinite linear
 }
 .fade.in .spinner, 
 .fade.in .spinner-small {
@@ -1176,6 +1210,10 @@ legend {
 .alert.alert-warning {
     background: #ffead0;
 }
+    .alert.alert-inverse {
+        background: #242a30;
+        color: #fff;
+    }
 
 
 /* 3.5 Component - Note Setting */
@@ -3760,6 +3798,11 @@ body .fc button:active {
 }
 .widget-stats .stats-number {
     font-size: 24px;
+    font-weight: 300;
+    margin-bottom: 10px;
+}
+.widget-stats .stats-number2 {
+    font-size: 16px;
     font-weight: 300;
     margin-bottom: 10px;
 }

@@ -219,6 +219,18 @@ common.directive('payroll', ['$uibModal', 'zionAPI', '$timeout', '$window', 'ver
 							}
 						}
 					}
+					var getApplicableMinimumWage = function (companyMinWage, employeeState) {
+						
+						var federal = $filter('filter')($scope.datasvc.minWages, { stateId: null, year: moment($scope.item.payDay).year() })[0];
+						$.each($scope.datasvc.minWages, function (i, st) {
+							var matching = $filter('filter')($scope.datasvc.minWages, { stateId: employeeState.state.stateId, year: moment($scope.item.payDay).year() })[0];
+							if (matching && matching.minWage > federal.minWage)
+								federal = matching;
+						});
+						if (companyMinWage)
+							federal.minWage = companyMinWage;
+						return federal;
+					}
 					$scope.isPayCheckInvalid = function (pc) {
 						var original = $filter('filter')($scope.originals, { employee: { id: pc.employee.id } })[0];
 						var orignalcopy = angular.copy(original);
@@ -239,16 +251,21 @@ common.directive('payroll', ['$uibModal', 'zionAPI', '$timeout', '$window', 'ver
 							return pc.hasError = false ;
 						}
 						pc.hasWarning = false;
+						var minWageRow = getApplicableMinimumWage($scope.company.minWage, pc.employee.state);
 						$.each(pc.payCodes, function (index1, paycode) {
 							paycode.hours = calculateHours(paycode.screenHours);
 							paycode.overtimeHours = calculateHours(paycode.screenOvertime);
 							payCodeSum += (paycode.hours + paycode.overtimeHours);
-							if (paycode.payCode.id >= 0 && paycode.payCode.hourlyRate < $scope.company.minWage && (paycode.hours > 0 || paycode.overtimeHours > 0)) {
-								if (paycode.payCode.hourlyRate <= 0) {
-									pwAmount = 0;
-									return;
+							if (paycode.payCode.id >= 0 && (paycode.hours > 0 || paycode.overtimeHours > 0)) {
+								if ((!pc.employee.isTipped && (paycode.payCode.rateType < 2 && paycode.payCode.hourlyRate < minWageRow.minWage) || ((paycode.payCode.rateType === 2 && (pc.employee.rate * paycode.payCode.hourlyRate < minWageRow.minWage))))
+									|| (pc.employee.isTipped && (paycode.payCode.rateType < 2 && paycode.payCode.hourlyRate < minWageRow.tippedMinWage) || ((paycode.payCode.rateType === 2 && (pc.employee.rate * paycode.payCode.hourlyRate < minWageRow.tippedMinWage))))
+									) {
+									if (paycode.payCode.hourlyRate <= 0) {
+										pwAmount = 0;
+										return;
+									}
+									pc.hasWarning = true;
 								}
-								pc.hasWarning = true;
 							}
 							if (paycode.payCode.id === -1 && ((paycode.pwAmount <= 0 && (paycode.hours > 0 || paycode.overtimeHours > 0)) || (paycode.pwAmount > 0 && paycode.hours <= 0 && paycode.overtimeHours <= 0))) {
 								payCodeSum = pwAmount = 0;
@@ -275,7 +292,7 @@ common.directive('payroll', ['$uibModal', 'zionAPI', '$timeout', '$window', 'ver
 						var modalInstance = $modal.open({
 							templateUrl: 'popover/updatecomps1.html',
 							controller: 'updateCompsCtrl',
-							size: 'md',
+							size: 'sm',
 							windowClass: 'my-modal-popup',
 							resolve: {
 								paycheck: function() {
@@ -317,6 +334,12 @@ common.directive('payroll', ['$uibModal', 'zionAPI', '$timeout', '$window', 'ver
 								},
 								companyRepository: function() {
 									return companyRepository;
+								},
+								payday: function () {
+									return $scope.item.payDay;
+								},
+								mainData: function () {
+									return $scope.mainData;
 								}
 							}
 						});
@@ -346,8 +369,8 @@ common.directive('payroll', ['$uibModal', 'zionAPI', '$timeout', '$window', 'ver
 								}
 							}
 						});
-						modalInstance.result.then(function (paycheck, result) {
-							$scope.$parent.$parent.updateEmployeeList(paycheck.employee);
+						modalInstance.result.then(function (scope) {
+							$scope.$parent.$parent.updateEmployeeList(scope.result);
 							
 						}, function () {
 							return false;
@@ -359,8 +382,8 @@ common.directive('payroll', ['$uibModal', 'zionAPI', '$timeout', '$window', 'ver
 							controller: 'companyCtrl',
 							size: 'lg',
 							windowClass: 'my-modal-popup',
-							backdrop  : 'static',
-							keyboard: false,
+							backdrop  : true,
+							keyboard: true,
 							backdropClick: true,
 							resolve: {
 								invoice: function () {
@@ -495,7 +518,21 @@ common.directive('payroll', ['$uibModal', 'zionAPI', '$timeout', '$window', 'ver
 								$scope.mainData.showMessage('error getting timesheet import template', 'danger');
 						});
 					}
-					
+					$scope.$watch('item.payDay',
+						function (newValue, oldValue) {
+							if (newValue !== oldValue ) {
+								$scope.list = $scope.list.filter(function (pc) {
+									if (!pc.employee.terminationDate) return true;
+									else if (moment(pc.employee.terminationDate).startOf('day').toDate() < moment(newValue).startOf('day').toDate())
+										return false;
+									else
+										return true;
+								});
+								$scope.fillTableData($scope.tableParams);
+							}
+
+						}, true
+					);
 					var init = function () {
 						$scope.originals = angular.copy($scope.item.payChecks);
 						$scope.list = $scope.item.payChecks;
@@ -678,12 +715,14 @@ common.controller('updateJobCostCtrl', function ($scope, $uibModalInstance, $fil
 	_init();
 });
 
-common.controller('updateDedsCtrl', function ($scope, $uibModalInstance, $filter, paycheck, companydeductions, agencies, companyRepository) {
+common.controller('updateDedsCtrl', function ($scope, $uibModalInstance, $filter, paycheck, companydeductions, agencies, companyRepository, payday, mainData) {
 	$scope.original = paycheck;
 	$scope.paycheck = angular.copy(paycheck);
 	$scope.dedList = angular.copy(paycheck.deductions);
 	$scope.deductionList = companydeductions;
 	$scope.agencies = agencies;
+	$scope.payDay = moment(payday).startOf('day').toDate();
+	$scope.mainData = mainData;
 
 	$scope.isValid = function () {
 		var returnVal = true;
@@ -705,8 +744,7 @@ common.controller('updateDedsCtrl', function ($scope, $uibModalInstance, $filter
 			
 
 		}
-		else
-			return true;
+		return true;
 	}
 	$scope.cancel = function () {
 		$uibModalInstance.dismiss();
@@ -736,7 +774,9 @@ common.controller('updateDedsCtrl', function ($scope, $uibModalInstance, $filter
 			dd.employeeDeduction.limit = dd.limit;
 			dd.employeeDeduction.accountNo = dd.accountNo;
 			dd.employeeDeduction.agencyId = dd.agencyId;
-            dd.employeeDeduction.priority = dd.priority;
+			dd.employeeDeduction.priority = dd.priority;
+			dd.employeeDeduction.startDate = dd.startDate;
+			dd.employeeDeduction.endDate = dd.endDate;
             companyRepository.saveEmployeeDeduction(dd.employeeDeduction).then(function (deduction) {
                 dd.employeeDeduction.id = deduction.id;
                 
@@ -802,7 +842,7 @@ common.controller('employeeCtrl', function ($scope, $uibModalInstance, $filter, 
 		$scope.paycheck.deductions = [];
 		$.each(result.payCodes, function (index1, paycode) {
 			var pc = {
-				payCode: paycode,
+				payCode: angular.copy(paycode),
 				hours: 0,
 				overtimeHours: 0,
 				screenHours: 0,
@@ -820,8 +860,8 @@ common.controller('employeeCtrl', function ($scope, $uibModalInstance, $filter, 
 			}
 			$scope.paycheck.compensations.push(pt);
 		});
-		
-		$uibModalInstance.close($scope.paycheck, result);
+		$scope.result = result;
+		$uibModalInstance.close($scope);
 	};
 
 
@@ -916,7 +956,7 @@ common.controller('importTimesheetCtrl', function ($scope, $uibModalInstance, $f
 			payTypes: $scope.payTypes,
 			importMap: importMap
 		});
-		main.$parent.$parent.confirmDialog('this will try and import ' + ($scope.importMap.lastRow ? ($scope.importMap.lastRow - $scope.importMap.startingRow + 1) : 'maximum') + ' checks? do you want to proceed ?', 'warning', function () {
+		mainData.confirmDialog('this will try and import ' + ($scope.importMap.lastRow ? ($scope.importMap.lastRow - $scope.importMap.startingRow + 1) : 'maximum') + ' checks? do you want to proceed ?', 'warning', function () {
 			payrollRepository.importTimesheetsWithMap($scope.files[0]).then(function(timesheets) {
 				var counter = 0;
 				var messages = [];

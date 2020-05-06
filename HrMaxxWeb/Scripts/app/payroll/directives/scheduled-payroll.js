@@ -277,7 +277,7 @@ common.directive('scheduledPayroll', ['$uibModal', 'zionAPI', '$timeout', '$wind
 						var modalInstance = $modal.open({
 							templateUrl: 'popover/updatecomps1.html',
 							controller: 'updateCompsCtrl',
-							size: 'md',
+							size: 'sm',
 							windowClass: 'my-modal-popup',
 							resolve: {
 								paycheck: function() {
@@ -319,6 +319,12 @@ common.directive('scheduledPayroll', ['$uibModal', 'zionAPI', '$timeout', '$wind
 								},
 								companyRepository: function() {
 									return companyRepository;
+								},
+								payday: function () {
+									return $scope.item.payDay;
+								},
+								mainData: function () {
+									return $scope.mainData;
 								}
 							}
 						});
@@ -504,13 +510,7 @@ common.directive('scheduledPayroll', ['$uibModal', 'zionAPI', '$timeout', '$wind
 						//$scope.tableParams.reload();
 						$scope.fillTableData($scope.tableParams);
 						$scope.datasvc.isBodyOpen = false;
-						$scope.minPayDate = moment().startOf('day');
-						if ($scope.company.payrollDaysInPast > 0) {
-							$scope.minPayDate = moment().add($scope.company.payrollDaysInPast * -1, 'day').startOf('day').toDate();
-						}
-						//if (moment($scope.minPayDay) > $scope.minPayDate && $scope.mainData.userRole !== 'SuperUser' && $scope.mainData.userRole !== 'Master') {
-						//	$scope.minPayDate = moment($scope.minPayDay).startOf('day');
-						//}
+						$scope.minPayDate = moment().add(1, 'days').startOf('day');
 						
 					}
 					init();

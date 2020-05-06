@@ -1,7 +1,7 @@
 ﻿'use strict';
 
-common.directive('userDashboard', ['zionAPI', '$timeout', '$window', 'version', '$sce',
-	function (zionAPI, $timeout, $window, version, $sce) {
+common.directive('userDashboard', ['$uibModal','zionAPI', '$timeout', '$window', 'version', '$sce',
+	function ($modal, zionAPI, $timeout, $window, version, $sce) {
 		return {
 			restrict: 'E',
 			replace: true,
@@ -21,6 +21,8 @@ common.directive('userDashboard', ['zionAPI', '$timeout', '$window', 'version', 
 						payrollsWithoutInvoice: [],
 						payrollsWithDraftInvoice: [],
 						companiesWithoutPayroll: [],
+						renewals: [],
+						filteredRenewals: [],
 						filterApproachingPayroll: '',
 						clearanceData: [],
 						filteredClearanceData: [],
@@ -35,6 +37,9 @@ common.directive('userDashboard', ['zionAPI', '$timeout', '$window', 'version', 
 						viewPerformance: $scope.mainData.hasClaim(ClaimTypes.DashboardPerformance, 1),
 						viewClearance: $scope.mainData.hasClaim(ClaimTypes.DashboardAccountReceivable,1),
 					}
+					$scope.dueranges = [
+						{ id: 1, title: '0 - 15 days' }, { id: 2, title: '15 - 30 days' }, { id: 3, title: '30 - 60 days' }, {id:4, title: '60 - 90 days'}
+					];
 					$scope.invoiceStatusList = [];
 					$scope.selectedInvoice = null;
 					$scope.set = function (item) {
@@ -515,6 +520,13 @@ common.directive('userDashboard', ['zionAPI', '$timeout', '$window', 'version', 
 							console.log(error);
 						});
 					};
+					function mapAndJoin(reps) {
+						var result = '';
+						$.each(reps, function (i, m) {
+							result += m.User.FirstName + ' ' + m.User.LastName + ', ';
+						})
+						return result;
+					}
 					$scope.drawCompaniesWithoutPayrollChart = function () {
 						dataSvc.companiesWithoutPayroll = [];
 						reportRepository.getDashboardData('GetCompaniesWithoutPayroll', $scope.mainData.reportFilter.filterStartDate, $scope.mainData.reportFilter.filterEndDate, null, $scope.mainData.reportFilter.filter.onlyActive).then(function (data1) {
@@ -530,7 +542,7 @@ common.directive('userDashboard', ['zionAPI', '$timeout', '$window', 'version', 
 											companyId: ap[1],
 											host: ap[2],
 											company: ap[3],
-											salesRep: salesRepJson.SalesRep ? salesRepJson.SalesRep.User.FirstName + ' ' + salesRepJson.SalesRep.User.LastName : 'NA',
+											salesRep: salesRepJson.SalesReps ? mapAndJoin(salesRepJson.SalesReps) : 'NA',
 											due: ap[5]
 										});
 									}
@@ -560,7 +572,7 @@ common.directive('userDashboard', ['zionAPI', '$timeout', '$window', 'version', 
 											companyId: ap[1],
 											host: ap[2],
 											company: ap[3],
-											salesRep: salesRepJson.SalesRep ? salesRepJson.SalesRep.User.FirstName + ' ' + salesRepJson.SalesRep.User.LastName : 'NA',
+											salesRep: salesRepJson.SalesReps ? mapAndJoin(salesRepJson.SalesReps) : 'NA',
 											due: ap[5]
 										});
 									}
@@ -578,6 +590,41 @@ common.directive('userDashboard', ['zionAPI', '$timeout', '$window', 'version', 
 							console.log(error);
 						});
 						
+					};
+					$scope.drawCompaniesRenewal = function () {
+						reportRepository.getDashboardData('GetCompaniesRenewalData', $scope.mainData.reportFilter.filterStartDate, $scope.mainData.reportFilter.filterEndDate, null, $scope.mainData.reportFilter.filter.onlyActive).then(function (data1) {
+							var data = data1[0];
+							if (data) {
+								dataSvc.renewals = data.data;
+								var filteredRenewals = [];
+								$.each(dataSvc.renewals, function (ind, ap) {
+									if (ind > 0) {
+										var salesRepJson = ap[4] ? JSON.parse(ap[4]) : '';
+										filteredRenewals.push({
+											hostId: ap[0],
+											companyId: ap[1],
+											host: ap[2],
+											company: ap[3],
+											description: ap[5],
+											salesRep: salesRepJson.SalesReps ? mapAndJoin(salesRepJson.SalesReps) : 'NA',
+											due: ap[6],
+											dueRange: ap[7]
+										});
+									}
+
+								});
+
+								dataSvc.viewingChart = 6;
+								dataSvc.filteredRenewals = angular.copy(filteredRenewals);
+								$scope.tableParamsRenewals.reload();
+								$scope.fillTableDataRenewals($scope.tableParamsRenewals);
+
+							}
+
+						}, function (error) {
+							console.log(error);
+						});
+
 					};
 					$scope.selectedSchedules = [];
 				
@@ -696,6 +743,45 @@ common.directive('userDashboard', ['zionAPI', '$timeout', '$window', 'version', 
 							params.total(orderedData.length); // set total for recalc pagination
 						}
 					};
+					$scope.tableDataRenewals = [];
+					$scope.tableParamsRenewals = new ngTableParams({
+						page: 1,            // show first page
+						count: 10,
+
+						sorting: {
+							due: 'asc'     // initial sorting
+						}
+					},
+
+						{
+
+							total: $scope.filteredRenewals ? $scope.filteredRenewals.length : 0, // length of data
+							getData: function (params) {
+								$scope.fillTableDataRenewals(params);
+								return $scope.tableDataRenewals;
+							}
+						});
+					if ($scope.tableParamsRenewals.settings().$scope == null) {
+						$scope.tableParamsRenewals.settings().$scope = $scope;
+					}
+					$scope.fillTableDataRenewals = function (params) {
+
+						// use build-in angular filter
+						if (dataSvc.filteredRenewals && dataSvc.filteredRenewals.length > 0) {
+							var orderedData = params.filter() ?
+								$filter('filter')(dataSvc.filteredRenewals, params.filter()) :
+								dataSvc.filteredRenewals;
+
+							orderedData = params.sorting() ?
+								$filter('orderBy')(orderedData, params.orderBy()) :
+								orderedData;
+
+							$scope.tableParamsRenewals = params;
+							$scope.tableDataRenewals = orderedData;
+
+							params.total(orderedData.length); // set total for recalc pagination
+						}
+					};
 
 					$scope.tableDataCompanySchedule = [];
 					$scope.tableParamsCompanySchedules = new ngTableParams({
@@ -786,9 +872,34 @@ common.directive('userDashboard', ['zionAPI', '$timeout', '$window', 'version', 
 					}
 
 					$scope.viewPayrolls = function (host, company) {
+						
 						$scope.mainData.fromPayrollsWithoutInvoice = true;
-						$scope.$parent.$parent.setHostandCompany(host, company, "#!/Client/Payrolls#invoice");
+						$scope.$parent.$parent.setHostandCompany(host, company, null, function () {
+							var modalInstance = $modal.open({
+								templateUrl: 'popover/company.html',
+								controller: 'companyCtrl',
+								size: 'lg',
+								windowClass: 'my-modal-popup',
+								backdrop: true,
+								keyboard: true,
+								backdropClick: true,
+								resolve: {
+									invoice: function () {
+										return null;
+									},
+									mainData: function () {
+										return $scope.mainData;
+									}
+								}
+							})
+						});
+						
+						
+							
+						
+						
 					}
+					
 					$scope.listEmployeeAccess = [];
 					$scope.listEmployeeDocuments = [];
 					$scope.tableDataEmployeeView = [];

@@ -24,6 +24,7 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
         public bool IsEmployeeSpecific { get; set; }
         public int Option { get; set; }
         public Nullable<decimal> GlobalLimit { get; set; }
+        public string Name { get; set; }
     
         public virtual Company Company { get; set; }
         public virtual PayType PayType { get; set; }

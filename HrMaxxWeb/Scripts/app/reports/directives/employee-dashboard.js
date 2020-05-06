@@ -72,7 +72,7 @@ common.directive('employeeDashboard', ['zionAPI', '$timeout', '$window', 'versio
 						month[10] = "Nov";
 						month[11] = "Dec";
 
-						return month[x.getMonth()] + '-' + x.getYear();
+						return month[x.getMonth()] + '-' + x.getFullYear().toString().substr(2, 2);
 					};
 
                     $scope.scrollToSummary = function () {

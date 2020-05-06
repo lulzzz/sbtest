@@ -57,6 +57,15 @@ namespace HrMaxx.OnlinePayroll.Models
 			}
 			set { }
 		}
+		public string StateStr { get; set; }
+		public EmployeeState State
+		{
+			get
+			{
+				return !string.IsNullOrWhiteSpace(StateStr) ? JsonConvert.DeserializeObject<EmployeeState>(StateStr) : default(EmployeeState);
+			}
+			set { }
+		}
 
 		public string SSN { get; set; }
 		public string SSNVal { get { return !string.IsNullOrWhiteSpace(SSN) ? Crypto.Decrypt(SSN) : string.Empty; } set{} }
@@ -107,17 +116,26 @@ namespace HrMaxx.OnlinePayroll.Models
 		public bool HasCalifornia { get { return States != null && States.Any(s => s.CountryId == 1 && s.StateId == (int)Common.Models.Enum.States.California); } set { } }
         public bool HasTexas { get { return States != null && States.Any(s => s.CountryId == 1 && s.StateId == (int)Common.Models.Enum.States.Texas); } set { } }
         public bool HasHawaii { get { return States != null && States.Any(s => s.CountryId == 1 && s.StateId == (int)Common.Models.Enum.States.Hawaii); } set { } }
-        public decimal CaliforniaEmployeeTaxes { get { return Math.Round(Taxes.Where(t => t.Tax.StateId.HasValue && t.Tax.StateId.Value == (int)Common.Models.Enum.States.California && t.Tax.IsEmployeeTax).Sum(t => t.YTD), 2, MidpointRounding.AwayFromZero); } set { } }
+		public bool HasMontana { get { return States != null && States.Any(s => s.CountryId == 1 && s.StateId == (int)Common.Models.Enum.States.Montana); } set { } }
+		public decimal CaliforniaEmployeeTaxes { get { return Math.Round(Taxes.Where(t => t.Tax.StateId.HasValue && t.Tax.StateId.Value == (int)Common.Models.Enum.States.California && t.Tax.IsEmployeeTax).Sum(t => t.YTD), 2, MidpointRounding.AwayFromZero); } set { } }
 		public decimal CaliforniaEmployerTaxes { get { return Math.Round(Taxes.Where(t => t.Tax.StateId.HasValue && t.Tax.StateId.Value == (int)Common.Models.Enum.States.California && !t.Tax.IsEmployeeTax).Sum(t => t.YTD), 2, MidpointRounding.AwayFromZero); } set { } }
 		public decimal CaliforniaTaxes { get { return Math.Round(Taxes.Where(t => t.Tax.StateId.HasValue && t.Tax.StateId.Value == (int)Common.Models.Enum.States.California).Sum(t => t.YTD), 2, MidpointRounding.AwayFromZero); } set { } }
 
         public decimal HawaiiEmployeeTaxes { get { return Math.Round(Taxes.Where(t => t.Tax.StateId.HasValue && t.Tax.StateId.Value == (int)Common.Models.Enum.States.Hawaii && t.Tax.IsEmployeeTax).Sum(t => t.YTD), 2, MidpointRounding.AwayFromZero); } set { } }
         public decimal HawaiiEmployerTaxes { get { return Math.Round(Taxes.Where(t => t.Tax.StateId.HasValue && t.Tax.StateId.Value == (int)Common.Models.Enum.States.Hawaii && !t.Tax.IsEmployeeTax).Sum(t => t.YTD), 2, MidpointRounding.AwayFromZero); } set { } }
         public decimal HawaiiTaxes { get { return Math.Round(Taxes.Where(t => t.Tax.StateId.HasValue && t.Tax.StateId.Value == (int)Common.Models.Enum.States.Hawaii).Sum(t => t.YTD), 2, MidpointRounding.AwayFromZero); } set { } }
-        public decimal TexasTaxes { get { return Math.Round(Taxes.Where(t => t.Tax.StateId.HasValue && t.Tax.StateId.Value == (int)Common.Models.Enum.States.Texas).Sum(t => t.YTD), 2, MidpointRounding.AwayFromZero); } set { } }
+
+
+		public decimal MontanaEmployeeTaxes { get { return Math.Round(Taxes.Where(t => t.Tax.StateId.HasValue && t.Tax.StateId.Value == (int)Common.Models.Enum.States.Montana && t.Tax.IsEmployeeTax).Sum(t => t.YTD), 2, MidpointRounding.AwayFromZero); } set { } }
+		public decimal MontanaEmployerTaxes { get { return Math.Round(Taxes.Where(t => t.Tax.StateId.HasValue && t.Tax.StateId.Value == (int)Common.Models.Enum.States.Montana && !t.Tax.IsEmployeeTax).Sum(t => t.YTD), 2, MidpointRounding.AwayFromZero); } set { } }
+		public decimal MontanaTaxes { get { return Math.Round(Taxes.Where(t => t.Tax.StateId.HasValue && t.Tax.StateId.Value == (int)Common.Models.Enum.States.Montana).Sum(t => t.YTD), 2, MidpointRounding.AwayFromZero); } set { } }
+		public decimal TexasTaxes { get { return Math.Round(Taxes.Where(t => t.Tax.StateId.HasValue && t.Tax.StateId.Value == (int)Common.Models.Enum.States.Texas).Sum(t => t.YTD), 2, MidpointRounding.AwayFromZero); } set { } }
 
 		public decimal Overtime { get { return Math.Round(PayCodes.Sum(pc => pc.YTDOvertime), 2, MidpointRounding.AwayFromZero); } set { } }
 		public decimal Regular { get { return Math.Round(PayCodes.Sum(pc => pc.YTDAmount), 2, MidpointRounding.AwayFromZero); } set { } }
+		public decimal WCRegularPay { get { return Math.Round(WorkerCompensations.Sum(w => w.RegularPay), 2, MidpointRounding.AwayFromZero); } }
+		public decimal WCOverTimePay { get { return Math.Round(WorkerCompensations.Sum(w => w.OverTimePay), 2, MidpointRounding.AwayFromZero); } }
+		public decimal WCGrossPay { get { return Math.Round(WorkerCompensations.Sum(w => w.GrossPay), 2, MidpointRounding.AwayFromZero); } }
 		public decimal TotalCompensations { get { return Math.Round(Compensations.Sum(pc => pc.YTD), 2, MidpointRounding.AwayFromZero); } set { } }
 
 		public List<PayCheckTax> ApplicableTaxes
@@ -126,21 +144,23 @@ namespace HrMaxx.OnlinePayroll.Models
 			{
 				if (ExtractType == ExtractType.Federal940)
 					return Taxes.Where(t => t.Tax.Code.Equals("FUTA")).ToList();
-				if (ExtractType == ExtractType.Federal941)
+				else if (ExtractType == ExtractType.Federal941)
 					return Taxes.Where(t => !t.Tax.StateId.HasValue && !t.Tax.Code.Equals("FUTA")).ToList();
-				if (ExtractType == ExtractType.CAPITSDI)
+				else if (ExtractType == ExtractType.CAPITSDI)
 					return Taxes.Where(t => t.Tax.Code.Equals("SIT") || t.Tax.Code.Equals("SDI")).ToList();
-				if (ExtractType == ExtractType.CAETTUI)
+				else if (ExtractType == ExtractType.CAETTUI)
 					return Taxes.Where(t => t.Tax.Code.Equals("ETT") || t.Tax.Code.Equals("SUI")).ToList();
-				if (ExtractType == ExtractType.CADE9)
+				else if (ExtractType == ExtractType.CADE9)
 					return Taxes.Where(t => t.Tax.Code.Equals("ETT") || t.Tax.Code.Equals("SUI") || t.Tax.Code.Equals("SIT") || t.Tax.Code.Equals("SDI")).ToList();
-				if (ExtractType == ExtractType.TXSuta)
+				else if (ExtractType == ExtractType.TXSuta)
 					return Taxes.Where(t => t.Tax.Code.Equals("TX-SUTA")).ToList();
-                if (ExtractType == ExtractType.HISIT)
+                else if (ExtractType == ExtractType.HISIT)
                     return Taxes.Where(t => t.Tax.Code.Equals("HI-SIT")).ToList();
-                if (ExtractType == ExtractType.HIUI)
+                else if (ExtractType == ExtractType.HIUI)
                     return Taxes.Where(t => t.Tax.Code.Equals("HI-SUI")).ToList();
-                return Taxes;
+				else if (ExtractType == ExtractType.MTUI)
+					return Taxes.Where(t => t.Tax.Code.Equals("MT-UI")).ToList();
+				return Taxes;
 
 			}
 			set { }
@@ -152,7 +172,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		}
         public decimal OutOfStateUIWages
         {
-            get { return Taxes.Where(t => t.Tax.Code.Equals("HI-SUI") || t.Tax.Code.Equals("SUI") || t.Tax.Code.Equals("TX-SUTA")).Sum(t=>t.YTDWage) - ApplicableWages; }
+            get { return Taxes.Where(t => t.Tax.Code.Equals("HI-SUI") || t.Tax.Code.Equals("SUI") || t.Tax.Code.Equals("TX-SUTA") || t.Tax.Code.Equals("MT-UI")).Sum(t=>t.YTDWage) - ApplicableWages; }
             set { }
         }
         
@@ -353,7 +373,7 @@ namespace HrMaxx.OnlinePayroll.Models
 				var monthVal = new C1095Month
 				{
 					Month = m.Key,
-					IsFullTime = getIsFullTime(m.ToList(), company.MinWage),
+					IsFullTime = getIsFullTime(m.ToList(), company.MinWage.Value),
 					IsNonNewHire = getIsNonNewHire(m.ToList()),
 					Value = m.ToList().SelectMany(pc => pc.Deductions).Sum(d => d.Amount),
 					Checks = m.Count(),

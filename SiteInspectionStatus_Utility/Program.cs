@@ -4,8 +4,10 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Web.UI;
 using System.Xml.Serialization;
+using System.Xml.Xsl;
 using Autofac;
 using HrMaxx.Bus.Contracts;
 using HrMaxx.Common.Contracts.Services;
@@ -54,8 +56,9 @@ namespace SiteInspectionStatus_Utility
 			builder.RegisterModule<ControllerModule>();
 			builder.RegisterModule<BusModule>();
 
-			//builder.RegisterModule<SiteInspectionStatus_Utility.MappingModule>();
-			builder.RegisterModule<HrMaxxAPI.Code.IOC.Common.RepositoriesModule>();
+            //builder.RegisterModule<SiteInspectionStatus_Utility.MappingModule>();
+            builder.RegisterModule<SiteInspectionStatus_Utility.RepositoriesModule>();
+            builder.RegisterModule<HrMaxxAPI.Code.IOC.Common.RepositoriesModule>();
 			builder.RegisterModule<HrMaxxAPI.Code.IOC.Common.MappingModule>();
 			builder.RegisterModule<HrMaxxAPI.Code.IOC.Common.ServicesModule>();
 			builder.RegisterModule<HrMaxxAPI.Code.IOC.Common.CommandHandlerModule>();
@@ -152,8 +155,24 @@ namespace SiteInspectionStatus_Utility
                 case 32:
                     FixFitWage(container);
                     break;
+                
                 case 33:
                     FixCreditCardCompanies(container);
+                    break;
+                case 34:
+                    AddFieldsToPayCodes(container);
+                    break;
+                case 35:
+                    CreateDemoData(container);
+                    break;
+                case 36:
+                    ConvertSalesRep(container);
+                    break;
+                case 37:
+                    FillExtract(container);
+                    break;
+                case 38:
+                    ClearPriorYearAccumulations(container);
                     break;
                 default:
 					break;
@@ -161,6 +180,292 @@ namespace SiteInspectionStatus_Utility
 
 			Console.WriteLine("Utility run finished for ");
 		}
+        private static void ClearPriorYearAccumulations(IContainer container)
+        {
+            using (var scope = container.BeginLifetimeScope())
+            {
+                var readerservice = scope.Resolve<IReaderService>();
+                var payrollService = scope.Resolve<IPayrollService>();
+                var repository = scope.Resolve<IPayrollRepository>();
+
+                var company = readerservice.GetCompany(new Guid("1055128A-9F23-4E9F-8D42-A6ED014C4A4E"));
+                var employees = readerservice.GetEmployees(company: company.Id);
+                var payType = company.AccumulatedPayTypes.First();
+                
+                employees.ForEach(e =>
+                {
+
+                    var fiscalStartDate = CalculateFiscalStartDate(e.SickLeaveHireDate, DateTime.Today, payType);
+                    var fiscalEndDate = fiscalStartDate.AddYears(1).AddDays(-1);
+                    var previousAccumulations = e.Accumulations != null &&
+                                                                        e.Accumulations.Any(
+                                                                            ac =>
+                                                                                ac.PayTypeId == payType.PayType.Id && ac.FiscalStart < fiscalStartDate &&
+                                                                                ac.FiscalEnd < fiscalEndDate) ? e.Accumulations.Where(
+                            ac => ac.PayTypeId == payType.PayType.Id && ac.FiscalStart < fiscalStartDate && ac.FiscalEnd < fiscalEndDate)
+                            .ToList()
+                        : null;
+                    var currentAccumulaiton = e.Accumulations != null &&
+                                              e.Accumulations.Any(
+                                                  ac =>
+                                                      ac.PayTypeId == payType.PayType.Id && ac.FiscalStart == fiscalStartDate &&
+                                                      ac.FiscalEnd == fiscalEndDate)
+                        ? e.Accumulations.Where(
+                            ac => ac.PayTypeId == payType.PayType.Id && ac.FiscalStart == fiscalStartDate && ac.FiscalEnd == fiscalEndDate)
+                            .OrderBy(ac => ac.FiscalStart)
+                            .Last()
+                        : null;
+                    payrollService.RemoveAllPreviousAccumulations(previousAccumulations, currentAccumulaiton, e);
+                });
+                
+            }
+
+        }
+        private static void FillExtract(IContainer scope)
+        {
+            var reader = scope.Resolve<IReaderService>();
+            var reportservice = scope.Resolve<IReportService>();
+            var _fileRepository = scope.Resolve<IFileRepository>();
+            
+            Console.Write("Enter Extract Name : ");
+            string extractName = Console.ReadLine();
+            var extracts = reader.GetExtracts(extractName);
+            Console.WriteLine("extracts " + extracts.Count);
+            extracts =
+                extracts.Where(
+                    e => !_fileRepository.ArchiveFileExists(ArchiveTypes.Extract.GetDbName(), string.Empty, e.Id.ToString())).ToList();
+            Console.WriteLine("extracts without files " + extracts.Count);
+            extracts.OrderByDescending(e=>e.Id).ToList().ForEach(e =>
+            {
+
+                var extract = new Extract();
+                var reportrequest = new ReportRequest()
+                {
+                    MasterExtractId = e.Id,
+                    DepositDate = e.DepositDate,
+                    StartDate = e.StartDate,
+                    EndDate = e.EndDate,
+                    IncludeHistory = true,
+                    ReportName = extractName,
+                    IsReverse = true
+                };
+                if (!e.ExtractName.Equals("ACH"))
+                {
+                    if (e.StartDate.Day == 1 && e.StartDate.Month == e.EndDate.Month && e.EndDate.Day == DateTime.DaysInMonth(e.EndDate.Year, e.EndDate.Month))
+                        reportrequest.DepositSchedule = DepositSchedule941.Monthly;
+                    else if (e.StartDate.Day == 1 && e.StartDate.Month != e.EndDate.Month && e.EndDate.Day == DateTime.DaysInMonth(e.EndDate.Year, e.EndDate.Month))
+                        reportrequest.DepositSchedule = DepositSchedule941.Quarterly;
+                    else
+                    {
+                        reportrequest.DepositSchedule = DepositSchedule941.SemiWeekly;
+                    }
+                }
+                
+
+                try
+                {
+                    var _templatePath = "";
+                    if (e.ExtractName.Equals("ACH"))
+                    {
+                        var achExtract = reportservice.GetACHReport(reportrequest);
+                        achExtract.Data.Hosts.ForEach(h =>
+                        {
+                            h.ACHTransactions.ForEach(t => t.Included = true);
+                        });
+                        var xml = Utilities.GetXml<ACHResponse>(achExtract.Data);
+                        var args = new XsltArgumentList();
+                        args.AddParam("time", "", e.LastModified.ToString("HHmm"));
+                        args.AddParam("today", "", e.LastModified.ToString("yyMMdd"));
+                        args.AddParam("postingDate", "", e.DepositDate.ToString("yyMMdd"));
+                        var transformed = Utilities.XmlTransform(xml,
+                            $"{_templatePath}{"transformers/extracts/CBT-ACHTransformer.xslt"}", args);
+
+                        transformed = Utilities.Transform(transformed);
+
+                        achExtract.File = new FileDto
+                        {
+                            Data = Encoding.UTF8.GetBytes(transformed),
+                            DocumentExtension = ".txt",
+                            Filename = $"CBT-ACH-Extract-{e.LastModified.ToString("MM/dd/yyyy")}.txt",
+                            MimeType = "application/octet-stream"
+                        };
+                        
+                        _fileRepository.SaveArchiveJson(ArchiveTypes.Extract.GetDbName(), string.Empty, e.Id.ToString(), JsonConvert.SerializeObject(achExtract));
+                    }
+                    else
+                    {
+                        
+                        _fileRepository.SaveArchiveJson(ArchiveTypes.Extract.GetDbName(), string.Empty, e.Id.ToString(), JsonConvert.SerializeObject(extract));
+                        Console.WriteLine("{0}--{1}", e.Id, e.ExtractName);
+                    }
+                    
+                }
+                catch (Exception e1)
+                {
+                    Console.WriteLine("error in filling the files" + e.Id + " --- " + e1);
+                    Console.WriteLine(e1.Message);
+                }
+
+
+            });
+
+            Console.WriteLine("Extract fules created for " + extractName);
+        }
+        private static void CreateDemoData(IContainer container)
+        {
+            using (var scope = container.BeginLifetimeScope())
+            {
+                var payrollService = scope.Resolve<IPayrollRepository>();
+                var mapper = scope.Resolve<IMapper>();
+                var readerservice = scope.Resolve<IReaderService>();
+                var hostservice = scope.Resolve<IHostService>();
+                var companyrepository = scope.Resolve<ICompanyRepository>();
+                var writerepository = scope.Resolve<IWriteRepository>();
+                var hosts = hostservice.GetHostList(Guid.Empty);
+                var companies = readerservice.GetCompanies(status: 0).Where(c => !c.IsLocation).ToList();
+                
+                companies.ForEach(c =>
+                {
+                    var h = hosts.First(h1 => h1.Id == c.HostId);
+                    c.FederalEIN = $"{h.HostIntId.ToString("00")}{c.CompanyIntId.ToString("0000000")}";
+                    c.States.ForEach(cs =>
+                    {
+                        cs.StateEIN = $"{h.HostIntId.ToString("000")}{c.CompanyIntId.ToString("0000")}1";
+                    });
+                });
+                var mappedcompanies = mapper.Map<List<HrMaxx.OnlinePayroll.Models.Company>, List<HrMaxx.OnlinePayroll.Models.DataModel.Company>>(companies);
+                writerepository.ExecuteQuery("update company set FederalEIN=@FederalEIN where Id=@Id", mappedcompanies);
+                writerepository.ExecuteQuery("update companytaxstate set StateEIN=@StateEIN where Id=@Id", mappedcompanies.SelectMany(c => c.CompanyTaxStates.ToList()).ToList());
+
+                var employees = readerservice.GetEmployees(status: 0);
+
+                //employees.ForEach(e =>
+                //{
+                //    e.Contact.FirstName = e.FirstName;
+                //    e.Contact.LastName = e.LastName;
+                //    e.Contact.Email = "cs.paxol@gmail.com";
+                
+                    
+
+                //});
+                //var mapped = mapper.Map<List<HrMaxx.OnlinePayroll.Models.Employee>, List<HrMaxx.OnlinePayroll.Models.DataModel.Employee>>(employees);
+                //writerepository.ExecuteQuery("update employee set Contact=@Contact where Id=@Id", mapped);
+
+
+
+
+            }
+        }
+        private static void AddFieldsToPayCodes(IContainer container)
+        {
+            using (var scope = container.BeginLifetimeScope())
+            {
+                var payrollService = scope.Resolve<IPayrollRepository>();
+
+                var readerservice = scope.Resolve<IReaderService>();
+                var taxationService = scope.Resolve<ITaxationService>();
+                var companyrepository = scope.Resolve<ICompanyRepository>();
+                
+                var companies = readerservice.GetCompanies(status: 0);
+                var counter = (int)1;
+                var empcounter = (int)0;
+                var chckCounter = (int)0;
+                companies.ForEach(c =>
+                {
+                    var employees = readerservice.GetEmployees(company: c.Id, status: 0).Where(e => e.PayCodes.Any(pc=>pc.RateType==PayCodeRateType.NA)).ToList();
+                    employees.ForEach(e =>
+                    {
+                        e.PayCodes.ForEach(pc =>
+                        {
+                            pc.RateType = pc.RateType == PayCodeRateType.NA ? PayCodeRateType.Flat : pc.RateType;
+                        });
+                    });
+                    companyrepository.UpdateEmployeePayCodes(employees);
+                    empcounter += employees.Count;
+                    var payChecks = new List<PayCheck>();
+                    var payrolls = readerservice.GetPayChecks(companyId: c.Id).Where(pc => pc.PayCodes.Any()).ToList();
+
+                    payrolls.ForEach(pc =>
+                    {
+                        pc.PayCodes.ForEach(pcc =>
+                        {
+                            pcc.PayCode.RateType = PayCodeRateType.Flat;
+                            if (pcc.PayCode.Id >= 0)
+                            {
+                                pcc.AppliedRate = pcc.PayCode.HourlyRate;
+                                pcc.AppliedOverTimeRate = Math.Round(pcc.PayCode.HourlyRate * (decimal)1.5, 2, MidpointRounding.AwayFromZero);
+                            }
+                            else if (pcc.PayCode.Id == -1)
+                            {
+                                pcc.AppliedRate = pcc.PayCode.HourlyRate;
+                                pcc.AppliedOverTimeRate = Math.Round(pcc.PayCode.HourlyRate * (decimal)0.5, 2, MidpointRounding.AwayFromZero);
+                            }
+                        });
+                        payChecks.Add(pc);
+                    }
+
+                    );
+                    payrollService.FixPayCheckPayCodes(payChecks);
+                    Console.WriteLine($"{counter++} - {c.Name} -  Checks Updated {payChecks.Count}");
+                    chckCounter += payChecks.Count;
+                });
+                Console.WriteLine($"{chckCounter} total checks, {empcounter} Employees");
+
+
+
+
+            }
+        }
+        private static void ConvertSalesRep(IContainer container)
+        {
+            using (var scope = container.BeginLifetimeScope())
+            {
+                var readerservice = scope.Resolve<IReaderService>();
+                var write = scope.Resolve<IWriteRepository>();
+
+                var companies = readerservice.GetQueryData<IdValuePair>("select CompanyId [Key], InvoiceSetup [Value] from CompanyContract");
+                companies.ForEach(c =>
+                {
+                    var inv = !string.IsNullOrWhiteSpace(c.Value) ? JsonConvert.DeserializeObject<InvoiceSetup>(c.Value) : new InvoiceSetup();
+                    if (inv.SalesRep!=null)
+                    {
+                        inv.SalesReps = new List<SalesRep> { inv.SalesRep };
+                    }
+                    else
+                    {
+                        inv.SalesReps = new List<SalesRep>();
+                    }
+                    inv.SalesRep = null;
+                    //var inv1 = new InvoiceSetup
+                    //{ InvoiceStyle=inv.InvoiceStyle, InvoiceType=inv.InvoiceType, AdminFee=inv.AdminFee, AdminFeeMethod=inv.AdminFeeMethod, AdminFeeThreshold=inv.AdminFeeThreshold,
+                    //    SUIManagement=inv.SUIManagement, ApplyStatuaryLimits=inv.ApplyStatuaryLimits,  ApplyEnvironmentalFee=inv.ApplyEnvironmentalFee, ApplyWCCharge=inv.ApplyWCCharge,
+                    //    PrintClientName = inv.PrintClientName, PaysByAch=inv.PaysByAch, RecurringCharges = inv.RecurringCharges, SalesRep = inv.SalesRep!=null ? new List<SalesRep> { inv.SalesRep} : new List<SalesRep>()
+                    //};
+
+                    write.ExecuteQuery("update companycontract set InvoiceSetup=@InvoiceSetup where CompanyId=@Id", new { Id = c.Key, InvoiceSetup = JsonConvert.SerializeObject(inv) });
+                });
+                var invoices = readerservice.GetQueryData<IdValuePair>("select Id [Key], InvoiceSetup [Value] from payrollInvoice");
+                invoices.ForEach(i =>
+                {
+                    var inv = !string.IsNullOrWhiteSpace(i.Value) ? JsonConvert.DeserializeObject<InvoiceSetup>(i.Value) : new InvoiceSetup();
+                    if (inv.SalesRep != null)
+                    {
+                        inv.SalesReps = new List<SalesRep> { inv.SalesRep };
+                    }
+                    else
+                    {
+                        inv.SalesReps = new List<SalesRep>();
+                    }
+                    inv.SalesRep = null;
+                    write.ExecuteQuery("update PayrollInvoice set InvoiceSetup=@InvoiceSetup where CompanyId=@Id", new { Id = i.Key, InvoiceSetup = JsonConvert.SerializeObject(inv) });
+                });
+                Console.WriteLine($"{companies.Count} total companies, total invoices {invoices.Count}");
+
+
+
+
+            }
+        }
         private static void FixCreditCardCompanies(IContainer container)
         {
             using (var scope = container.BeginLifetimeScope())
@@ -1030,8 +1335,8 @@ namespace SiteInspectionStatus_Utility
 						};
 						if (baserate.HourlyRate == 0)
 						{
-							e.Rate = company.MinWage;
-							baserate.HourlyRate = company.MinWage;
+							e.Rate = company.MinWage.Value;
+							baserate.HourlyRate = company.MinWage.Value;
 						}
 						e.PayCodes.Add(baserate);
 						e.UserName = "System";

@@ -58,7 +58,8 @@ namespace HrMaxx.OnlinePayroll.Repository.Reports
 					{
 						cmd.Parameters.AddWithValue("@includeVoids", extractReport.IncludeVoids);
 					}
-					
+					cmd.Parameters.AddWithValue("@isReverse", extractReport.IsReverse);
+					cmd.Parameters.AddWithValue("@masterExtractId", extractReport.MasterExtractId);
 					cmd.Connection = con;
 					con.Open();
 
@@ -105,7 +106,8 @@ namespace HrMaxx.OnlinePayroll.Repository.Reports
 					cmd.CommandType = CommandType.StoredProcedure;
 					cmd.Parameters.AddWithValue("@startDate", extractReport.StartDate);
 					cmd.Parameters.AddWithValue("@endDate", extractReport.EndDate);
-					
+					cmd.Parameters.AddWithValue("@isReverse", extractReport.IsReverse);
+					cmd.Parameters.AddWithValue("@masterExtractId", extractReport.MasterExtractId);
 					cmd.Connection = con;
 					con.Open();
 

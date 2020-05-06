@@ -44,7 +44,10 @@
     <link rel="shortcut icon" href="~/Content/images/icon.png">
 </head>
 <body>
-    
+    @*<div id="page-loader" class="fade in"><span class="spinner"></span></div>*@
+    <div id="page-loader" class="fade in">
+        <span class="spinner"></span>
+    </div>
     <!-- end #page-loader -->
     <!-- begin #page-container -->
     @if (User.Identity.IsAuthenticated)
@@ -58,7 +61,7 @@
             <!-- begin #sidebar -->
             @Html.Partial("_Navigation")
             <div id="content" class="content">
-                <div id="page-loader1" class="fade in" ng-if="loading"><span class="spinner"></span></div>
+
                 <script type="text/javascript" src="https://www.google.com/jsapi?autoload={'modules':[{'name':'visualization','version':'1.1','packages':['corechart']}]}"></script>
                 <script type="text/ng-template" id="popover/messages.html">
                     <div class="modal-header">
@@ -109,6 +112,66 @@
                     </div>
 
                 </script>
+                <script type="text/ng-template" id="popover/wcdetails.html">
+                    <div class="modal-header alert alert-info">
+                        <h4 class="modal-title">Pay Checks Details for {{selectedEmployee.fullName}} with {{selected.companyWorkerCompensation.code + ' - ' + selected.companyWorkerCompensation.description}}</h4>
+                    </div>
+                    <div class="modal-body">
+                        <table class="table">
+                            <tr>
+                                <th>Pay Day</th>
+                                <th class="text-right">Employee Wage</th>
+                                <th class="text-right">Employer Withheld</th>
+                            </tr>
+
+                            <tbody>
+                                <tr ng-repeat="pc in employeePayChecks">
+                                    <td>{{pc.payDay | date:'MM/dd/yyyy'}}</td>
+                                    <td class="text-right">{{pc.employeeWage | currency:'$'}}</td>
+                                    <td class="text-right">{{pc.employeeWithheld | currency:'$'}}</td>
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="modal-footer">
+                        <a href="javascript:;" class="btn btn-sm btn-white" ng-click="cancel()">Close</a>
+
+                    </div>
+
+                </script>
+                <script type="text/ng-template" id="popover/minwages.html">
+                    <div class="modal-header alert alert-inverse">
+                        <h4 class="modal-title">{{company.name}} - Min Wage(s) for {{modal[0].year}}</h4>
+                    </div>
+                    <div class="modal-body">
+                        <table class="table table-header table-bordered table-condensed form-controls input-sm">
+                            <thead>
+                                <tr>
+                                    <th class="col-sm-3">Year</th>
+                                    <th class="col-sm-3">Min Wage</th>
+                                    <th class="col-sm-3">Min Wage</th>
+                                    <th class="col-sm-3">Tipped Min Wage</th>
+
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="mw in model">
+                                    <td>{{mw.year}}</td>
+                                    <td>{{mw.stateText}}</td>
+                                    <td>{{mw.minWage | currency:'$'}}</td>
+                                    <td>{{mw.tippedMinWage | currency:'$'}}</td>
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="modal-footer">
+                        <a href="javascript:;" class="btn btn-sm btn-white" ng-click="cancel()">Close</a>
+
+                    </div>
+
+                </script>
                 <script type="text/ng-template" id="employee.html">
                     <div class="col-sm-12 text-center">
                         <strong>{{pc.fullName}}</strong>
@@ -145,10 +208,10 @@
                         </div>
                     </div>
                     <div class="col-sm-12">
-                        <div class="col-sm-9 text-left">
+                        <div class="col-sm-8 text-left">
                             <i class="fa fa-arrow-right"></i>({{pt.fiscalStart | date:'MM/dd/yyyy'}} - {{pt.fiscalEnd | date:'MM/dd/yyyy'}})
                         </div>
-                        <div class="col-sm-3 text-right">{{pt.available}} hrs</div>
+                        <div class="col-sm-4 text-right">{{pt.available}} hrs</div>
                     </div>
                 </script>
                 <script type="text/ng-template" id="wages.html">
@@ -216,8 +279,10 @@
                         <h2 class="modal-title">Version #{{memento.version}} Details</h2>
                     </div>
                     <div class="modal-body">
-
-                        <div class="row" ng-if="sourceTypeId===2">
+                        <div class="row" ng-if="sourceTypeId===2 && !memento.object">
+                            the document cannot be loaded at this time.
+                        </div>
+                        <div class="row" ng-if="sourceTypeId===2 && memento.object">
                             <company company="memento.object" main-data="mainData" is-popup="true" show-controls="false" />
                         </div>
                         <div class="row" ng-if="sourceTypeId===3">
@@ -248,40 +313,31 @@
                     </div>
                 </script>
                 <script type="text/ng-template" id="popover/company.html">
+                    <company company="company" main-data="mainData" is-popup="true" show-controls="true" />
 
-                    <div class="modal-header">
-                        <h2 class="modal-title">{{company.name}} Details</h2>
-                        <button type="btn btn-sm pull-right" class="close" ng-click="cancel()">
-                            <span class="glyphicon glyphicon-remove-circle"></span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="row">
-                            <company company="company" main-data="mainData" is-popup="true" show-controls="true" />
-                        </div>
-                    </div>
+
                 </script>
                 <script type="text/ng-template" id="popover/confirm.html">
-                    <div class="modal-header">
 
-                    </div>
-                    <div class="modal-body">
-                        <div class="alert alert-{{type}}" ng-bind-html="message">
+                    <div class="modal-body text-center">
 
-                        </div>
+                        <blockquote>
+                            <p>
+                                <h3><i class="fa fa-lg fa-exclamation-circle" style="color:{{getColor()}}" ng-if="type==='warning'"></i><i class="fa fa-info-circle fa-lg" style="color:{{getColor()}}" ng-if="type==='info'"></i><i class="fa fa-exclamation-triangle fa-lg" style="color:{{getColor()}}" ng-if="type==='danger'"></i><i class="fa fa-check-circle fa-lg" style="color:{{getColor()}}" ng-if="type==='success'"></i> Are you sure to proceed ?</h3>
+                                <br />
+                                {{message}}
+                            </p>
+
+                        </blockquote>
+
+                        @*<div class="alert" ng-bind-html="message">
+
+                </div>*@
                     </div>
                     <div class="modal-footer text-center">
-                        <div class="row">
-                            <button type="button" class="btn btn-sm btn-primary pull-center" data-ng-click="ok()">
-                                <span class="glyphicon glyphicon-check"></span> Yes <i class="fa fa-lg fa-question-circle text-default"></i>
-                            </button>
-                            <button type="button" class="btn btn-sm btn-default pull-center" data-ng-click="cancel()">
-                                <span class="glyphicon glyphicon-remove-circle"></span> No <i class="fa fa-lg fa-question-circle text-default"></i>
-                            </button>
-                        </div>
-                        <div class="row alert alert-warning" ng-if="type==='danger'">
-                            All activities are logged in the system.
-                        </div>
+                        <a href="javascript:;" class="btn btn-circle" ng-click="ok()" ng-class="getButtonClass()"><i class="fa fa-check fa-lg" /></a>
+                        <a href="javascript:;" class="btn btn-white btn-circle" ng-click="cancel()" style="color:{{getColor()}}"><i class="fa fa-times fa-lg" /></a>
+
                     </div>
 
                 </script>
@@ -305,53 +361,63 @@
 
                 </script>
                 <script type="text/ng-template" id="popover/updatecomps1.html">
-
-                    <div class="modal-header">
-                        <h2 class="modal-title">Comepnsations for {{paycheck.employee.name}}<button class="btn btn-lg btn-success btn-icon btn-circle" ng-show="availablePayTypes().length>0" ng-click="addPayType()"><i class="fa fa-plus"></i></button></h2>
-                    </div>
-                    <div class="modal-body">
-                        <form name="compform" data-parsley-validate="true">
-                            <div class="row" ng-repeat="paytype in paycheck.compensations track by $index">
-                                <div class="col-sm-6">{{paytype.payType.description}}</div>
-                                <div class="col-sm-2">
-                                    <span ng-show="paytype.payType.isAccumulable">{{calculateWage(paytype.payType)}}</span>
-                                </div>
-                                <div class="col-sm-3">
-                                    <input class="form-control"
-                                           ng-model="paytype.amount" required data-parsley-type="number" data-parsley-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" step="0.01" convert-to-decimal />
-                                </div>
-                                <div class="col-sm-1">
-                                    <button class="btn  btn-sm btn-icon btn-circle btn-danger" ng-show="!item.id" ng-click="remove($index)"><i class="fa fa-trash"></i></button>
-                                </div>
-                            </div>
-                            <div class="row" ng-repeat="paytype in newPayTypes track by $index">
-                                <div class="col-sm-6">
-                                    <select name="pt1{{$index}}" id="pt1{{$index}}" class="form-control" ng-change="updatePayTypeUsed(paytype)" ng-model="paytype.payType" ng-options="st.description for st in payTypeList(paytype) | orderBy:'id' track by st.id" required>
-                                        <option value="">Please select...</option>
-                                    </select>
-                                </div>
-                                <div class="col-sm-2">
-                                    <span ng-show="paytype.payType.isAccumulable">{{calculateWage(paytype.payType)}}</span>
-
-                                </div>
-                                <div class="col-sm-3">
-                                    <input class="form-control"
-                                           data-parsley-type="number"
-                                           ng-model="paytype.amount" required data-parsley-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" step="0.01" convert-to-decimal />
-                                </div>
-                                <div class="col-sm-1">
-                                    <button class="btn  btn-lg btn-icon btn-circle btn-danger" ng-show="!item.id && paytype.payType" ng-click="removeFromNew($index)"><i class="fa fa-trash"></i></button>
-                                </div>
-                            </div>
-
-                        </form>
-                    </div>
-                    <div class="modal-footer">
-                        <div class="col-sm-12" ng-show="paycheck.compensations.length>0 || newPayTypes.length>0 || changesMade">
-                            <button type="button" class="btn btn-default  btn-lg btn-icon btn-circle pull-right" ng-click="cancel()"><i class="fa fa-remove"></i></button>
-                            <button type="button" class="btn btn-success  btn-lg btn-icon btn-circle pull-right" ng-click="save()"><i class="fa fa-save"></i></button>
+                    <div class="panel panel-success overflow-hidden">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">
+                                Compensations for {{paycheck.employee.name}}
+                            </h3>
                         </div>
+                        <div class="panel-body">
+                            <form name="compform" data-parsley-validate="true">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th class="col-sm-5">Pay Type</th>
+                                            <th class="col-sm-3">Wage</th>
+                                            <th class="col-sm-3">Amount</th>
+                                            <th class="col-sm-1"><button class="btn btn-success btn-icon btn-circle pull-right" ng-show="availablePayTypes().length>0" ng-click="addPayType()"><i class="fa fa-plus"></i></button></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr ng-repeat="paytype in paycheck.compensations track by $index">
+                                            <td>{{paytype.payType.description}}</td>
+                                            <td><span ng-show="paytype.payType.isAccumulable">{{calculateWage(paytype.payType)}}</span></td>
+                                            <td>
+                                                <input class="form-control"
+                                                       ng-model="paytype.amount" required data-parsley-type="number" ng-disabled="paytype.payType.id===12" data-parsley-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" step="0.01" convert-to-decimal />
+                                            </td>
+                                            <td>
+                                                <button class="btn  btn-sm btn-circle btn-danger pull-right" ng-hide="paytype.payType.id===12" ng-click="remove($index)"><i class="fa fa-trash"></i></button>
+                                            </td>
+                                        </tr>
+                                        <tr ng-repeat="paytype in newPayTypes track by $index">
+                                            <td>
+                                                <select name="pt1{{$index}}" id="pt1{{$index}}" class="form-control" ng-change="updatePayTypeUsed(paytype)" ng-model="paytype.payType" ng-options="st.description for st in payTypeList(paytype) | orderBy:'id' track by st.id" required>
+                                                    <option value="">Please select...</option>
+                                                </select>
+                                            </td>
+                                            <td><span ng-show="paytype.payType.isAccumulable">{{calculateWage(paytype.payType)}}</span></td>
+                                            <td>
+                                                <input class="form-control"
+                                                       data-parsley-type="number"
+                                                       ng-model="paytype.amount" required data-parsley-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" step="0.01" convert-to-decimal ng-disabled="paytype.payType.id===12" />
+                                            </td>
+                                            <td>
+                                                <button class="btn  btn-sm btn-circle btn-danger pull-right" ng-show="!item.id && paytype.payType && paytype.payType.id!==12" ng-click="removeFromNew($index)"><i class="fa fa-trash"></i></button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
 
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <div class="col-sm-12" ng-show="paycheck.compensations.length>0 || newPayTypes.length>0 || changesMade">
+                                <button type="button" class="btn btn-white  pull-right" ng-click="cancel()">close</button>
+                                <button type="button" class="btn btn-success   pull-right" ng-click="save()">save</button>
+                            </div>
+
+                        </div>
                     </div>
 
                 </script>
@@ -417,26 +483,27 @@
                     </div>
                     <div class="modal-footer">
                         <div class="col-sm-12">
-                            <button type="button" class="btn btn-default  btn-lg btn-icon btn-circle pull-right" ng-click="cancel()"><i class="fa fa-remove"></i></button>
-                            <button type="button" class="btn btn-success  btn-lg btn-icon btn-circle pull-right" ng-click="save()"><i class="fa fa-save"></i></button>
+                            <button type="button" class="btn btn-white   pull-right" ng-click="cancel()">close</button>
+                            <button type="button" class="btn btn-success   pull-right" ng-click="save()">save</button>
                         </div>
 
                     </div>
 
                 </script>
                 <script type="text/ng-template" id="popover/updatededs.html">
-
-                    <div class="modal-header">
-                        <h2 class="modal-title">Deductions for {{paycheck.employee.name}}</h2>
-                    </div>
-                    <div class="modal-body">
-                        <div class="row">
-                            <employee-deduction-list list="dedList" employee-id="paycheck.employee.id" company-deductions="deductionList" save-to-server="false" show-controls="true" agencies="agencies" />
+                    <div class="panel panel-inverse overflow-hidden">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">
+                                Deductions for {{paycheck.employee.name}}
+                            </h3>
+                        </div>
+                        <div class="panel-body">
+                            <employee-deduction-list list="dedList" pay-day="payDay" employee-id="paycheck.employee.id" company-deductions="deductionList" main-data="mainData" save-to-server="false" show-controls="true" agencies="agencies" />
                         </div>
                     </div>
                     <div class="modal-footer">
                         <div class="row">
-                            <button type="button" class="btn btn-default btn-sm pull-right" ng-click="cancel()">cancel</button>
+                            <button type="button" class="btn btn-white btn-sm pull-right" ng-click="cancel()">close</button>
                             <button type="button" class="btn btn-warning btn-sm pull-right" ng-disabled="!isValid()" ng-click="save()">only on this check</button>
                             <button type="button" class="btn btn-success btn-sm pull-right" ng-disabled="!isValid()" ng-click="permanentSave()">permanently save</button>
                             <button type="button" class="btn btn-danger btn-sm pull-right" ng-disabled="!isValid()" ng-click="empty()">pay no deductions on this check</button>
@@ -444,17 +511,10 @@
 
                     </div>
 
+
                 </script>
                 <script type="text/ng-template" id="popover/employee.html">
-
-                    <div class="modal-header">
-                        <h2 class="modal-title">{{employee.name}} Details</h2>
-                    </div>
-                    <div class="modal-body">
-                        <div class="row">
-                            <employee employee="employee" main-data="mainData" is-popup="true" show-controls="true" />
-                        </div>
-                    </div>
+                    <employee employee="employee" main-data="mainData" is-popup="true" show-controls="true" />
                 </script>
                 <script type="text/ng-template" id="popover/importtimesheet.html">
 
@@ -557,7 +617,7 @@
                                                     <button type="submit" ng-disabled="rowform.$waiting || !isItemValid(f)" ng-show="rowform.$visible" class="btn btn-success btn-lg btn-icon btn-circle">
                                                         <i class="fa fa-save"></i>
                                                     </button>
-                                                    <button type="button" ng-disabled="rowform.$waiting" ng-show="rowform.$visible" ng-click="rowform.$cancel();cancelSelected(f, $index)" class="btn btn-default btn-lg btn-icon btn-circle">
+                                                    <button type="button" ng-disabled="rowform.$waiting" ng-show="rowform.$visible" ng-click="rowform.$cancel();cancelSelected(f, $index)" class="btn btn-white btn-lg btn-icon btn-circle">
                                                         <i class="fa fa-remove"></i>
                                                     </button>
                                                 </form>
@@ -635,16 +695,181 @@
                     </div>
                     <div class="modal-footer">
                         <div class="col-sm-12">
-                            <button type="button" class="btn btn-default btn-lg btn-icon btn-circle pull-right" ng-click="cancel()"><i class="fa fa-remove"></i></button>
+                            <button type="button" class="btn btn-white btn-lg btn-icon btn-circle pull-right" ng-click="cancel()"><i class="fa fa-remove"></i></button>
                             <button type="button" class="btn btn-success btn-lg btn-icon btn-circle pull-right" ng-disabled="!ready()" ng-click="uploadDocument()"><i class="fa fa-save"></i></button>
                         </div>
 
                     </div>
 
                 </script>
+                <script type="text/ng-template" id="popover/user.html">
+                    <div class="modal-header alert alert-inverse">
+                        <h4 class="modal-title">User Details for {{selectedUser.firstName + ' ' + selectedUser.lastName}}</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-sm-4">
+                                <pre ng-show="!selectedUser.userId">New User</pre>
+                                <form name="userform" class="form-horizontal" novalidate>
+                                    <fieldset>
+                                        <div class="form-group">
+                                            <label class="col-md-4 control-label">User Name</label>
+                                            <div class="col-md-8">
+                                                <input type="text" name="username" placeholder="User Name" class="form-control" ng-model="selectedUser.subjectUserName" ng-maxlength="20" ng-required ng-pattern="/^[a-zA-Z0-9.]*$/" />
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="col-md-4 control-label">First Name</label>
+                                            <div class="col-md-8">
+                                                <input type="text" name="firstname" placeholder="First Name" class="form-control" ng-model="selectedUser.firstName" />
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="col-md-4 control-label">Last Name</label>
+                                            <div class="col-md-8">
+                                                <input type="text" name="lastname" placeholder="Last Name" class="form-control" ng-model="selectedUser.lastName" />
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="col-md-4 control-label">Email <i class="fa fa-envelope"></i></label>
+                                            <div class="col-md-8">
+                                                <input type="text" name="email" placeholder="Email" class="form-control" ng-model="selectedUser.email" />
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="col-md-4 control-label">Phone <i class="fa fa-mobile"></i></label>
+                                            <div class="col-md-8">
+                                                <input type="text" name="phone1" class="form-control" ng-model="selectedUser.phone" ui-mask="(999) 999-9999" />
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="col-md-4 control-label">Access Level <i class="fa fa-users"></i></label>
+                                            <div class="col-md-8">
+                                                <select id="roles" class="form-control" ng-change="roleChanged()" ng-model="selectedUser.role" ng-options="m.roleName for m in data.roles | filter:{show:true} track by m.roleId">
+                                                    <option value="">Please select</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="form-group" ng-if="selectedUser.host || selectedUser.role.roleId<51">
+                                            <label class="col-md-4 control-label">Host</label>
+                                            <div class="col-md-8">
+                                                <select id="host" class="form-control" ng-change="hostSelected()" ng-model="data.selectedHost" ng-options="host1.name for host1 in data.hosts track by host1.id" ng-disabled="hostId"></select>
+                                            </div>
+                                        </div>
+                                        <div class="form-group" ng-if="selectedUser.company || selectedUser.role.roleId<31">
+                                            <label class="col-md-4 control-label">Company</label>
+                                            <div class="col-md-8">
+                                                <select id="company" class="form-control" ng-disabled="!data.selectedHost || companyId" ng-change="companySelected()" ng-model="data.selectedCompany" ng-options="c.name for c in data.filteredCompanies track by c.id"></select>
+                                            </div>
+                                        </div>
+                                        <div class="form-group" ng-if="selectedUser.company && selectedUser.role.roleId<1">
+                                            <label class="col-md-4 control-label">Employee</label>
+                                            <div class="col-md-8">
+                                                <select id="employee" class="form-control" ng-disabled="!data.selectedCompany || employeeId" ng-change="employeeSelected()" ng-model="data.selectedEmployee" ng-options="c.name for c in data.filteredEmployees track by c.id"></select>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="col-md-4 control-label">Active <i class="fa fa-question-circle"></i></label>
+                                            <div class="col-sm-8">
+                                                <label for="active" class="switch">
+                                                    <input id="active" type="checkbox" ng-model="selectedUser.active" /><i></i>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </fieldset>
+
+
+                                </form>
+                            </div>
+                            <div class="col-sm-8">
+                                <div class="panel panel-inverse">
+                                    <div class="panel-heading" ng-click="data.isBodyOpen=!data.isBodyOpen">
+                                        <h4 class="panel-title">User Accesses (*click on tick/cross to toggle access)</h4>
+                                    </div>
+
+                                </div>
+                                <div class="panel-body">
+                                    <ul class="nav nav-tabs  nav-tabs-inverse nav-justified nav-justified-mobile" id="dashboardtabs">
+                                        <li ng-repeat="fn in data.featureNames" ng-class="{'active':data.openedRack===fn.title}" ng-click="data.openedRack=fn.title"><a data-toggle="tab"> <span class="hidden-xs">{{fn.title}}</span></a></li>
+                                    </ul>
+                                    <table class="table table-bordered table-condensed" ng-show="selectedUser.role">
+                                        <thead>
+                                            <tr>
+                                                <th>Feature</th>
+                                                <th>Access</th>
+                                                <th><button class="btn btn-xs btn-primary" ng-click="includeAll()">include all</button></th>
+                                            </tr>
+                                        </thead>
+                                        <tr ng-repeat="access in data.userAccessList" ng-show="access.featureName===data.openedRack">
+                                            <td>{{access.featureName}}</td>
+                                            <td>{{access.claimName}}</td>
+                                            <td>
+                                                <i class="fa fa-lg" ng-disabled="selectedUser.role.roleId<access.accessLevel" ng-click="access.hasAccess=!access.hasAccess" ng-class="{'fa-check': selectedUser.role.roleId>=access.accessLevel && access.hasAccess, 'fa-remove': selectedUser.role.roleId>=access.accessLevel && !access.hasAccess, 'fa-ban':access.accessLevel>selectedUser.role.roleId}" ng-style="(access.hasAccess && selectedUser.role.roleId>=access.accessLevel && {'color':'green'}) || (!access.hasAccess && selectedUser.role.roleId>=access.accessLevel && {'color': 'red'}) || (selectedUser.role.roleId<access.accessLevel && {'color': 'orange'})"></i>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                    </div>
+                    <div class="modal-footer">
+
+                        <button type="button" class="btn btn-sm btn-warning pull-right" ng-click="resetPasswordDefault()" ng-show="mainData.userRole==='SuperUser'">Default Password</button>
+                        <button type="button" class="btn btn-sm btn-danger pull-right" ng-click="resetPassword()" ng-show="showResetPassword && selectedUser.userId">Reset Password</button>
+                        <a class="btn btn-sm btn-primary" ng-click="save()" ng-disabled="!validateUser()">Save</a>
+                        <a href="javascript:;" class="btn btn-sm btn-white" ng-click="cancel()">Close</a>
+
+                    </div>
+
+                </script>
+                <script type="text/ng-template" id="popover/ssnlist.html">
+
+                    <div class="modal-header alert alert-info">
+                        <h2 class="modal-title">SSN Details</h2>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <table class="table table-bordered table-condensed" ng-show="list.length>0">
+                                <thead>
+                                    <tr>
+                                        <th>Host</th>
+                                        <th>Company</th>
+                                        <th>Name</th>
+
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr ng-repeat="ctx in list track by $index">
+                                        <td>
+                                            {{ctx.host}}
+                                        </td>
+                                        <td>
+                                            {{ctx.company}}
+                                        </td>
+                                        <td>
+                                            {{ctx.name}}
+                                        </td>
+
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <span ng-show="list.length===0">No results found</span>
+                        </div>
+
+                    </div>
+                    <div class="modal-footer">
+                        <a href="javascript:;" class="btn btn-sm btn-white" ng-click="cancel()">Close</a>
+
+                    </div>
+
+                </script>
                 @if (User.Identity.IsAuthenticated)
                 {
-                    
+
 
                     <div class="form-group hidden-print row" ng-show="data.showFilterPanel" ng-if="data.isReady">
 
@@ -656,19 +881,19 @@
                                 <option value="">Select Host</option>
                             </select>
                         </div>
-                        <a href="#!/" ng-if="data.selectedHost && data.selectedHost.homePage.logo" style="background-color:transparent" class="pull-right">
-                            <img ng-src="{{getDocumentUrl(logo)}}" err-src="https://upload.wikimedia.org/wikipedia/commons/a/ac/No_image_available.svg" style="width:150px;height:40px" />
-                        </a>
+                        @*<a href="#!/" ng-if="data.selectedHost && data.selectedHost.homePage.logo" style="background-color:transparent" class="pull-right">
+                    <img ng-src="{{getDocumentUrl(logo)}}" err-src="https://upload.wikimedia.org/wikipedia/commons/a/ac/No_image_available.svg" style="width:150px;height:40px" />
+                </a>*@
                         <div class="col-sm-4 pull-left" ng-show="data.selectedCompany && data.selectedCompany.id"><h5 class="pull-right"><em>You are viewing company: {{data.selectedCompany.name}} <span class="show-red" ng-show="data.selectedCompany.isLocation">(is a location)</span></em></h5></div>
 
 
                     </div>
-                    <div class="col-sm-12 visible-print" ng-show="data.selectedCompany && data.selectedCompany.id && data.showCompanies"><h5><em><u>{{data.selectedCompany.name}}</u></em></h5></div>
+                    @*<div class="col-sm-12 visible-print" ng-show="data.selectedCompany && data.selectedCompany.id && data.showCompanies"><h5><em><u>{{data.selectedCompany.name}}</u></em></h5></div>*@
                     <div ng-view></div>
-                    
-                    
-                    
-                    
+
+
+
+
                 }
 
 

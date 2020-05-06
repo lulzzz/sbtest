@@ -262,6 +262,14 @@ namespace HrMaxxAPI.Controllers.Companies
 			var wc = MakeServiceCall(() => _companyService.SavePayCode(mappedResource, CurrentUser.FullName, new Guid(CurrentUser.UserId)), "save company pay code", true);
 			return Mapper.Map<CompanyPayCode, CompanyPayCodeResource>(wc);
 		}
+		[System.Web.Http.HttpPost]
+		[System.Web.Http.Route(CompanyRoutes.SaveRenewal)]
+		public CompanyRenewal SaveRenewal(CompanyRenewal resource)
+		{
+			
+			return MakeServiceCall(() => _companyService.SaveRenewal(resource, CurrentUser.FullName, new Guid(CurrentUser.UserId)), "save company pay code", true);
+			
+		}
 
 		[System.Web.Http.HttpPost]
 		[System.Web.Http.Route(CompanyRoutes.SaveLocation)]
@@ -674,6 +682,14 @@ namespace HrMaxxAPI.Controllers.Companies
 		public List<CaliforniaCompanyTax> AllCompanies(int year)
 		{
 			return MakeServiceCall(() => _companyService.GetCaliforniaCompanyTaxes(year), "Get all companies for tax rates", true);
+		}
+		[System.Web.Http.HttpGet]
+		[System.Web.Http.Route(CompanyRoutes.SaveRenewalDate)]
+		[DeflateCompression]
+		public HttpStatusCode SaveRenewalDate(Guid companyId, int renewalId)
+		{
+			MakeServiceCall(() => _companyService.SaveRenewalDate(companyId, renewalId, CurrentUser.FullName), "save renewal date");
+			return HttpStatusCode.OK;
 		}
 
 		[System.Web.Http.HttpGet]

@@ -1,7 +1,7 @@
 ﻿'use strict';
 
-common.directive('config', ['zionAPI', '$timeout', '$window', 'version',
-	function (zionAPI, $timeout, $window, version) {
+common.directive('config', ['zionAPI', '$timeout', '$window', 'version', 'localStorageService',
+	function (zionAPI, $timeout, $window, version, localStorageService) {
 		return {
 			restrict: 'E',
 			replace: true,
@@ -20,10 +20,14 @@ common.directive('config', ['zionAPI', '$timeout', '$window', 'version',
 					minYear: 2017,
 					holidays: [],
 					newHoliday: null,
-					selectedHoliday: null
+					selectedHoliday: null,
+					openedRack: 2,
+					originalCountries: localStorageService.get('countries'),
+					states: angular.copy(localStorageService.get('countries')[0].states),
+					deductionCategories: [{ key: 1, value: 'Post Tax Deduction' }, { key: 2, value: 'Partial Pre Tax Deduction' }, { key: 3, value: 'Total Pre Tax Deduction' }, { key: 4, value: 'Other' }]
 					
 			}
-
+				$scope.deductionTypes = [];
 				$scope.data = dataSvc;
 				
 				if ($scope.mainData)
@@ -78,6 +82,96 @@ common.directive('config', ['zionAPI', '$timeout', '$window', 'version',
 							$scope.mainData.handleError('', error, 'danger');
 					});
 				}
+				$scope.addDeductionType = function () {
+					var dt = {
+						id: 0, name: '', w2_12: '', r940_R: '', w2_13rVal: false, w2_13R: '', category: 0, categoryOption: null
+					};
+					$scope.deductionTypes.push(dt);
+					$scope.selectedType = dt;
+				}
+				$scope.cancelDeduction = function (dt) {
+					$scope.selectedType = null;
+					$scope.deductionTypes[dt] = angular.copy($scope.original);
+					$scope.original = null;
+					if (!$scope.deductionTypes[dt]) {
+						$scope.deductionTypes.splice(dt, 1);
+					}
+				}
+				$scope.setSelectedType = function (dt) {
+					$scope.original = angular.copy($scope.deductionTypes[dt]);
+					$scope.selectedType = $scope.deductionTypes[dt];
+				}
+				$scope.isDeductionTypeValid = function () {
+					if ($scope.selectedType) {
+						if (!$scope.selectedType.categoryOption || !$scope.selectedType.name)
+							return false;
+						else
+							return true;
+					} else {
+						return true;
+					}
+
+				}
+				$scope.saveDeductionType = function (dt) {
+					if ($scope.selectedType) {
+						$scope.selectedType.category = $scope.selectedType.categoryOption.key;
+						var precList = [];
+						$.each(dataSvc.precedenceList, function (i, p) {
+							if (p.typeId === $scope.selectedType.id) {
+								$.each(p.list, function (i1, p1) {
+									$.each(p1.list, function (i2, p2) {
+										precList.push(p2);
+									});
+								});
+							}
+						});
+						commonRepository.saveDeductionType({ deductionType: $scope.selectedType, precedence: precList }).then(function (data) {
+
+							$scope.mainData.showMessage('Successfully saved deduction type ', 'success');
+							$scope.deductionTypes[dt] = angular.copy(data);
+							$scope.selectedType = null;
+							$scope.original = null;
+
+						}, function (error) {
+							$scope.mainData.handleError('error in saving deductin type. ', error, 'danger');
+						});
+					}
+				}
+				$scope.hasStatesChanged = function () {
+					return (!angular.equals(dataSvc.states, dataSvc.originalCountries[0].states)) ? true : false;
+				}
+				$scope.cancelStates = function () {
+					dataSvc.originalCountries = localStorageService.get('countries');
+					dataSvc.states = angular.copy(dataSvc.originalCountries[0].states);
+				}
+				$scope.saveStates = function () {
+					dataSvc.originalCountries[0].states = dataSvc.states;
+					commonRepository.saveCountries(dataSvc.originalCountries[0]).then(function (data) {
+
+						$scope.mainData.showMessage('Successfully saved states ', 'success');
+						localStorageService.set('countries', data);
+						dataSvc.states = angular.copy(data[0].states);
+						dataSvc.originalCountries = data;
+					}, function (error) {
+							$scope.mainData.handleError('error in saving countries. ', error, 'danger');
+							$scope.cancelStates();
+					});
+				}
+				$scope.saveState = function (dt) {
+					dataSvc.states[dt] = angular.copy($scope.selectedState);
+					$scope.selectedState = null;
+					$scope.originalState = null;
+				}
+				$scope.cancelState = function (dt) {
+					$scope.selectedState = null;
+					dataSvc.states[dt] = angular.copy($scope.originalState);
+					$scope.originalState = null;
+					
+				}
+				$scope.setSelectedState = function (dt) {
+					$scope.originalState = angular.copy(dataSvc.states[dt]);
+					$scope.selectedState = dataSvc.states[dt];
+				}
 				
 				var init = function () {
 					dataSvc.maxYear = new Date().getFullYear();
@@ -107,6 +201,12 @@ common.directive('config', ['zionAPI', '$timeout', '$window', 'version',
 							dataSvc.holidays = hols;
 						}, function (error) {
 								$scope.mainData.handleError('error occurred in bank holidays ' , error, 'danger');
+						});
+						commonRepository.getDeductionTypes().then(function (types) {
+							$scope.deductionTypes = angular.copy(types.types);
+							dataSvc.precedenceList = angular.copy(types.precedence);
+						}, function (error) {
+							$scope.mainData.handleError('error occurred in getting deduction types ', error, 'danger');
 						});
 					}, function (error) {
 							$scope.mainData.handleError('error occurred in getting configuration data ' , error, 'danger');

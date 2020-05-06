@@ -16,6 +16,7 @@ namespace HrMaxx.Common.Contracts.Services
 		void DeleteEntityRelation(EntityTypeEnum source, EntityTypeEnum target, Guid sourceId, Guid targetId);
 
 		IList<Country> GetCountries();
+		IList<Country> SaveCountries(Country countries);
 		T AddToList<T>(EntityTypeEnum sourceTypeId, EntityTypeEnum comment, Guid sourceId, T target);
 		IList<T> GetRelatedEntityList<T>(EntityTypeEnum sourceTypeId, EntityTypeEnum targetTypeId, Guid sourceId);
 		T FirstRelatedEntity<T>(EntityTypeEnum sourceTypeId, EntityTypeEnum targetTypeId, Guid sourceId);

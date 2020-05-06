@@ -10,8 +10,8 @@ common.directive('staffDashboard', ['zionAPI', '$timeout', '$window', 'version',
 			},
 			templateUrl: $sce.trustAsResourceUrl(zionAPI.Web + 'Areas/Reports/templates/staff-dashboard.html?v=' + version),
 
-			controller: ['$scope', '$element', '$location', '$filter', 'reportRepository','$anchorScroll', 'ClaimTypes',
-				function ($scope, $element, $location, $filter, reportRepository, $anchorScroll, ClaimTypes) {
+			controller: ['$scope', '$element', '$location', '$filter', 'reportRepository', 'companyRepository','$anchorScroll', 'ClaimTypes',
+				function ($scope, $element, $location, $filter, reportRepository, companyRepository, $anchorScroll, ClaimTypes) {
 					var dataSvc = {
 						dashboard: null
 				}
@@ -74,7 +74,16 @@ common.directive('staffDashboard', ['zionAPI', '$timeout', '$window', 'version',
 							backgroundColor: '#242a30'
 						});
 					};
-
+					$scope.taskCompleted = function (list, item) {					
+						if (!item.isComplete) {
+							companyRepository.saveRenewalDone(item.companyId, item.renewalId).then(function (data) {
+								item.isComplete = true;
+							}, function (error) {
+								$scope.mainData.handleError('Error is saving renewal date: ', error, 'danger');
+							});
+						}
+						
+					}
 				
 					$scope.loadData = function() {
 						reportRepository.getStaffDashboard($scope.mainData.userRole==='Host' || $scope.mainData.userRole==='HostStaff'  ? $scope.mainData.userHost : null).then(function (data) {
@@ -83,9 +92,27 @@ common.directive('staffDashboard', ['zionAPI', '$timeout', '$window', 'version',
 							$timeout(function() {
 								handleDonutChart(dataSvc.dashboard.payrollsProcessedChart.items, 'processed-donut');
 								handleDonutChart(dataSvc.dashboard.payrollsVoidedChart.items, 'voided-donut');
-								handleDonutChart(dataSvc.dashboard.invoicesCreatedChart.items, 'created-donut');
+								//handleDonutChart(dataSvc.dashboard.invoicesCreatedChart.items, 'created-donut');
 								handleDonutChart(dataSvc.dashboard.invoicesDeliveredChart.items, 'delivered-donut');
 								handleDonutChart(dataSvc.dashboard.companiesUpdatedChart.items, 'companies-donut');
+								//$timeout(function () {
+								//	$('#jstree-default2').jstree({
+								//		"core": {
+								//			"themes": {
+								//				"responsive": false
+								//			}
+								//		},
+								//		"types": {
+								//			"default": {
+								//				"icon": "fa fa-folder text-warning fa-lg"
+								//			},
+								//			"file": {
+								//				"icon": "fa fa-file text-inverse fa-lg"
+								//			}
+								//		},
+								//		"plugins": ["types"]
+								//	});
+								//});
 							});
 						}, function (erorr) {
 

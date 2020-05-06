@@ -42,7 +42,7 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 		CompanyDashboard GetEmployeeDashboard(Guid companyId, Guid id);
 		CompanyDashboard GetExtractDashboard();
 
-		StaffDashboard GetStaffDashboard(Guid? hostId);
+		StaffDashboard GetStaffDashboard(Guid? hostId, Guid guid);
 		EmployeeDocumentMetaData GetStaffDashboardDocuments(Guid? hostId);
 	}
 }

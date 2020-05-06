@@ -12,7 +12,7 @@
 				{{alert.msg}}
 			</div>
 			
-			<div class="panel panel-success col-sm-6" ng-if="mode===1">
+			<div class="panel panel-info col-sm-6" ng-if="mode===1">
 				<div class="panel-heading" ng-click="data.isCustomTypeOpen=!data.isCustomTypeOpen">
 					<h4 class="panel-title">
 						Custom Document Types
@@ -25,10 +25,10 @@
 						<table class="table table-condensed">
 							<tr>
 								<th>Name</th>
-								<th>Type</th>
+								<th>Category</th>
 								<th>Required from Employee?</th>
 								<th>Track Employee Access?</th>
-								<th><a class="btn btn-success btn-icon btn-circle" ng-show="!selectedDocumentType" ng-click="addDocumentType()"><i class="fa fa-plus"></i></a></th>
+								<th><a class="btn btn-primary btn-icon btn-circle" ng-show="!selectedDocumentType" ng-click="addDocumentType()"><i class="fa fa-plus"></i></a></th>
 							</tr>
 							<tr ng-repeat="item in companyDocumentSubTypes track by $index" class="mouse-over-pointer" ng-class="{'success':selectedDocumentType.id===item.id}">
 
@@ -61,14 +61,14 @@
 								<td style="white-space: nowrap">
 									<!-- form -->
 									<form editable-form id="rowform" name="rowform" onbeforesave="saveDocumentType($index)" class="form-buttons form-inline" shown="selectedDocumentType===item">
-										<button type="button" ng-show="!rowform.$visible" class="btn btn-sm btn-success  btn-icon btn-circle" ng-click="rowform.$show();setSelectedDocumentType($index)">
-											<i class="fa fa-edit"></i>
+										<button type="button" ng-show="!rowform.$visible" class="btn btn-sm btn-primary  btn-icon btn-circle" ng-click="rowform.$show();setSelectedDocumentType($index)">
+											<i class="fa fa-pencil"></i>
 										</button>
 										<button type="submit" ng-disabled="rowform.$waiting || !isDocumentTypeValid()" ng-show="rowform.$visible" class="btn btn-sm btn-success  btn-icon btn-circle">
-											<i class="fa fa-save"></i>
+											<i class="fa fa-check"></i>
 										</button>
 										<button type="button" ng-disabled="rowform.$waiting" ng-show="rowform.$visible" ng-click="rowform.$cancel();cancel($index)" class="btn btn-sm btn-default  btn-icon btn-circle">
-											<i class="fa fa-remove"></i>
+											<i class="fa fa-undo"></i>
 										</button>
 									</form>
 								</td>
@@ -82,7 +82,7 @@
 					</div>
 				</div>
 			</div>
-			<div class="panel panel-success col-sm-6" ng-if="mode===1">
+			<div class="panel panel-info col-sm-6" ng-if="mode===1">
 				<div class="panel-heading" ng-click="data.isDocsOpen=!data.isDocsOpen">
 					<h4 class="panel-title">
 						Company Documents
@@ -121,7 +121,7 @@
 						<div class="col-sm-4">
 							<div class="form-group">
 								<i class="fa fa-upload fa-lg" ng-click="uploadDocument($index)" ng-show="!file.doc.uploaded">upload</i>
-								<i class="fa fa-remove fa-lg" ng-click="removeFile($index)">delete</i>
+								<i class="fa fa-trash fa-lg" ng-click="removeFile($index)">delete</i>
 							</div>
 
 						</div>
@@ -154,7 +154,7 @@
 								</td>
 								<td class="col-sm-2">
 									<a ng-href="{{getDocumentUrl(item)}}" target="_blank"><button class="btn btn-sm btn-success   btn-icon btn-circle"><i class="fa fa-eye"></i></button></a>
-									<button class="btn btn-sm btn-danger   btn-icon btn-circle" ng-click="deleteDocument(item)"><i class="fa fa-remove"></i></button>
+									<button class="btn btn-sm btn-danger   btn-icon btn-circle" ng-click="deleteDocument(item)"><i class="fa fa-trash"></i></button>
 								</td>
 
 							</tr>
@@ -184,7 +184,7 @@
 				</div>
 			</div>
 			
-			<div class="panel panel-success col-sm-6" ng-if="mode===2">
+			<div class="panel panel-info col-sm-6" ng-if="mode===2">
 				<div class="panel-heading">
 					<h4 class="panel-title">
 						Documents to be Viewed
@@ -234,7 +234,7 @@
 				</div>
 			</div>
 			
-			<div class="panel panel-success col-sm-6" ng-if="mode===2">
+			<div class="panel panel-info col-sm-6" ng-if="mode===2">
 				<div class="panel-heading">
 					<h4 class="panel-title">
 						Documents Required
@@ -262,7 +262,7 @@
 								</td>
 								
                                 <td class="col-sm-2">
-                                    <button class="btn btn-sm btn-danger   btn-icon btn-circle" ng-click="deleteEmployeeDocument(item)" ng-if="item.document.id" ng-show="(mainData.userEmployee && mainData.userEmployee === $scope.employeeId) || mainData.userRole==='Master' || mainData.userRole==='SuperUser'"><i class="fa fa-remove"></i></button>
+                                    <button class="btn btn-sm btn-danger   btn-icon btn-circle" ng-click="deleteEmployeeDocument(item)" ng-if="item.document.id" ng-show="(mainData.userEmployee && mainData.userEmployee === $scope.employeeId) || mainData.userRole==='Master' || mainData.userRole==='SuperUser'"><i class="fa fa-trash"></i></button>
                                     <a ng-href="{{getDocumentUrl(item.document)}}" target="_blank" ng-show="item.document.id"><button class="btn btn-sm btn-success   btn-icon btn-circle"><i class="fa fa-eye"></i></button></a>
                                     <div ng-file-select="onFileSelectEmployee($files, item)" data-multiple="true" title="select file" onclick="this.value = null" class="upload-button" style="position: relative;" ng-show="!item.document.id && !item.fileIndex">
                                         <button class="btn btn-default attach-button " id="attachments">

@@ -90,6 +90,23 @@ common.directive('govtForms', ['zionAPI', '$timeout', '$window', 'version',
                             includeHistory: true,
                             includeClients: false
                         },
+                        filterMTSIT: {
+                            year: 0,
+                            payPeriods: [],
+                            payPeriod: null,
+                            depositSchedule: $filter('filter')($scope.mainData.selectedCompany.states, { state: { stateId: 25 } })[0] ? $filter('filter')($scope.mainData.selectedCompany.states, { state: { stateId: 25 } })[0].depositSchedule : 1,
+                            month: null,
+                            quarter: null,
+                            depositDate: moment().startOf('day').toDate(),
+                            includeHistory: true,
+                            includeClients: false
+                        },
+                        filterMTUI: {
+                            year: 0,
+                            quarter: 0,
+                            includeHistory: true,
+                            includeClients: false
+                        },
 						filterTxSuta: {
 							year: 0,
 							quarter: 0,
@@ -142,6 +159,40 @@ common.directive('govtForms', ['zionAPI', '$timeout', '$window', 'version',
                     }
                     $scope.fillHIPITPayPeriods = function () {
                         dataSvc.filterHIPIT.payPeriods = fillPayPeriods(dataSvc.filterHIPIT.year);
+                    }
+                    $scope.isMTSITValid = function () {
+                        if (!dataSvc.filterMTSIT.year || !dataSvc.filterMTSIT.depositSchedule || !dataSvc.filterMTSIT.depositDate)
+                            return false;
+                        else {
+                            if (dataSvc.filterMTSIT.depositSchedule === 1) {
+                                dataSvc.filterMTSIT.month = null;
+                                dataSvc.filterMTSIT.quarter = null;
+                                if (!dataSvc.filterMTSIT.payPeriod)
+                                    return false;
+                                else
+                                    return true;
+                            }
+                            else if (dataSvc.filterMTSIT.depositSchedule === 2) {
+                                dataSvc.filterMTSIT.payPeriod = null;
+                                dataSvc.filterMTSIT.quarter = null;
+                                if (!dataSvc.filterMTSIT.month)
+                                    return false;
+                                else {
+                                    return true;
+                                }
+                            } else {
+                                dataSvc.filterMTSIT.month = null;
+                                dataSvc.filterMTSIT.payPeriod = null;
+                                if (!dataSvc.filterMTSIT.quarter)
+                                    return false;
+                                else
+                                    return true;
+                            }
+
+                        }
+                    }
+                    $scope.fillMTSITPayPeriods = function () {
+                        dataSvc.filterMTSIT.payPeriods = fillPayPeriods(dataSvc.filterMTSIT.year);
                     }
                     var isQuarterDifferent = function (start, end) {
                         var stqtr = Math.floor((start.month() + 3) / 3);
@@ -254,6 +305,21 @@ common.directive('govtForms', ['zionAPI', '$timeout', '$window', 'version',
                             currDate = currDate.add('days', 1);
                         }
                         return payPeriods;
+                    }
+                    $scope.getReportMTSIT = function () {
+                        if (dataSvc.filterMTSIT.depositSchedule === 1)
+                            getReport('StateMTMW1', 'Montana MW-1 File', dataSvc.filterMTSIT.year, null, dataSvc.filterMTSIT.includeClients, dataSvc.filterMTSIT.includeHistory, dataSvc.filterMTSIT.payPeriod.startDate, dataSvc.filterMTSIT.payPeriod.endDate, null);
+                        else if (dataSvc.filterMTSIT.depositSchedule === 2)
+                            getReport('StateMTMW1', 'Montana MW-1 File', dataSvc.filterMTSIT.year, null, dataSvc.filterMTSIT.includeClients, dataSvc.filterMTSIT.includeHistory, null, null, dataSvc.filterMTSIT.month);
+                        else {
+                            getReport('StateMTMW1', 'Montana MW-1 File', dataSvc.filterMTSIT.year, dataSvc.filterMTSIT.quarter, dataSvc.filterMTSIT.includeClients, dataSvc.filterMTSIT.includeHistory);
+                        }
+                    }
+                    $scope.getReportUI5 = function () {
+                        getReport('StateMTUIForm', 'Montana State Unemployment Insurance', dataSvc.filterMTUI.year, dataSvc.filterMTUI.quarter, dataSvc.filterMTUI.includeHistory, dataSvc.filterMTUI.includeClients);
+                    }
+                    $scope.getReportUI9 = function () {
+                        getReport('StateMTUI', 'Montana State Unemployment Insurance', dataSvc.filterMTUI.year, dataSvc.filterMTUI.quarter, dataSvc.filterMTUI.includeHistory, dataSvc.filterMTUI.includeClients);
                     }
                     $scope.getReportHIPIT = function () {
                         if (dataSvc.filterHIPIT.depositSchedule === 1)

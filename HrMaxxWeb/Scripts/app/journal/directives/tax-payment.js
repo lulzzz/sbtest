@@ -9,7 +9,8 @@ common.directive('taxPayment', ['zionAPI', 'version',
 				item: "=item",
 				datasvc: "=datasvc",
 				company: "=company",
-				showControls: "=showControls"
+				showControls: "=showControls",
+				mainData: "=mainData"
 			},
 			templateUrl: zionAPI.Web + 'Areas/Client/templates/tax-payment.html?v=' + version,
 
@@ -32,9 +33,6 @@ common.directive('taxPayment', ['zionAPI', 'version',
 						$scope.$parent.$parent.cancel();
 					}
 
-					var addAlert = function (error, type) {
-						$scope.$parent.$parent.addAlert(error, type);
-					};
 
 					$scope.payeeSelected = function () {
 						if (dataSvc.selectedPayee) {

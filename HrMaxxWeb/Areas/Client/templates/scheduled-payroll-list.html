@@ -9,7 +9,7 @@
 		<div class="panel-body" ng-show="data.isBodyOpen">
 			
 			<div ng-show="list.length===0 && !selected && !processed && !committed" class="table table-bordered">
-				No scheduled payrolls found <a class="btn btn-success btn-icon btn-circle btn-lg" ng-show="canRunPayroll()" id="test" ng-click="add()"><i class="fa fa-plus"></i></a>
+				No scheduled payrolls found <a class="btn btn-primary btn-icon btn-circle btn-lg" ng-show="canRunPayroll()" id="test" ng-click="add()"><i class="fa fa-plus"></i></a>
 			</div>
 			
 			<div ng-show="list.length>0" ng-if="!data.loadedForPayrollsWithoutInvoice" class="col-sm-6 text-left p-5">
@@ -25,8 +25,8 @@
 			</div>
 			<div class="row" ng-show="list.length>0">
 				<table ng-table="tableParams" class="table table-responsive" template-pagination="custom/pager">
-					<tr ng-repeat="item in tableData | orderBy:['-lastPayrollDate'] track by $index" class="mouse-over-pointer" ng-click="set(item)" ng-class="getClass(item)">
-						<td data-title=" 'Last Pay Date' " sortable=" 'lastPayrollDate' " class="col-sm-1">
+					<tr ng-repeat="item in tableData | orderBy:['-lastPayrollDate'] track by $index" class="mouse-over-pointer"  ng-class="getClass(item)">
+						<td data-title=" 'Last Run Date' " sortable=" 'lastPayrollDate' " class="col-sm-1">
 							{{item.lastPayrollDate | date:'MM/dd/yyyy hh:mm a'}}
 						</td>
 						<td data-title=" 'Pay Schedule Start Date' " sortable=" 'scheduleStartDate' " class="col-sm-1">
@@ -48,10 +48,18 @@
 						<td data-title=" 'Status' " sortable=" 'statusText' " class="col-sm-1">
 							{{item.statusText}}
 						</td>
-						<td data-title=" 'Next Pay Date' " sortable=" 'nextPayrollDate' " class="col-sm-1">
+						<td data-title=" 'Next Run Date' " sortable=" 'nextPayrollDate' " class="col-sm-1">
 							<i class="fa fa-calendar" style="color:orange"></i> {{item.nextPayrollDate | date:'MM/dd/yyyy'}}
 						</td>
-						<td class="col-sm-1 text-right dt-buttons button-group">
+						<td class="col-sm-1 text-right ">
+							<div class="btn-group dropdown m-r-5 m-b-5">
+								<a href="javascript:;" ng-click="set(item)" class="btn btn-sm btn-primary"><i class="fa fa-eye"></i></a>
+								<a href="javascript:;" ng-click="deletePayroll($event, item)" class="btn btn-sm btn-danger" ng-show="item.id"><i class="fa fa-trash"></i></a>
+								
+							</div>
+
+
+
 						</td>
 					</tr>
 

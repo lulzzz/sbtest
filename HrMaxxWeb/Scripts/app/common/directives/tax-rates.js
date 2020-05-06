@@ -10,8 +10,8 @@ common.directive('taxRates', ['zionAPI', 'version', '$timeout',
 			},
 			templateUrl: zionAPI.Web + 'Areas/Administration/templates/tax-rates.html?v=' + version,
 
-			controller: ['$scope', '$rootScope', '$filter', 'commonRepository',
-				function ($scope, $rootScope, $filter, commonRepository) {
+			controller: ['$scope', '$rootScope', '$filter', 'commonRepository', 'localStorageService',
+				function ($scope, $rootScope, $filter, commonRepository, localStorageService) {
 					
 					
 					var dataSvc = {
@@ -24,7 +24,8 @@ common.directive('taxRates', ['zionAPI', 'version', '$timeout',
 						payrollSchedules: [{ key: 1, value: 'Weekly' }, { key: 2, value: 'Bi-Weekly' }, { key: 3, value: 'Semi-Monthly' }, { key: 4, value: 'Monthly' }, , { key: 5, value: 'Annually' }],
 						federalFilingStatuses: [{ key: 1, value: 'Single' }, { key: 2, value: 'Married' }, { key: 3, value: 'HeadofHousehold' }],
 						californiaFilingStatuses: [{ key: 1, value: 'Single' }, { key: 2, value: 'Married' }, { key: 3, value: 'Headofhousehold' }],
-						californiaLowIncomeFilingStatuses: [{ key: 1, value: 'Single' }, { key: 2, value: 'DualIncomeMarried' }, { key: 3, value: 'MarriedWithMultipleEmployers' }, { key: 4, value: 'Married' }, { key: 5, value: 'Headofhousehold' }]
+						californiaLowIncomeFilingStatuses: [{ key: 1, value: 'Single' }, { key: 2, value: 'DualIncomeMarried' }, { key: 3, value: 'MarriedWithMultipleEmployers' }, { key: 4, value: 'Married' }, { key: 5, value: 'Headofhousehold' }],
+						states: localStorageService.get('countries')[0].states
 					}
 					$scope.showEdit = function () {
 						return dataSvc.selectedYear >= dataSvc.currentYear;
@@ -56,7 +57,9 @@ common.directive('taxRates', ['zionAPI', 'version', '$timeout',
 						commonRepository.getTaxTables(dataSvc.selectedYear).then(function (data) {
 							dataSvc.originalTaxTables = data;
 							dataSvc.taxTables = angular.copy(data);
-							
+							$timeout(function () {
+								handleUnlimitedTabsRender();
+							}, 1);
 						}, function (error) {
 							$scope.list = [];
 							$scope.mainData.showMessage('error in getting tax rates ', 'danger');
@@ -232,7 +235,7 @@ common.directive('taxRates', ['zionAPI', 'version', '$timeout',
                     }
                     $scope.cancelHISIT = function (tr) {
                         var ind = dataSvc.taxTables.hisitTaxTable.indexOf(tr);
-                        dataSvc.taxTables.fitTaxTable[ind] = angular.copy($scope.originalSelectedHISIT);
+						dataSvc.taxTables.hisitTaxTable[ind] = angular.copy($scope.originalSelectedHISIT);
                         $scope.originalSelectedHISIT = null;
                         $scope.selectedHISIT = null;
 
@@ -266,7 +269,48 @@ common.directive('taxRates', ['zionAPI', 'version', '$timeout',
                         };
                         dataSvc.taxTables.hisitTaxTable.push(newfit);
 						$scope.setSelectedHISIT(newfit);
-                    }
+					}
+
+					$scope.setSelectedMTSIT = function (tr) {
+						$scope.selectedMTSIT = tr;
+						$scope.originalSelectedMTSIT = angular.copy(tr);
+					}
+					$scope.cancelMTSIT = function (tr) {
+						var ind = dataSvc.taxTables.mtsitTaxTable.indexOf(tr);
+						dataSvc.taxTables.mtsitTaxTable[ind] = angular.copy($scope.originalSelectedmtSIT);
+						$scope.originalSelectedMTSIT = null;
+						$scope.selectedMTSIT = null;
+
+					}
+					$scope.saveMTSIT = function (tr) {
+						if (!angular.equals(tr, $scope.originalSelectedMTSIT)) {
+							tr.hasChanged = true;
+						}
+						$scope.originalSelectedMTSIT = null;
+						$scope.selectedMTSIT = null;
+						return tr;
+					}
+					$scope.removeMTSIT = function (tr) {
+						dataSvc.taxTables.mtsitTaxTable.splice(dataSvc.taxTables.mtsitTaxTable.indexOf(tr), 1);
+
+					}
+					$scope.addMTSIT = function () {
+						var max = $filter('orderBy')(dataSvc.taxTables.mtsitTaxTable, 'id', true)[0];
+						var newfit = {
+							isNew: true,
+							hasChanged: true,
+							id: max ? max.id + 1 : 1,
+							year: dataSvc.selectedYear,
+							payrollSchedule: null,
+							rangeStart: null,
+							rangeEnd: null,
+							flatRate: null,
+							additionalPercentage: null,
+							excessOverAmount: null
+						};
+						dataSvc.taxTables.mtsitTaxTable.push(newfit);
+						$scope.setSelectedMTSIT(newfit);
+					}
 
 					$scope.setSelectedSIT = function (tr) {
 						$scope.selectedSIT = tr;
@@ -347,7 +391,27 @@ common.directive('taxRates', ['zionAPI', 'version', '$timeout',
                         $scope.originalSelectedHISITW = null;
                         $scope.selectedHISITW = null;
                         return tr;
-                    }
+					}
+
+					$scope.setSelectedMTSITW = function (tr) {
+						$scope.selectedMTSITW = tr;
+						$scope.originalSelectedMTSITW = angular.copy(tr);
+					}
+					$scope.cancelMTSITW = function (tr) {
+						var ind = dataSvc.taxTables.mtsitExemptionConstantTable.indexOf(tr);
+						dataSvc.taxTables.mtsitExemptionConstantTable[ind] = angular.copy($scope.originalSelectedMTSITW);
+						$scope.originalSelectedMTSITW = null;
+						$scope.selectedMTSITW = null;
+
+					}
+					$scope.saveMTSITW = function (tr) {
+						if (!angular.equals(tr, $scope.originalSelectedMTSITW)) {
+							tr.hasChanged = true;
+						}
+						$scope.originalSelectedMTSITW = null;
+						$scope.selectedMTSITW = null;
+						return tr;
+					}
 
 					$scope.setSelectedSITLow = function (tr) {
 						$scope.selectedSITLow = tr;
@@ -428,6 +492,182 @@ common.directive('taxRates', ['zionAPI', 'version', '$timeout',
 						$scope.selectedExmpAllow = null;
 						return tr;
 					}
+
+					$scope.setSelectedMinWage = function (tr) {
+						$scope.selectedMinWage = tr;
+						$scope.originalSelectedMinWage = angular.copy(tr);
+					}
+					$scope.cancelMinWage = function (tr) {
+						var ind = dataSvc.taxTables.minWageYearTable.indexOf(tr);
+						dataSvc.taxTables.minWageYearTable[ind] = angular.copy($scope.originalSelectedMinWage);
+						$scope.originalSelectedMinWage = null;
+						$scope.selectedMinWage = null;
+
+					}
+					$scope.saveMinWage = function (tr) {
+						if (!angular.equals(tr, $scope.originalSelectedMinWage)) {
+							tr.hasChanged = true;
+						}
+						$scope.originalSelectedMinWage = null;
+						$scope.selectedMinWage = null;
+						return tr;
+					}
+					
+					$scope.addMinWage = function () {
+						var max = $filter('orderBy')(dataSvc.taxTables.minWageYearTable, 'id', true)[0];
+						var newm = {
+							isNew: true,
+							hasChanged: true,
+							id: max ? max.id + 1 : 1,
+							year: dataSvc.selectedYear,
+							stateId: null,
+							state: null,
+							city: null,
+							minNoOfEmployees: null,
+							maxNoOfEmployees: null,
+							minWage: null,
+							tippedMinWage: null
+						};
+						dataSvc.taxTables.minWageYearTable.push(newm);
+						$scope.setSelectedMinWage(newm);
+					}
+					$scope.getStateName = function (id) {
+						if (id) {
+							var st = $filter('filter')(dataSvc.states, { stateId: id })[0];
+							return st ? st.stateName : '';
+						}
+						else return 'Federal';
+					}
+
+					var handleUnlimitedTabsRender = function () {
+
+						// function handle tab overflow scroll width 
+						function handleTabOverflowScrollWidth(obj, animationSpeed) {
+							var marginLeft = parseInt($(obj).css('margin-left'));
+							var viewWidth = $(obj).width();
+							var prevWidth = $(obj).find('li.active').width();
+							var speed = (animationSpeed > -1) ? animationSpeed : 150;
+							var fullWidth = 0;
+
+							$(obj).find('li.active').prevAll().each(function () {
+								prevWidth += $(this).width();
+							});
+
+							$(obj).find('li').each(function () {
+								fullWidth += $(this).width();
+							});
+
+							if (prevWidth >= viewWidth) {
+								var finalScrollWidth = prevWidth - viewWidth;
+								if (fullWidth != prevWidth) {
+									finalScrollWidth += 40;
+								}
+								$(obj).find('.nav.nav-tabs').animate({ marginLeft: '-' + finalScrollWidth + 'px' }, speed);
+							}
+
+							if (prevWidth != fullWidth && fullWidth >= viewWidth) {
+								$(obj).addClass('overflow-right');
+							} else {
+								$(obj).removeClass('overflow-right');
+							}
+
+							if (prevWidth >= viewWidth && fullWidth >= viewWidth) {
+								$(obj).addClass('overflow-left');
+							} else {
+								$(obj).removeClass('overflow-left');
+							}
+						}
+
+						// function handle tab button action - next / prev
+						function handleTabButtonAction(element, direction) {
+							var obj = $(element).closest('.tab-overflow');
+							var marginLeft = parseInt($(obj).find('.nav.nav-tabs').css('margin-left'));
+							var containerWidth = $(obj).width();
+							var totalWidth = 0;
+							var finalScrollWidth = 0;
+
+							$(obj).find('li').each(function () {
+								if (!$(this).hasClass('next-button') && !$(this).hasClass('prev-button')) {
+									totalWidth += $(this).width();
+								}
+							});
+
+							switch (direction) {
+								case 'next':
+									var widthLeft = totalWidth + marginLeft - containerWidth;
+									if (widthLeft <= containerWidth) {
+										finalScrollWidth = widthLeft - marginLeft;
+										setTimeout(function () {
+											$(obj).removeClass('overflow-right');
+										}, 150);
+									} else {
+										finalScrollWidth = containerWidth - marginLeft - 80;
+									}
+
+									if (finalScrollWidth != 0) {
+										$(obj).find('.nav.nav-tabs').animate({ marginLeft: '-' + finalScrollWidth + 'px' }, 150, function () {
+											$(obj).addClass('overflow-left');
+										});
+									}
+									break;
+								case 'prev':
+									var widthLeft = -marginLeft;
+
+									if (widthLeft <= containerWidth) {
+										$(obj).removeClass('overflow-left');
+										finalScrollWidth = 0;
+									} else {
+										finalScrollWidth = widthLeft - containerWidth + 80;
+									}
+									$(obj).find('.nav.nav-tabs').animate({ marginLeft: '-' + finalScrollWidth + 'px' }, 150, function () {
+										$(obj).addClass('overflow-right');
+									});
+									break;
+							}
+						}
+
+						// handle page load active tab focus
+						function handlePageLoadTabFocus() {
+							$('.tab-overflow').each(function () {
+								var targetWidth = $(this).width();
+								var targetInnerWidth = 0;
+								var targetTab = $(this);
+								var scrollWidth = targetWidth;
+
+								$(targetTab).find('li').each(function () {
+									var targetLi = $(this);
+									targetInnerWidth += $(targetLi).width();
+
+									if ($(targetLi).hasClass('active') && targetInnerWidth > targetWidth) {
+										scrollWidth -= targetInnerWidth;
+									}
+								});
+
+								handleTabOverflowScrollWidth(this, 0);
+							});
+						}
+
+						// handle tab next button click action
+						$('a[data-click="next-tab"]').click(function (e) {
+							e.preventDefault();
+							handleTabButtonAction(this, 'next');
+						});
+
+						// handle tab prev button click action
+						$('a[data-click="prev-tab"]').click(function (e) {
+							e.preventDefault();
+							handleTabButtonAction(this, 'prev');
+
+						});
+
+						// handle unlimited tabs responsive setting
+						$(window).resize(function () {
+							$('.tab-overflow .nav.nav-tabs').removeAttr('style');
+							handlePageLoadTabFocus();
+						});
+
+						handlePageLoadTabFocus();
+					};
 					var _init = function () {
 						$scope.mainData.showFilterPanel = false;
 						//getTaxTables();

@@ -113,6 +113,9 @@
     <Compile Include="DataModel\CompanyRecurringCharge.cs">
       <DependentUpon>OnlinePayrollModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="DataModel\CompanyRenewal.cs">
+      <DependentUpon>OnlinePayrollModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="DataModel\CompanyTaxRate.cs">
       <DependentUpon>OnlinePayrollModel.tt</DependentUpon>
     </Compile>
@@ -185,6 +188,15 @@
     <Compile Include="DataModel\MasterExtract.cs">
       <DependentUpon>OnlinePayrollModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="DataModel\MinWageYear.cs">
+      <DependentUpon>USTaxTablesModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="DataModel\MTSITExemptionConstantTable.cs">
+      <DependentUpon>USTaxTablesModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="DataModel\MTSITTaxTable.cs">
+      <DependentUpon>USTaxTablesModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="DataModel\PayCheckExtract.cs">
       <DependentUpon>OnlinePayrollModel.tt</DependentUpon>
     </Compile>
@@ -192,6 +204,9 @@
       <DependentUpon>OnlinePayrollModel.tt</DependentUpon>
     </Compile>
     <Compile Include="DataModel\PayrollInvoice.cs">
+      <DependentUpon>OnlinePayrollModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="DataModel\PayrollInvoiceCommission.cs">
       <DependentUpon>OnlinePayrollModel.tt</DependentUpon>
     </Compile>
     <Compile Include="DataModel\PayrollPayCheck.cs">
@@ -278,6 +293,7 @@
     <Compile Include="JsonDataModel\CompanyPayrollCube.cs" />
     <Compile Include="JsonDataModel\EmployeeJson.cs" />
     <Compile Include="JsonDataModel\ExtractInvoicePaymentJson.cs" />
+    <Compile Include="JsonDataModel\Host.cs" />
     <Compile Include="JsonDataModel\Journal.cs" />
     <Compile Include="JsonDataModel\JournalPayeeJson.cs" />
     <Compile Include="JsonDataModel\KeyValueResult.cs" />
@@ -291,14 +307,18 @@
     <Compile Include="JsonDataModel\ScheduledPayrollJson.cs" />
     <Compile Include="JsonDataModel\StaffDashboardJson.cs" />
     <Compile Include="JsonDataModel\VoidedPayCheckInvoiceCredit.cs" />
+    <Compile Include="MetaDataModels\PreTaxDeduction.cs" />
     <Compile Include="MinWageEligibileCompany.cs" />
     <Compile Include="MinWageEligibilityCriteria.cs" />
     <Compile Include="PayCheckJournal.cs" />
     <Compile Include="ProfitStars.cs" />
     <Compile Include="SchedulePayroll.cs" />
     <Compile Include="StaffDashboard.cs" />
+    <Compile Include="USTaxModels\MTSITTaxTableRow.cs" />
     <Compile Include="USTaxModels\FITW4TaxTableRow.cs" />
     <Compile Include="USTaxModels\FITAlienAdjustmentTableRow.cs" />
+    <Compile Include="USTaxModels\MTSITExemptionConstantTableRow.cs" />
+    <Compile Include="USTaxModels\MinWageYearRow.cs" />
     <Compile Include="ViewObjects.cs" />
     <Compile Include="Invoice.cs" />
     <Compile Include="InvoiceDeliveryClaim.cs" />

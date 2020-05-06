@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using HrMaxx.Common.Models;
@@ -47,5 +48,7 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 		void BulkTerminateEmployees(Guid companyId, List<Guid> employees, string userId, string name);
 
 		Account GetComanyAccountById(Guid companyId, int accountId);
-	}
+		CompanyRenewal SaveRenewal(CompanyRenewal renewal, string username, Guid userid);
+        void SaveRenewalDate(Guid companyId, int renewalId, string fullName);
+    }
 }

@@ -32,7 +32,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public int InsuranceGroupNo { get; set; }
 		public PayrollSchedule PayrollSchedule { get; set; }
 		public PayrollScheduleSubType PayrollScheduleDay { get; set; }
-		public decimal MinWage { get; set; }
+		public decimal? MinWage { get; set; }
 		public string Memo { get; set; }
 		public string Notes { get; set; }
 		public string DashboardNotes { get; set; }
@@ -51,7 +51,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public string ControlId { get; set; }
 		public DateTime? LastPayrollDate { get; set; }
 		public CompanyCheckPrintOrder CompanyCheckPrintOrder { get; set; }
-
+		public bool IsRestaurant { get; set; }
 		public string InsuranceClientNo { get; set; }
 		public InsuranceGroupDto InsuranceGroup { get; set; }
 		public Contact Contact { get; set; }
@@ -64,6 +64,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public ContractDetails Contract { get; set; }
 		public List<CompanyTaxRate> CompanyTaxRates { get; set; }
 		public List<CompanyPayCode> PayCodes { get; set; }
+		public List<CompanyRenewal> CompanyRenewals { get; set; }
 		public DateTime Created { get; set; }
 		public Guid? ParentId { get; set; }
 		public bool HasLocations { get; set; }
@@ -159,11 +160,14 @@ namespace HrMaxx.OnlinePayroll.Models
 		public bool ApplyInvoiceCredit { get; set; }
 		public string DeductionName { get; set; }
 		public string Description { get; set; }
-		public decimal AnnualMax { get; set; }
+		public decimal? AnnualMax { get; set; }
 		public string W2_12 { get; set; }
 		public string W2_13R { get; set; }
 		public string R940_R { get; set; }
-        public decimal EmployeeWithheld { get; set; }
+
+		public DateTime? StartDate { get; set; }
+		public DateTime? EndDate { get; set; }
+		public decimal EmployeeWithheld { get; set; }
         public decimal EmployerWithheld { get; set; }
 
     }
@@ -180,6 +184,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public bool IsLumpSum { get; set; }
 		public bool IsEmployeeSpecific { get; set; }
 		public AccumulatedPayTypeOption Option { get; set; }
+		public string Name { get; set; }
 	}
 
 	public class CompanyTaxState
@@ -190,6 +195,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public string StateEIN { get; set; }
 		public string StatePIN { get; set; }
         public string StateUIAccount { get; set; }
+		public DepositSchedule941 DepositSchedule { get; set; }
 	}
 
 	public class CompanyTaxRate
@@ -209,8 +215,21 @@ namespace HrMaxx.OnlinePayroll.Models
 		public string Code { get; set; }
 		public string Description { get; set; }
 		public decimal HourlyRate { get; set; }
+		public PayCodeRateType RateType { get; set; }
+		
 	}
-
+	public class CompanyRenewal
+	{
+		public int Id { get; set; }
+		public Guid CompanyId { get; set; }
+		public string Description { get; set; }
+		public int Month { get; set; }
+		public int Day { get; set; }
+		public int ReminderDays { get; set; }
+		public DateTime? LastRenewed { get; set; }
+		public string LastRenewedBy { get; set; }
+		
+	}
 	public class CompanyLocation
 	{
 		public Guid Id { get; set; }
@@ -233,7 +252,8 @@ namespace HrMaxx.OnlinePayroll.Models
 		public bool PrintClientName { get; set; }
 		public bool PaysByAch { get; set; }
 		public List<RecurringCharge> RecurringCharges { get; set; }
-		public SalesRep SalesRep { get; set; } 
+		public List<SalesRep> SalesReps { get; set; } 
+		public SalesRep SalesRep { get; set; }
 	}
 
 	public class SalesRep

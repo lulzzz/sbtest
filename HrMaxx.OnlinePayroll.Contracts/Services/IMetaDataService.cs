@@ -23,14 +23,14 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 		object GetInvoiceMetaData(Guid companyId);
 		object GetUsersMetaData(Guid? host, Guid? company, Guid? employee);
 
-		IList<DeductionType> GetDeductionTypes();
+		object GetDeductionTypes();
 
 		List<TaxByYear> GetCompanyTaxesForYear(int year);
 		List<CaliforniaCompanyTax> SaveTaxRates(List<CaliforniaCompanyTax> rates);
 		List<SearchResult> FillSearchTable();
 		List<CompanySUIRate> GetPEOCompanies();
 		List<Access> GetAccessMetaData();
-		DeductionType SaveDeductionType(DeductionType dt);
+		DeductionType SaveDeductionType(DeductionType dt, List<PreTaxDeduction> precedence);
 		List<KeyValuePair<int, DateTime>> GetBankHolidays();
 		object SaveBankHoliday(DateTime holiday, bool action);
 		CompanyDocumentSubType SaveDocumentSubType(CompanyDocumentSubType subType);

@@ -57,15 +57,15 @@ namespace HrMaxxAPI.Controllers
 		}
 		[System.Web.Http.HttpGet]
 		[System.Web.Http.Route(HrMaxxRoutes.DeductionTypes)]
-		public IList<DeductionType> GetDeductionTypes()
+		public object GetDeductionTypes()
 		{
 			return MakeServiceCall(() => _metaDataService.GetDeductionTypes(), "Get Deduction Types in the System", true);
 		}
 		[HttpPost	]
 		[System.Web.Http.Route(HrMaxxRoutes.SaveDeductionType)]
-		public DeductionType SaveDeductionType(DeductionType dt)
+		public DeductionType SaveDeductionType(DeductionTypeResource dt)
 		{
-			return MakeServiceCall(() => _metaDataService.SaveDeductionType(dt), "save Deduction Types in the System", true);
+			return MakeServiceCall(() => _metaDataService.SaveDeductionType(dt.DeductionType, dt.Precedence), "save Deduction Types in the System", true);
 		}
 		[System.Web.Http.HttpPost]
 		[System.Web.Http.Route(HrMaxxRoutes.SaveDocumentType)]
@@ -118,9 +118,9 @@ namespace HrMaxxAPI.Controllers
 
 		[System.Web.Http.HttpGet]
 		[System.Web.Http.Route(HrMaxxRoutes.Documents)]
-		public IList<DocumentDto> Documents(int sourceTypeId, Guid sourceId)
+		public IList<Document> Documents(int sourceTypeId, Guid sourceId)
 		{
-			return MakeServiceCall(() => _commonService.GetRelatedEntities<DocumentDto>((EntityTypeEnum)sourceTypeId, EntityTypeEnum.Document, sourceId), "Get Entity Documents", true);
+			return MakeServiceCall(() => _commonService.GetDocuments((EntityTypeEnum)sourceTypeId, sourceId), "Get Entity Documents", true);
 		}
 
 		[System.Web.Http.HttpGet]

@@ -31,6 +31,7 @@
 		public const string CommissionExtract = "Reports/CommissionExtract/{id:int}";
 		public const string ExtractDocumentReport = "Reports/ExtractDocumentReport";
 		public const string PrintChecks = "Reports/PrintExtractChecks";
+		public const string EmailExtractClients = "Reports/EmailExtractClients";
 		public const string CreateDepositTickets = "Reports/CreateDepositTickets";
 		public const string CommissionsReport = "Reports/CommissionsReport";
 		public const string PayCommissions = "Reports/PayCommissions";

@@ -330,6 +330,22 @@ namespace HrMaxx.OnlinePayroll.Services.ACH
 			
 			return threedaysafter.Date;
 		}
+		public DateTime GetProfitStarsMinRunDate(DateTime payDay)
+		{
+			var threedaysafter = payDay;
+			var counter = (int)0;
+
+			while (counter < 3)
+			{
+				threedaysafter = threedaysafter.AddDays(-1);
+				if (!(threedaysafter.DayOfWeek == DayOfWeek.Saturday || threedaysafter.DayOfWeek == DayOfWeek.Sunday || BankHolidays.Any(b => b.Value.Equals(threedaysafter))))
+				{
+					counter++;
+				}
+			}
+
+			return threedaysafter.Date;
+		}
 		public DateTime GetProfitStarsPaymentDateFromFundingDate(DateTime today)
 		{
 			var threedaysafter = today;

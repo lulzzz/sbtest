@@ -18,7 +18,7 @@
 					<a class="btn btn-success btn-icon btn-circle btn-lg" ng-click="print()" ng-disabled="selectedHeaders.length===0"><i class="fa fa-print"></i></a>
 				</div>
 				<div class="col-sm-1 pull-right">
-					<a class="btn btn-success btn-icon btn-circle btn-lg" ng-show="mainData.selectedHost && !selectedCompany" ng-click="addCompany()"><i class="fa fa-plus"></i></a>
+					<a class="btn btn-primary btn-icon btn-circle btn-lg" ng-show="mainData.selectedHost && !selectedCompany" ng-click="addCompany()"><i class="fa fa-plus"></i></a>
 				</div>
 				<div class="col-sm-2 form-group pull-right">
 					
@@ -72,14 +72,14 @@
 		</div>
 	</div>
 
-	<div class="hidden-print" ng-if="selectedCompany">
-		<company company="selectedCompany" main-data="mainData" is-popup="false" show-controls="true" />	
+	<div class="hidden-print" ng-if="data.companyMetaData && selectedCompany">
+		<company company="selectedCompany" main-data="mainData" company-meta-data="data.companyMetaData" is-popup="false" show-controls="true" />	
 	</div>
 	
 	<script type="text/ng-template" id="popover/copycompany.html">
 
-		<div class="modal-header">
-			<h2 class="modal-title">Copy Company {{company.name}}<i class="fa fa-times-circle fa-lg pull-right" ng-click="cancel()"></i></h2>
+		<div class="modal-header bg-info-darker">
+			<h3 class="modal-title text-white">{{company.name}}<i class="fa fa-times-circle fa-lg pull-right" ng-click="cancel()"></i></h3>
 		</div>
 		<div class="modal-body">
 			<div ng-repeat="alert in alerts" class="alert alert-{{alert.type}}" style="margin-bottom:0px">
@@ -89,7 +89,7 @@
 				<i class="fa fa-info-circle text-info fa-lg" ng-if="alert.type==='info'"></i>{{alert.msg}}
 			</div>
 			<div class="panel-group col-sm-12" id="accordion">
-				<div class="panel panel-inverse overflow-hidden">
+				<div class="panel panel-info overflow-hidden">
 					<div class="panel-heading" ng-click="option=1" ng-show="showCopy">Copy Company and Employees
 					</div>
 					<div class="panel-body" ng-show="option===1">
@@ -105,25 +105,25 @@
 
 
 							</div>
-							<div class="col-sm-4" ng-show="showCopyEmployees">
-								<div class="form-group">
-									<label></label>
+							<div class="col-sm-4 form-group" ng-show="showCopyEmployees">
+								
+									<label>Copy Employees?</label>
 									<div>
 										<label for="copyemployees" class="switch">
-											Copy Employees?
+											
 											<input id="copyemployees" type="checkbox" ng-model="copyemployees" /><i></i>
 										</label>
 									</div>
-								</div>
-								<div class="form-group"></div>
+								
+								
 
 							</div>
-							<div class="col-sm-4" ng-show="showCopyEmployees && copyemployees">
+							<div class="col-sm-4 form-group" ng-show="showCopyEmployees && copyemployees">
 								<div class="form-group">
-									<label></label>
+									<label>Keep Employee #?</label>
 									<div>
 										<label for="copypayroll" class="switch">
-											Keep Employee #?
+											
 											<input id="copypayroll" type="checkbox" ng-model="keepEmployeeNumbers" /><i></i>
 										</label>
 									</div>
@@ -147,18 +147,18 @@
 							<div class="alert alert-danger" ng-if="error">
 								{{error}}
 							</div>
-							<button type="button" class="btn btn-default btn-sm pull-right" ng-click="cancel()"><i class="fa fa-remove m-r-5"></i> Cancel</button>
-							<button type="button" class="btn btn-primary btn-sm pull-right" ng-click="save()" ng-disabled="!isValid()"><i class="fa fa-save m-r-5"></i> Save</button>
+							<button type="button" class="btn btn-white btn-sm pull-right" ng-click="cancel()"><i class="fa fa-undo m-r-5"></i> Cancel</button>
+							<button type="button" class="btn btn-primary btn-sm pull-right" ng-click="save()" ng-disabled="!isValid()"><i class="fa fa-check m-r-5"></i> Save</button>
 						</div>
 					</div>
 					</div>
 						
-					<div class="panel panel-inverse overflow-hidden" ng-if="showCopyPayroll">
+					<div class="panel panel-info overflow-hidden" ng-if="showCopyPayroll">
 						<div class="panel-heading" ng-click="option=2"> Move or Copy Payrolls
 						</div>
 						<div class="panel-body" ng-show="option===2">
 							<div class="row">
-								<div class="col-sm-4">
+								<div class="col-sm-6">
 									<div class="form-group">
 										<label>Source Company</label>
 										<select id="host" class="form-control" ng-model="company" ng-disabled="true" ng-options="company.name for company in mainData.companies track by company.id">
@@ -169,17 +169,17 @@
 
 
 								</div>
-								<div class="col-sm-4">
+								<div class="col-sm-6">
 									<div class="form-group">
 										<label>Target Company</label>
-										<select id="host" class="form-control" ng-model="selectedCompanyTarget" ng-options="company.name for company in mainData.companies  | filter:{ id:'!' + company.hostId} track by company.id">
+										<select id="host" class="form-control" ng-model="data.selectedCompanyTarget" ng-options="company1.name for company1 in mainData.companies  | filter:{ id:'!' + company.hostId} track by company1.id">
 											<option value="">Select Target Company</option>
 										</select>
 									</div>
 
 								</div>
 							</div>
-							<div class="row" ng-show="company && selectedCompanyTarget" style="height:500px">
+							<div class="row" ng-show="company && data.selectedCompanyTarget" style="height:500px">
 								<div class="col-sm-3">
 									<div class="form-group">
 										<label class="col-md-5 control-label">Move or Copy</label>
@@ -202,10 +202,10 @@
 
 								</div>
 								<div class="col-sm-3">
-									<label></label>
+									<label>As history?</label>
 									<div>
 										<label for="ashistory" class="switch">
-											As history?
+											
 											<input id="ashistory" type="checkbox" ng-model="ashistory"  /><i></i>
 										</label>
 									</div>
@@ -234,7 +234,7 @@
 								<div class="col-sm-3" ng-if="company && asPayrollsOption===2">
 									<div class="form-group">
 										<label for="statuses">Payrolls</label>
-										<div class="col-sm-12" ng-dropdown-multiselect="" options="payrolls" extra-settings="{displayProp: 'payDayText', idProp: 'id', showCheckAll: true, showUncheckAll: true ,scrollable: true}" selected-model="selectedPayrollList"></div>
+										<div ng-dropdown-multiselect="" options="payrolls" extra-settings="{displayProp: 'payDayText', idProp: 'id', showCheckAll: true, showUncheckAll: true ,scrollable: true}" selected-model="selectedPayrollList"></div>
 									</div>
 								</div>
 								
@@ -249,8 +249,8 @@
 							</div>
 
 							<div class="row">
-								<button type="button" class="btn btn-default btn-sm pull-right" ng-click="cancel()"><i class="fa fa-remove m-r-5"></i> Cancel</button>
-								<button type="button" class="btn btn-primary btn-sm pull-right" ng-click="moveCopyPayrolls()" ng-disabled="!company || !selectedCompanyTarget || !mcPayrollsOption"><i class="fa fa-save m-r-5"></i> {{mcPayrollsOption===1 ? 'Move' : 'Copy'}} Payrolls</button>
+								<button type="button" class="btn btn-white btn-sm pull-right" ng-click="cancel()"><i class="fa fa-undo m-r-5"></i> Cancel</button>
+								<button type="button" class="btn btn-primary btn-sm pull-right" ng-click="moveCopyPayrolls()" ng-disabled="!company || !data.selectedCompanyTarget || !mcPayrollsOption"><i class="fa fa-check m-r-5"></i> {{mcPayrollsOption===1 ? 'Move' : 'Copy'}} Payrolls</button>
 							</div>
 
 

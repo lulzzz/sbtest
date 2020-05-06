@@ -61,7 +61,9 @@ namespace HrMaxx.OnlinePayroll.Models.Enum
 		[HrMaxxSecurity(DbId = 2, DbName = "Monthly")]
 		Monthly=2,
 		[HrMaxxSecurity(DbId = 3, DbName = "Quarterly")]
-		Quarterly=3
+		Quarterly=3,
+		[HrMaxxSecurity(DbId = 4, DbName = "Annual")]
+		Annual = 4
 	}
 
 	public enum PayrollSchedule
@@ -129,6 +131,12 @@ namespace HrMaxx.OnlinePayroll.Models.Enum
 		[HrMaxxSecurity(DbId = 23, DbName = "Monthly")]
 		Monthly = 23
 		
+	}
+	public enum PayCodeRateType
+	{
+		NA=0,
+		Flat=1,
+		Times=2
 	}
 
 	public enum BillingOptions
@@ -413,6 +421,8 @@ namespace HrMaxx.OnlinePayroll.Models.Enum
 		DeductionPayment = 6,
 		[HrMaxxSecurity(DbName = "Invoice Deposit")]
 		InvoiceDeposit = 7,
+		[HrMaxxSecurity(DbName = "Customer Invoice")]
+		CustomerInvoice = 8,
 
 	}
 
@@ -533,7 +543,8 @@ namespace HrMaxx.OnlinePayroll.Models.Enum
 		TXSuta=7,
         HISIT=8,
         HIUI = 9,
-		NA=0
+		MTUI = 10,
+		NA =0
 	}
 
 	public enum ACHTransactionType

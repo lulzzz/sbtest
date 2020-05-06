@@ -6,7 +6,7 @@ common.directive('payTypeList', ['zionAPI','version',
 			restrict: 'E',
 			replace: true,
 			scope: {
-				
+				mainData: "=mainData",
 			},
 			templateUrl: zionAPI.Web + 'Areas/Client/templates/pay-type-list.html?v=' + version,
 
@@ -18,17 +18,12 @@ common.directive('payTypeList', ['zionAPI','version',
 					};
 					$scope.data = dataSvc;
 				$scope.selected = null;
-				$scope.alerts = [];
+				
 				var addAlert = function (error, type) {
-                    $scope.$parent.$parent.$parent.$parent.alerts = [];
-                    $scope.$parent.$parent.$parent.$parent.alerts.push({
-						msg: error,
-						type: type
-					});
+					$scope.mainData.showMessage(error, type);
+                   
 				};
-				$scope.closeAlert = function (index) {
-					$scope.alerts.splice(index, 1);
-				};
+				
 				$scope.add = function () {
 					$scope.selected = {
 						id: 0,
@@ -40,14 +35,30 @@ common.directive('payTypeList', ['zionAPI','version',
 					$scope.list.push($scope.selected);
 				},
 				
-				$scope.save = function(item) {
-					commonRepository.savePayType(item).then(function (data) {
-						item.id = data.id;
-						$scope.selected = null;
-						
-					}, function(error) {
-						addAlert('error in saving pay type', 'danger');
-					});
+					$scope.save = function (item) {
+					if (item.paidInCash) {
+						$scope.mainData.confirmDialog('Paid in Cash Compensations are added to Gross Wage but deducted from Net Wage. Are you sure you want to continue?', 'warning', function () {
+							commonRepository.savePayType(item).then(function (data) {
+								item.id = data.id;
+								$scope.selected = null;
+
+							}, function (error) {
+								addAlert('error in saving pay type', 'danger');
+							});
+						}, function () {
+
+						});
+					}
+					else {
+						commonRepository.savePayType(item).then(function (data) {
+							item.id = data.id;
+							$scope.selected = null;
+
+						}, function (error) {
+							addAlert('error in saving pay type', 'danger');
+						});
+					}
+					
 				}
 				$scope.cancel = function (index) {
 					if ($scope.selected.id === 0) {

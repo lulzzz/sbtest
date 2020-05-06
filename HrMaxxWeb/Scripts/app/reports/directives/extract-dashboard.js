@@ -1,4 +1,5 @@
-﻿'use strict';
+﻿
+'use strict';
 
 common.directive('extractDashboard', ['zionAPI', '$timeout', '$window', 'version', '$sce',
 	function (zionAPI, $timeout, $window, version, $sce) {
@@ -18,14 +19,18 @@ common.directive('extractDashboard', ['zionAPI', '$timeout', '$window', 'version
 						chartTitle: '',
 						donutChartTotal: 0,
 						donutPaid:0,
-						donutPending:0,
+						donutPending: 0,
+						donutDelayed: 0,
 						donutPaidPercentage: 0,
 						donutPendingPercentage: 0,
+						donutDelayedPercentage: 0,
 						tab: 0,
 						filteredExtracts: [],
 						filteredPendingExtracts: [],
 						filteredPendingExtractsByDate: [],
 						filteredPendingExtractsByCompany: [],
+						filteredPendingExtractsBySchedule: [],
+						filteredDelayedExtractsBySchedule: [],
 						isDataLoaded: false
 
 				}
@@ -67,7 +72,7 @@ common.directive('extractDashboard', ['zionAPI', '$timeout', '$window', 'version
 						month[10] = "Nov";
 						month[11] = "Dec";
 
-						return month[x.getMonth()] + '-' + x.getYear();
+						return month[x.getMonth()] + '-' + x.getFullYear().toString().substr(2, 2);
 					};
 
 					
@@ -77,103 +82,164 @@ common.directive('extractDashboard', ['zionAPI', '$timeout', '$window', 'version
 						
 						var blackTransparent = 'rgba(0,0,0,0.6)';
 						var whiteTransparent = 'rgba(255,255,255,0.4)';
-
-						Morris.Line({
-							element: element,
-							data: data,
-							xkey: 'depositDate',
-							ykeys: ['amount'],
-							xLabelFormat: function (x) {
-								x = getMonthName(x);
-								return x.toString();
-							},
-							labels: [label],
-							lineColors: [lineColor],
-							pointFillColors: [lineColorLigth],
-							lineWidth: '2px',
-							pointStrokeColors: [blackTransparent, blackTransparent],
-							resize: true,
-							gridTextFamily: 'Open Sans',
-							gridTextColor: whiteTransparent,
-							gridTextWeight: 'normal',
-							gridTextSize: '11px',
-							gridLineColor: 'rgba(0,0,0,0.5)',
-							hideHover: 'auto',
-						});
+						if (data.length > 0) {
+							Morris.Line({
+								element: element,
+								data: data,
+								xkey: 'depositDate',
+								ykeys: ['amount'],
+								xLabelFormat: function (x) {
+									x = getMonthName(x);
+									return x.toString();
+								},
+								labels: [label],
+								lineColors: [lineColor],
+								pointFillColors: [lineColorLigth],
+								lineWidth: '2px',
+								pointStrokeColors: [blackTransparent, blackTransparent],
+								resize: true,
+								gridTextFamily: 'Open Sans',
+								gridTextColor: whiteTransparent,
+								gridTextWeight: 'normal',
+								gridTextSize: '11px',
+								gridLineColor: 'rgba(0,0,0,0.5)',
+								hideHover: 'auto',
+							});
+						}
+						
 					};
 
 					var handleExtractDonutChart = function () {
 						$("#extract-donut").empty();
-						var green = '#00acac';
-						var blue = '#348fe2';
+						//var green = '#00acac';
+						//var blue = '#348fe2';
 						Morris.Donut({
 							element: 'extract-donut',
 							data: [
 									{ label: "Paid", value: dataSvc.donutPaid },
-									{ label: "Pending", value: dataSvc.donutPending }
+									{ label: "Pending", value: dataSvc.donutPending },
+									{ label: "Delayed", value: dataSvc.donutDelayed }
 							],
-							colors: [green, blue],
+							colors: [green, orange, red],
 							labelFamily: 'Open Sans',
 							labelColor: 'rgba(255,255,255,0.4)',
 							labelTextSize: '12px',
 							backgroundColor: '#242a30'
 						});
 					};
-
+					$scope.changePanel = function (panel) {
+						if (dataSvc.viewpanel !== panel) {
+							dataSvc.viewpanel = panel;
+							$timeout(function () {
+								if (panel === 2) {
+									
+								}
+								if (panel === 3) {
+									
+								}
+								
+								
+								
+							});
+						}
+						
+					}
 					$scope.showChart = function (extract) {
 						dataSvc.showChart = true;
+						dataSvc.chartShown = 0;
+						dataSvc.viewpanel = 0;
 						dataSvc.extractType = extract;
+						
 						$timeout(function () {
-
+							
 							var color = 'black';
 							if (extract === 1) {
 								dataSvc.filteredExtracts = $filter('filter')(dataSvc.dashboard.extractHistory, { extractName: 'Federal941' });
-								dataSvc.filteredPendingExtracts = $filter('filter')(dataSvc.dashboard.pendingExtractsByDates, { extractName: 'Federal941' });
-								dataSvc.filteredPendingExtractsByDate = $filter('filter')(dataSvc.dashboard.pendingExtractsByDates, { extractName: 'Federal941' });
-								dataSvc.filteredPendingExtractsByCompany = $filter('filter')(dataSvc.dashboard.pendingExtractsByCompany, { extractName: 'Federal941' });
+								dataSvc.filteredPendingExtracts = $filter('filter')(dataSvc.dashboard.pendingExtracts, { extractName: 'Federal941' });
+								
+								dataSvc.filteredPendingExtractsBySchedule = $filter('filter')(dataSvc.dashboard.pendingExtractsBySchedule, { extractName: 'Federal941' });
+								dataSvc.filteredDelayedExtractsBySchedule = $filter('filter')(dataSvc.dashboard.delayedExtractsBySchedule, { extractName: 'Federal941' });
 								color = '0D888B';
 								dataSvc.chartTitle = 'Federal 941 Extract History';
 								dataSvc.donutPaid = dataSvc.dashboard.ytd941Extract;
 								dataSvc.donutPending = dataSvc.dashboard.pending941Amount;
+								dataSvc.donutDelayed = dataSvc.dashboard.pendingDelayed941Amount;
 
 							}
 							else if (extract === 2) {
 								dataSvc.chartTitle = 'Federal 940 Extract History';
 								dataSvc.filteredExtracts = $filter('filter')(dataSvc.dashboard.extractHistory, { extractName: 'Federal940' });
-								dataSvc.filteredPendingExtracts = $filter('filter')(dataSvc.dashboard.pendingExtractsByDates, { extractName: 'Federal940' });
-								dataSvc.filteredPendingExtractsByDate = $filter('filter')(dataSvc.dashboard.pendingExtractsByDates, { extractName: 'Federal940' });
-								dataSvc.filteredPendingExtractsByCompany = $filter('filter')(dataSvc.dashboard.pendingExtractsByCompany, { extractName: 'Federal940' });
+								dataSvc.filteredPendingExtracts = $filter('filter')(dataSvc.dashboard.pendingExtracts, { extractName: 'Federal940' });
+								
+								dataSvc.filteredPendingExtractsBySchedule = $filter('filter')(dataSvc.dashboard.pendingExtractsBySchedule, { extractName: 'Federal940' });
+								dataSvc.filteredDelayedExtractsBySchedule = $filter('filter')(dataSvc.dashboard.delayedExtractsBySchedule, { extractName: 'Federal940' });
 								dataSvc.donutPaid = dataSvc.dashboard.ytd940Extract;
 								dataSvc.donutPending = dataSvc.dashboard.pending940Amount;
+								dataSvc.donutDelayed = dataSvc.dashboard.pendingDelayed940Amount;
 							}
 							else if (extract === 3) {
 								dataSvc.chartTitle = 'CA PIT & DI Extract History';
 								dataSvc.filteredExtracts = $filter('filter')(dataSvc.dashboard.extractHistory, { extractName: 'StateCAPIT' });
-								dataSvc.filteredPendingExtracts = $filter('filter')(dataSvc.dashboard.pendingExtractsByDates, { extractName: 'StateCAPIT' });
-								dataSvc.filteredPendingExtractsByDate = $filter('filter')(dataSvc.dashboard.pendingExtractsByDates, { extractName: 'StateCAPIT' });
-								dataSvc.filteredPendingExtractsByCompany = $filter('filter')(dataSvc.dashboard.pendingExtractsByCompany, { extractName: 'StateCAPIT' });
+								dataSvc.filteredPendingExtracts = $filter('filter')(dataSvc.dashboard.pendingExtracts, { extractName: 'StateCAPIT' });
+								
+								dataSvc.filteredPendingExtractsBySchedule = $filter('filter')(dataSvc.dashboard.pendingExtractsBySchedule, { extractName: 'StateCAPIT' });
+								dataSvc.filteredDelayedExtractsBySchedule = $filter('filter')(dataSvc.dashboard.delayedExtractsBySchedule, { extractName: 'StateCAPIT' });
+								
 								dataSvc.donutPaid = dataSvc.dashboard.ytdCAPITExtract;
 								dataSvc.donutPending = dataSvc.dashboard.pendingPitAmount;
+								dataSvc.donutDelayed = dataSvc.dashboard.pendingDelayedPitAmount;
 							}
 							else {
 								dataSvc.chartTitle = 'CA UI & ETT Extract History';
 								dataSvc.filteredExtracts = $filter('filter')(dataSvc.dashboard.extractHistory, { extractName: 'StateCAUI' });
-								dataSvc.filteredPendingExtracts = $filter('filter')(dataSvc.dashboard.pendingExtractsByDates, { extractName: 'StateCAUI' });
-								dataSvc.filteredPendingExtractsByDate = $filter('filter')(dataSvc.dashboard.pendingExtractsByDates, { extractName: 'StateCAUI' });
-								dataSvc.filteredPendingExtractsByCompany = $filter('filter')(dataSvc.dashboard.pendingExtractsByCompany, { extractName: 'StateCAUI' });
+								dataSvc.filteredPendingExtracts = $filter('filter')(dataSvc.dashboard.pendingExtracts, { extractName: 'StateCAUI' });
+								
+								dataSvc.filteredPendingExtractsBySchedule = $filter('filter')(dataSvc.dashboard.pendingExtractsBySchedule, { extractName: 'StateCAUI' });
+								dataSvc.filteredDelayedExtractsBySchedule = $filter('filter')(dataSvc.dashboard.delayedExtractsBySchedule, { extractName: 'StateCAUI' });
+								
 								dataSvc.donutPaid = dataSvc.dashboard.ytdCAUIETTExtract;
 								dataSvc.donutPending = dataSvc.dashboard.pendingUiEttAmount;
+								dataSvc.donutDelayed = dataSvc.dashboard.pendingDelayedUiEttAmount;
 							}
-							dataSvc.donutChartTotal = dataSvc.donutPaid + dataSvc.donutPending;
+							dataSvc.donutChartTotal = dataSvc.donutPaid + dataSvc.donutPending + dataSvc.donutDelayed;
 							dataSvc.donutPaidPercentage = (dataSvc.donutPaid / dataSvc.donutChartTotal) * 100;
 							dataSvc.donutPendingPercentage = (dataSvc.donutPending / dataSvc.donutChartTotal) * 100;
+							dataSvc.donutDelayedPercentage = (dataSvc.donutDelayed / dataSvc.donutChartTotal) * 100;
 							dataSvc.filteredExtracts = $filter('orderBy')(dataSvc.filteredExtracts, 'dRank', true);
 							dataSvc.filteredPendingExtracts = $filter('orderBy')(dataSvc.filteredPendingExtracts, 'depositDate', true);
 							dataSvc.filteredPendingExtractsByDate = $filter('orderBy')(dataSvc.filteredPendingExtractsByDate, 'depositDate', false);
 							handleExtractChart(dataSvc.filteredExtracts, 'extract-paid', 'Tax Paid',green, greenLight);
 							handleExtractChart(dataSvc.filteredPendingExtracts, 'extract-pending', 'Tax Pending', redLight, red);
 							handleExtractDonutChart();
-							$timeout(function() {
+							dataSvc.chartShown = extract;
+							$timeout(function () {
+								$('#jstree-default2').jstree({
+									"core": {
+										"themes": {
+											"responsive": false
+										}
+									},
+									"types": {
+										"default": {
+											"icon": "fa fa-folder text-warning fa-lg"
+										},
+										"file": {
+											"icon": "fa fa-file text-inverse fa-lg"
+										}
+									},
+									"plugins": ["types"]
+								});
+								$('#jstree-default2').on('select_node.jstree', function (e, data) {
+									var link = $('#' + data.selected).find('a');
+									if (link.attr("href") != "#" && link.attr("href") != "javascript:;" && link.attr("href") != "") {
+										if (link.attr("target") == "_blank") {
+											link.attr("href").target = "_blank";
+										}
+										document.location.href = link.attr("href");
+										return false;
+									}
+								});
+								$('#jstree-default2').jstree('refresh');
 								$('#jstree-default').jstree({
 									"core": {
 										"themes": {
@@ -190,8 +256,7 @@ common.directive('extractDashboard', ['zionAPI', '$timeout', '$window', 'version
 									},
 									"plugins": ["types"]
 								});
-
-								$('#jstree-default').on('select_node.jstree', function(e, data) {
+								$('#jstree-default').on('select_node.jstree', function (e, data) {
 									var link = $('#' + data.selected).find('a');
 									if (link.attr("href") != "#" && link.attr("href") != "javascript:;" && link.attr("href") != "") {
 										if (link.attr("target") == "_blank") {
@@ -201,35 +266,8 @@ common.directive('extractDashboard', ['zionAPI', '$timeout', '$window', 'version
 										return false;
 									}
 								});
-								$('#jstree-default1').jstree({
-									"core": {
-										"themes": {
-											"responsive": false
-										}
-									},
-									"types": {
-										"default": {
-											"icon": "fa fa-folder text-warning fa-lg"
-										},
-										"file": {
-											"icon": "fa fa-file text-inverse fa-lg"
-										}
-									},
-									"plugins": ["types"]
-								});
-
-								$('#jstree-default1').on('select_node.jstree', function (e, data) {
-									var link = $('#' + data.selected).find('a');
-									if (link.attr("href") != "#" && link.attr("href") != "javascript:;" && link.attr("href") != "") {
-										if (link.attr("target") == "_blank") {
-											link.attr("href").target = "_blank";
-										}
-										document.location.href = link.attr("href");
-										return false;
-									}
-								});
+								$('#jstree-default').jstree('refresh');
 							});
-
 						});
 						
 

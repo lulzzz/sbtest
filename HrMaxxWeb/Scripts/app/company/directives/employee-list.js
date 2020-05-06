@@ -122,7 +122,8 @@ common.directive('employeeList', ['$uibModal','zionAPI', '$timeout', '$window', 
 							paymentMethod: 1,
 							bankAccounts:[],
 							companyEmployeeNo: null,
-							carryOver: 0
+							carryOver: 0,
+							sickLeaveCashPaidHours: 0
 						};
 						
 						$scope.set(selected);
@@ -407,7 +408,7 @@ common.directive('employeeList', ['$uibModal','zionAPI', '$timeout', '$window', 
 						var modalInstance = $modal.open({
 							templateUrl: 'popover/copyemployees.html',
 							controller: 'copyEmployeesCtrl',
-							size: 'lg',
+							size: 'sm',
 							windowClass: 'my-modal-popup',
 							backdrop: true,
 							keyboard: true,

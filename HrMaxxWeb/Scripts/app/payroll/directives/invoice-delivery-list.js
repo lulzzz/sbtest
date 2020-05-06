@@ -15,8 +15,19 @@ common.directive('invoiceDeliveryList', ['zionAPI', '$timeout', '$window', 'vers
 					var dataSvc = {
 						isBodyOpen: true,
 						isBodyOpenHistory: true,
-						startDate: moment().add(-1, 'week').toDate(),
-						endDate: null
+						
+						reportFilter: {
+							filterStartDate: moment().add(-1, 'week').toDate(),
+							filterEndDate: null,
+							filter: {
+								startDate: moment().add(-1, 'week').toDate(),
+								endDate: null,
+								years: [],
+								month: 0,
+								year: 0,
+								quarter: 0
+							}
+						},
 
 				}
 					$scope.list = [];
@@ -81,7 +92,7 @@ common.directive('invoiceDeliveryList', ['zionAPI', '$timeout', '$window', 'vers
 						});
 					}
 					$scope.getInvoiceDeliveryClaims = function() {
-						payrollRepository.getInvoiceDeliveryClaims(dataSvc.startDate, dataSvc.endDate).then(function (data) {
+						payrollRepository.getInvoiceDeliveryClaims(dataSvc.reportFilter.filterStartDate, dataSvc.reportFilter.filterEndDate).then(function (data) {
 							$scope.history = data;
 							
 						}, function (error) {

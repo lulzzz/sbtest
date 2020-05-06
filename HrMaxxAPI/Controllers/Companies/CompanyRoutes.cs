@@ -15,6 +15,7 @@ namespace HrMaxxAPI.Controllers.Companies
 		public const string SaveWorkerCompensation = "Company/WorkerCompensation";
 		public const string SaveAccumulatedPayType = "Company/AccumulatedPayType";
 		public const string SavePayCode = "Company/PayCode";
+		public const string SaveRenewal = "Company/Renewal";
 		public const string SaveLocation = "Company/SaveLocation";
 		public const string VendorCustomerList = "Company/Vendors/{isVendor:bool}/{companyId:guid?}";
 		public const string GlobalVendors = "Company/GlobalVendors";
@@ -48,5 +49,6 @@ namespace HrMaxxAPI.Controllers.Companies
 		public const string UpdateWCRates = "Company/UpdateWCRates";
 		public const string SSNCheck = "Company/SSNCheck/{ssn}";
 		public const string BulkTerminateEmployees = "Company/BulkTerminateEmployees";
+		public const string SaveRenewalDate = "Company/SaveRenewalDate/{companyId:guid}/{renewalId:int}";
 	}
 }

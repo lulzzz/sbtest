@@ -28,7 +28,9 @@ namespace HrMaxx.OnlinePayroll.Models
 		//Employment
 		public DateTime HireDate { get; set; }
 		public DateTime SickLeaveHireDate { get; set; }
+		public DateTime? TerminationDate { get; set; }
 		public decimal CarryOver { get; set; }
+		public decimal SickLeaveCashPaidHours { get; set; }
 		public string Department { get; set; }
 		public StatusOption StatusId { get; set; }
 		public string EmployeeNo { get; set; }
@@ -65,7 +67,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public CompanyWorkerCompensation WorkerCompensation { get; set; }
 		public List<PayCheckPayTypeAccumulation> Accumulations { get; set; } 
 		public DateTime? LastPayrollDate { get; set; }
-
+		public bool IsTipped { get; set; }
 		public string GetSearchText
 		{
 			get
@@ -111,6 +113,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public EmployeeTaxStatus TaxStatus { get; set; }
 		public int Exemptions { get; set; }
 		public decimal AdditionalAmount { get; set; }
+		public bool IsSitExempt { get; set; }
 	}
 
 	public class EmployeeACA
@@ -138,7 +141,9 @@ namespace HrMaxx.OnlinePayroll.Models
 		public string AccountNo { get; set; }
 		public Guid? AgencyId { get; set; }
         public string Note { get; set; }
-        public decimal EmployeeWithheld { get; set; }
+		public DateTime? StartDate { get; set; }
+		public DateTime? EndDate { get; set; }
+		public decimal EmployeeWithheld { get; set; }
         public decimal EmployerWithheld { get; set; }
 	}
 

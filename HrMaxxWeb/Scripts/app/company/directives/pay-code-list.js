@@ -8,6 +8,7 @@ common.directive('payCodeList', ['zionAPI','version',
 			scope: {
 				companyId: "=companyId",
 				list: "=list",
+				mainData: "=mainData",
 				showControls: "=showControls"
 			},
 			templateUrl: zionAPI.Web + 'Areas/Client/templates/pay-code-list.html?v=' + version,
@@ -16,20 +17,24 @@ common.directive('payCodeList', ['zionAPI','version',
 				function ($scope, $rootScope, $filter, companyRepository) {
 					
 				$scope.selected = null;
-				
+					$scope.rateTypes = [{ id: 1, name: 'Flat Rate' }, {id:2, name: 'Times Base Rate'}];
 				var addAlert = function (error, type) {
-					$scope.$parent.$parent.addAlert(error, type);
+					$scope.mainData.showMessage(error, type);
 				};
 				$scope.closeAlert = function (index) {
 					
-				};
+					};
+					$scope.getMinRate = function (item) {
+						return item.rateType === 1 ? 0.0001 : 1;
+					}
 				$scope.add = function () {
 					$scope.selected = {
 						id: 0,
 						companyId: $scope.companyId,
 						code: '',
 						hourlyRate: 0,
-						description: ''
+						description: '',
+						rateType: 1
 					};
 					$scope.list.push($scope.selected);
 				},
@@ -39,9 +44,9 @@ common.directive('payCodeList', ['zionAPI','version',
 						item.id = data.id;
 						$scope.selected = null;
 						$rootScope.$broadcast('companyPayCodeUpdated', { pc: data });
-						addAlert('successfully saved pay code', 'success');
+						addAlert('successfully saved pay rate', 'success');
 					}, function(error) {
-						addAlert('error in saving pay code', 'danger');
+						addAlert('error in saving pay rate', 'danger');
 					});
 				}
 				$scope.cancel = function (index) {
@@ -50,8 +55,11 @@ common.directive('payCodeList', ['zionAPI','version',
 					}
 					$scope.selected = null;
 				}
-				$scope.setSelected = function(index) {
-					$scope.selected = $scope.list[index];
+					$scope.setSelected = function (index) {
+
+						$scope.selected = $scope.list[index];
+						if (!$scope.selected.rateType)
+							$scope.selected.rateType = 1;
 				}
 
 				$scope.isItemValid = function(item) {

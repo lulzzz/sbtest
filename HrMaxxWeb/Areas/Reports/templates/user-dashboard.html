@@ -62,32 +62,7 @@
 			</div>
 			<div class="row hidden-print" ng-show="data.tab===1">
 				<staff-dashboard main-data="mainData"/>
-				<!--<div class="col-sm-12 hidden-print table-responsive">
-
-					    <div class="col-sm-6 col-sm-offset-3">
-						    <div uib-carousel active="active" interval="5000" no-wrap="true">
-							    <div uib-slide ng-repeat="news in data.myNews track by $index" index="$index">
-								    <img ng-src="{{zionAPI.Web}}/Content/images/blank.png" alt="ASP.NET" class="img-responsive" style="height:300px;width:100%" />
-								    <div class="carousel-caption">
-									    <h3>{{news.title}}</h3>
-									    <p style="font-size: 14pt">
-										    {{news.newsContent}}
-										    <br />
-										    <i>by {{news.userName}} on {{news.timeStamp | date:'MM/dd/yyyy hh:mm:ss a'}}</i>
-									    </p>
-								    </div>
-
-								    <div class="carousel-control">
-									    News
-								    </div>
-
-							    </div>
-						    </div>
-					    </div>
-
-				    </div>-->
-
-
+				
 			</div>
 			<div class="row" ng-if="data.tab===4">
 				<div class="col-sm-12">
@@ -121,7 +96,7 @@
 										{{ctx.due}}
 									</td>
 									<td class="hidden-print">
-										<button class="btn btn-xs btn-primary" ng-click="viewPayrolls(ctx.hostId, ctx.companyId)">view</button>
+										<button class="btn btn-xs btn-primary" ng-click="viewPayrolls(ctx.hostId, ctx.companyId)"><i class="fa fa-eye" /></button>
 									</td>
 
 								</tr>
@@ -148,7 +123,7 @@
 										{{d}}
 									</td>
 									<td class="hidden-print">
-										<button class="btn btn-xs btn-primary" ng-click="viewPayrolls(ctx[0], ctx[1])">view</button>
+										<button class="btn btn-xs btn-primary" ng-click="viewPayrolls(ctx[0], ctx[1])"><i class="fa fa-eye" /></button>
 									</td>
 
 								</tr>
@@ -175,17 +150,50 @@
 										{{d}}
 									</td>
 									<td class="hidden-print">
-										<button class="btn btn-xs btn-primary" ng-click="viewPayrolls(ctx[0], ctx[1])">view</button>
+										<button class="btn btn-xs btn-primary" ng-click="viewPayrolls(ctx[0], ctx[1])"><i class="fa fa-eye" /></button>
 									</td>
 
 								</tr>
 							</tbody>
 						</table>
 
+						<br />
+						<br />
+						<table class="table table-bordered table-condensed" ng-class="{'hidden-print': data.printOption!==6}">
+							<thead>
+								<tr>
+									<th colspan="4">Companies Renewals <i class="fa pull-right hidden-print" show-filter="true" template-pagination="custom/nopager" ng-if="data.renewals.length>1" ng-class="{'fa-minus-square' : data.viewingChart===6, 'fa-plus-square': data.viewingChart!==4}" ng-click="data.viewingChart=(data.viewingChart===6?0:6)"></i> <i class="fa fa-refresh pull-right hidden-print" ng-click="drawCompaniesRenewal()"></i><i class="fa fa-print hidden-print pull-right" ng-click="print(6)" ng-if="data.renewals.length>1"></i></th>
+								</tr>
+
+							</thead>
+						</table>
+						<table ng-table="tableParamsRenewals" ng-show="data.viewingChart===6" class="table table-bordered table-condensed" ng-class="{'hidden-print': data.printOption!==6}">
+							
+							<tr ng-repeat="item in tableDataRenewals track by $index" class="mouse-over-pointer">
+								
+								<td data-title=" 'Company' " sortable=" 'company' " filter="{ 'company': 'text' }" class="col-sm-5">
+									{{item.company }}
+								</td>
+								<td data-title=" 'Sales Rep' " sortable=" 'salesRep' " filter="{ 'salesRep': 'text' }" class="col-sm-3">
+									{{item.salesRep }}
+								</td>
+								<td data-title=" 'Desc' " sortable=" 'description' " filter="{ 'description': 'text' }" class="col-sm-2">
+									{{item.description }}
+								</td>
+								<td data-title=" 'Due' " filter="{dueRange:'select'}" filter-data="dueranges" sortable=" 'due' " class="col-sm-2">
+									{{item.due | date:'MM/dd/yyyy'}}
+								</td>
+								
+							</tr>
+							<tr ng-show="tableDataRenewals.length===0">
+								<td colspan="4">No results found</td>
+							</tr>
+						</table>
+
 					</div>
 
 					<div class="col-md-6">
-						<table class="table table-condensed" ng-class="{'hidden-print': data.printOption!==2}">
+						<table class="table table-bordered table-condensed" ng-class="{'hidden-print': data.printOption!==2}">
 							<tr>
 								<th colspan="5">Companies Next Payroll Due ( in days ) <i class="fa pull-right hidden-print" ng-if="data.filteredApproachingPayrolls.length>0" ng-class="{'fa-minus-square' : data.viewingChart===2, 'fa-plus-square': data.viewingChart!==2}" ng-click="data.viewingChart=(data.viewingChart===2?0:2)"></i> <i class="fa fa-refresh pull-right hidden-print" ng-click="drawCompaniesWithApproachingPayrolls()"></i><i class="fa fa-print hidden-print pull-right" ng-click="print(2)" ng-if="data.filteredApproachingPayrolls.length>1"></i></th>
 							</tr>
@@ -207,13 +215,13 @@
 										{{item.due}}
 									</td>
 									<td class="hidden-print text-center">
-										<button class="btn btn-xs btn-primary" ng-click="viewPayrolls(item.hostId, item.companyId)">view</button>
+										<button class="btn btn-xs btn-primary" ng-click="viewPayrolls(item.hostId, item.companyId)"><i class="fa fa-eye" /></button>
 									</td>
 								</tr>
 							
 						</table>
 						
-						<table class="table table-condensed" ng-class="{'hidden-print': data.printOption!==5}">
+						<table class="table table-bordered table-condensed" ng-class="{'hidden-print': data.printOption!==5}">
 							<tr>
 
 								<th colspan="2">Compan Payroll Schedules and Reporting Days <i class="fa fa-print hidden-print pull-right" ng-show="data.companySchedules.length>0" ng-click="print(5)"></i></th>

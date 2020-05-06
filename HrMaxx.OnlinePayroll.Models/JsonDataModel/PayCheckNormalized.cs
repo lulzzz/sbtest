@@ -44,6 +44,7 @@ namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
 	{
 		public int PayCheckId { get; set; }
 		public int PayTypeId { get; set; }
+		public bool IsTip { get; set; }
 		public string PayTypeName { get; set; }
 		public Models.PayType PayType { get; set; }
 		public decimal Amount { get; set; }
@@ -97,7 +98,9 @@ namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
 		public decimal Amount { get; set; }
 		public decimal YTD { get; set; }
         public decimal YTDWage { get; set; }
-
+		public decimal RegularPay { get; set; }
+		public decimal OverTimePay { get; set; }
+		public decimal GrossPay { get; set; }
         public Models.CompanyWorkerCompensation WorkerCompensation
 		{
 			get { return !string.IsNullOrWhiteSpace(WorkerCompensationFlat) ? JsonConvert.DeserializeObject<Models.CompanyWorkerCompensation>(WorkerCompensationFlat) : default(Models.CompanyWorkerCompensation); }

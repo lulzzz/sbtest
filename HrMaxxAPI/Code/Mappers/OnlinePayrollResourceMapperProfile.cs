@@ -51,7 +51,7 @@ namespace HrMaxxAPI.Code.Mappers
 				.ForMember(dest => dest.FederalEIN, opt => opt.MapFrom(src => Crypto.Decrypt(src.FederalEIN)))
 				.ForMember(dest => dest.Contact, opt => opt.MapFrom(src => !string.IsNullOrWhiteSpace(src.Contact) ? JsonConvert.DeserializeObject<Contact>(src.Contact) : null));
 
-			CreateMap<HostResource, Host>()
+			CreateMap<HostResource, HrMaxx.OnlinePayroll.Models.Host>()
 				.ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id.HasValue ? src.Id.Value : CombGuid.Generate()))
 				.ForMember(dest => dest.LastModified, opt => opt.MapFrom(src => DateTime.Now));
 
@@ -254,6 +254,8 @@ namespace HrMaxxAPI.Code.Mappers
 			CreateMap<JournalDetail, JournalDetailResource>();
 			CreateMap<JournalDetailResource, JournalDetail>()
 				.ForMember(dest => dest.Amount, opt => opt.MapFrom(src => Math.Round(src.Amount, 2, MidpointRounding.AwayFromZero)));
+			CreateMap<JournalItem, JournalItemResource>();
+			CreateMap<JournalItemResource, JournalItem>();
 
 			CreateMap<JournalList, JournalListResource>();
 

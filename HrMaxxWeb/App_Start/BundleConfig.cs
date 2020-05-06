@@ -40,6 +40,7 @@ namespace HrMaxxWeb
 				"~/Scripts/jquery/jquery.ui.widget.min.js",
 				"~/Scripts/lodash/lodash.js",
 				"~/Scripts/es5-shim.js",
+				"~/Scripts/moment.js",
 				"~/Scripts/modernizr-{version}.js",
 				"~/Scripts/bootstrap/bootstrap.js",
 				"~/Scripts/bootstrap3-typeahead.js",
@@ -52,7 +53,9 @@ namespace HrMaxxWeb
 				"~/Scripts/bootstrap/wizard/bwizard.js",
 				"~/Scripts/jquery.plugin.js",
 				"~/Scripts/jquery.countdown.js",
-				"~/Scripts/coming-soon.demo.js"
+				"~/Scripts/coming-soon.demo.js",
+				"~/Scripts/bootstrap/sweetalert.min.js",
+				"~/Scripts/daterangepicker.js"
 
 
 				);
@@ -74,7 +77,7 @@ namespace HrMaxxWeb
 
 			Bundle angular = new Bundle("~/bundles/angular").Include(
 				"~/Scripts/angular1.5/angular-file-upload/angular-file-upload-shim.js",
-				"~/Scripts/moment.js",
+				
 				"~/Scripts/flot/jquery.flot.min.js",
 				"~/Scripts/flot/jquery.flot.time.min.js",
 				"~/Scripts/flot/jquery.flot.pie.min.js",
@@ -140,6 +143,7 @@ namespace HrMaxxWeb
 				"~/Scripts/app/common/users/user-app.js",
 				"~/Scripts/app/common/users/user-repository.js",
 				"~/Scripts/app/common/directives/document-list.js",
+				"~/Scripts/app/common/directives/entity-documents.js",
 				"~/Scripts/app/common/directives/address.js",
 				"~/Scripts/app/common/directives/comment-list.js",
 				"~/Scripts/app/common/directives/contact-list.js",
@@ -164,6 +168,7 @@ namespace HrMaxxWeb
 				"~/Scripts/app/company/directives/tax-year-rate-list.js",
 				"~/Scripts/app/company/directives/accumulated-pay-type-list.js",
 				"~/Scripts/app/company/directives/pay-code-list.js",
+				"~/Scripts/app/company/directives/renewal-date-list.js",
 				"~/Scripts/app/company/directives/company-locations.js",
 				"~/Scripts/app/company/directives/company-list.js",
 				"~/Scripts/app/company/directives/company.js",
@@ -183,6 +188,7 @@ namespace HrMaxxWeb
 				"~/Scripts/app/payroll/directives/paycheck.js",
 				"~/Scripts/app/journal/directives/regular-check.js",
 				"~/Scripts/app/journal/directives/deposit-ticket.js",
+				"~/Scripts/app/journal/directives/customer-invoice.js",
 				"~/Scripts/app/journal/directives/account-adjustment.js",
 				"~/Scripts/app/journal/directives/tax-payment.js",
 				"~/Scripts/app/journal/directives/journal-list.js",
@@ -225,8 +231,9 @@ namespace HrMaxxWeb
 				"~/Scripts/app/reports/directives/profit-stars-report.js",
 				"~/Scripts/app/reports/directives/commissions-view.js",
 				"~/Scripts/app/reports/directives/cpa-report.js"
-
 				
+
+
 
 				);
 			jquery.Builder = nullBuilder;

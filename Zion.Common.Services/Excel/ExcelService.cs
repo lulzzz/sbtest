@@ -240,5 +240,19 @@ namespace HrMaxx.Common.Services.Excel
 				throw new HrMaxxApplicationException(e.Message, e);
 			}
 		}
+
+		public FileDto GetExcelFile(string name, List<string> columns, List<List<string>> rows, bool hasSampleRows = false)
+		{
+			try
+			{
+				return _excelRepository.GetImportTemplate(name, columns, rows, hasSampleRows);
+			}
+			catch (Exception e)
+			{
+				string message = string.Format(CommonStringResources.ERROR_FailedToRetrieveX, " generate excel file " + name);
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
 	}
 }

@@ -35,7 +35,6 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 
 		void UpdatePayCheckSickLeaveAccumulation(PayCheck payCheck);
 		void UpdatePayrollDates(Models.Payroll mappedResource);
-		void SavePayrollInvoiceCommission(PayrollInvoice payrollInvoice);
 		void SavePayCheckPayTypeAccumulations(List<PayCheckPayTypeAccumulation> ptaccums);
 		void SavePayCheckTaxes(List<PayCheckTax> pttaxes);
 		void SavePayCheckCompensations(List<PayCheckCompensation> ptcomps);
@@ -74,5 +73,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 		void UnVoidPayroll(Guid id, string userName);
 		void UpdateCompanyAndEmployeeLastPayrollDate();
         void SaveScheduledPayroll(SchedulePayroll payroll);
+		void FixPayCheckPayCodes(List<PayCheck> payChecks);
+        void DeleteSchedulePayroll(SchedulePayroll payroll);
     }
 }

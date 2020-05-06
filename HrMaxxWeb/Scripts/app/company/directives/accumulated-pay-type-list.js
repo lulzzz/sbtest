@@ -9,6 +9,7 @@ common.directive('accumulatedPayTypeList', ['zionAPI', 'version',
 				companyId: "=companyId",
 				list: "=list",
 				metaData: "=metaData",
+				mainData: "=mainData",
 				showControls: "=showControls"
 			},
 			templateUrl: zionAPI.Web + 'Areas/Client/templates/accumulated-pay-type-list.html?v=' + version,
@@ -31,9 +32,6 @@ common.directive('accumulatedPayTypeList', ['zionAPI', 'version',
 							text: 'Per Day By Pay Period'
 						}
 					];
-				var addAlert = function (error, type) {
-					$scope.$parent.$parent.addAlert(error, type);
-				};
 				
 				$scope.add = function () {
 					$scope.selected = {
@@ -46,7 +44,8 @@ common.directive('accumulatedPayTypeList', ['zionAPI', 'version',
 						isNew: true,
 						companyManaged: false,
 						isLumpSum: false,
-						isEmployeeSpecific: false
+						isEmployeeSpecific: false,
+						name: ''
                     };
                     $scope.original = angular.copy($scope.selected);
 					$scope.list.push($scope.selected);
@@ -58,17 +57,27 @@ common.directive('accumulatedPayTypeList', ['zionAPI', 'version',
                         $scope.selected = null;
                         $scope.original = null;
 						$rootScope.$broadcast('companyPayTypeUpdated', { pt: data });
-						addAlert('successfully saved accumulated pay type', 'success');
-					}, function(error) {
-						addAlert('error in saving accumulated work type', 'danger');
+						$scope.mainData.showMessage('successfully saved accumulated pay type', 'success');
+						
+					}, function (error) {
+							$scope.mainData.handleError('error in saving accumulated work type', 'danger', error);
+						
 					});
 				}
-				$scope.cancel = function (index) {
+					$scope.cancel = function (index) {
+						var message = "changed will be lost.";
 					if ($scope.selected.id === 0) {
-						$scope.list.splice($scope.list.indexOf($scope.selected), 1);
+						message = "this leave type is not saved so it will be removed";
+						
 					}
-                    $scope.selected = null;
-                    $scope.original = null;
+						$scope.mainData.confirmDialog(message, 'warning', function () {
+							if ($scope.selected.id === 0) {
+								$scope.list.splice($scope.list.indexOf($scope.selected), 1);
+							}
+						$scope.selected = null;
+						$scope.original = null;
+					});
+                    
 				}
 				$scope.setSelected = function(index) {
                     $scope.selected = $scope.list[index];

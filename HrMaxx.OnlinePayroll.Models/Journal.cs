@@ -30,6 +30,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public bool IsDebit { get; set; }
 		public bool IsVoid { get; set; }
 		public List<JournalDetail> JournalDetails { get; set; } 
+		public List<JournalItem> ListItems { get; set; }
 		public string LastModifiedBy { get; set; }
 		public DateTime LastModified { get; set; }
 		public Guid DocumentId { get; set; }
@@ -71,7 +72,13 @@ namespace HrMaxx.OnlinePayroll.Models
 			throw new NotImplementedException();
 		}
 	}
-
+	public class JournalItem
+	{
+		public string Item { get; set; }
+		public decimal Rate { get; set; }
+		public decimal Quantity { get; set; }
+		public decimal Amount { get; set; }
+	}
 	public class JournalDetail
 	{
 		public int AccountId { get; set; }

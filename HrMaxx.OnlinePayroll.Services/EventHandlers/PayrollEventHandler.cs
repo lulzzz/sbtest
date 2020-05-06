@@ -170,10 +170,10 @@ namespace HrMaxx.OnlinePayroll.Services.EventHandlers
 			try
 			{
 				var invoices = _readerService.GetPayrollInvoices(companyId: event1.SavedObject.Id);
-				invoices.Where(i => i.SalesRep == null || i.SalesRep == Guid.Empty).ToList().ForEach(i =>
+				invoices.Where(i=>!i.CommissionClaimed).ToList().ForEach(i =>
 				{
 					i.UserId = event1.UserId;
-					i.CompanyInvoiceSetup.SalesRep = event1.SavedObject.Contract.InvoiceSetup.SalesRep;
+					i.CompanyInvoiceSetup.SalesReps = event1.SavedObject.Contract.InvoiceSetup.SalesReps;
 					i.CalculateCommission();
 					_payrollRepository.SavePayrollInvoice(i, ref strLog);
 					var memento = Memento<PayrollInvoice>.Create(i, EntityTypeEnum.Invoice, event1.UserName, string.Format("Invoice Commission updated through company commission set up change"), i.UserId);
