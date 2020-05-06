@@ -66,7 +66,7 @@ common.directive('customerInvoice', ['zionAPI','version','$window',
 
 					$scope.saveJournalItem = function (ji) {
 						updateItemAmount();
-						$scope.selectedjd = null;
+						$scope.selectedji = null;
 						$scope.originalji = null;
 						
 					}
