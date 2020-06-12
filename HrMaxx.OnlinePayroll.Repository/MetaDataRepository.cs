@@ -321,12 +321,12 @@ namespace HrMaxx.OnlinePayroll.Repository
 			}
 		}
 
-		public ImportMap GetCompanyTsImportMap(Guid companyId)
+		public ImportMap GetCompanyTsImportMap(Guid companyId, int type=1)
 		{
-			const string sql = "select * from CompanyTSImportMap where CompanyId=@CompanyId";
+			const string sql = "select * from CompanyTSImportMap where CompanyId=@CompanyId and Type=@Type";
 			using (var conn = GetConnection())
 			{
-				var result = conn.Query<Models.DataModel.CompanyTSImportMap>(sql, new {CompanyId = companyId}).FirstOrDefault();
+				var result = conn.Query<Models.DataModel.CompanyTSImportMap>(sql, new {CompanyId = companyId, Type=type}).FirstOrDefault();
 				if (result != null)
 					return JsonConvert.DeserializeObject<ImportMap>(result.TimeSheetImportMap);
 				return null;

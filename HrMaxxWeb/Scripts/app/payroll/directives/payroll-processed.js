@@ -237,19 +237,56 @@ common.directive('payrollProcessed', ['$uibModal', 'zionAPI', '$timeout', '$wind
 
 					}
 					
-					$scope.printPayrollReport = function (payroll) {
-						payroll.company.companyCheckPrintOrder = $scope.company.companyCheckPrintOrder;
-						payrollRepository.printPayrollReport(payroll).then(function (data) {
+					$scope.printPayrollReport = function (payroll, mode) {
+						var p = angular.copy(payroll);
+						p.warnings = mode;
+						p.company.companyCheckPrintOrder = $scope.company.companyCheckPrintOrder;
+						payrollRepository.printPayrollReport(p).then(function (data) {
 							var a = document.createElement('a');
 							a.href = data.file;
 							a.target = '_blank';
 							a.download = data.name;
 							document.body.appendChild(a);
 							a.click();
-							if (payroll.status > 2)
-								$scope.$parent.$parent.updatePrintStatus();
+							
 						}, function (error) {
-								$scope.mainData.showMessage('error printing pay check', 'danger');
+								$scope.mainData.showMessage('error printing payroll report', 'danger');
+						});
+					}
+					$scope.printCertifiedReport = function (payroll, mode) {
+						var p = angular.copy(payroll);
+						p.warnings = mode;
+						p.company.companyCheckPrintOrder = $scope.company.companyCheckPrintOrder;
+						p.startDate = moment(p.startDate).format("MM/DD/YYYY");
+						p.endDate = moment(p.endDate).format("MM/DD/YYYY");
+						payrollRepository.printCertifiedReport(p).then(function (data) {
+							var a = document.createElement('a');
+							a.href = data.file;
+							a.target = '_blank';
+							a.download = data.name;
+							document.body.appendChild(a);
+							a.click();
+
+						}, function (error) {
+							$scope.mainData.showMessage('error printing certified report', 'danger');
+						});
+					}
+					$scope.printCertifiedReportXml = function (payroll, mode) {
+						var p = angular.copy(payroll);
+						p.warnings = mode;
+						p.company.companyCheckPrintOrder = $scope.company.companyCheckPrintOrder;
+						p.startDate = moment(p.startDate).format("MM/DD/YYYY");
+						p.endDate = moment(p.endDate).format("MM/DD/YYYY");
+						payrollRepository.printCertifiedReportXml(p).then(function (data) {
+							var a = document.createElement('a');
+							a.href = data.file;
+							a.target = '_blank';
+							a.download = data.name;
+							document.body.appendChild(a);
+							a.click();
+
+						}, function (error) {
+							$scope.mainData.showMessage('error printing certified xml report', 'danger');
 						});
 					}
 					$scope.printPayrollTimesheet = function (payroll) {

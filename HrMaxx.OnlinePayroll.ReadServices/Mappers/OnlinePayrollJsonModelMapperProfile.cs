@@ -57,6 +57,8 @@ namespace HrMaxx.OnlinePayroll.ReadServices.Mappers
 				.ForMember(dest => dest.PrePaidSubscriptionOption, opt => opt.MapFrom(src => src.PrePaidSubscriptionType.HasValue ? (PrePaidSubscriptionOption)src.PrePaidSubscriptionType.Value : PrePaidSubscriptionOption.NA))
 				.ForMember(dest => dest.BankDetails,
 				opt => opt.MapFrom(src => !string.IsNullOrWhiteSpace(src.BankDetails) ? JsonConvert.DeserializeObject<BankAccount>(src.BankDetails) : null))
+				.ForMember(dest => dest.Options,
+				opt => opt.MapFrom(src => !string.IsNullOrWhiteSpace(src.Options) ? JsonConvert.DeserializeObject<CompanyOptions>(src.Options) : new CompanyOptions()))
 				.ForMember(dest => dest.InvoiceSetup,
 				opt => opt.MapFrom(src => !string.IsNullOrWhiteSpace(src.InvoiceSetup) ? JsonConvert.DeserializeObject<InvoiceSetup>(src.InvoiceSetup) : null));
 
@@ -118,6 +120,7 @@ namespace HrMaxx.OnlinePayroll.ReadServices.Mappers
 
 			CreateMap<Models.JsonDataModel.CompanyPayCode, CompanyPayCode>();
 			CreateMap<Models.JsonDataModel.CompanyRenewal, Models.CompanyRenewal>();
+			CreateMap<Models.JsonDataModel.CompanyProject, Models.CompanyProject>();
 
 			CreateMap<Models.JsonDataModel.PayrollInvoiceJson, Models.PayrollInvoice>()
 				.ForMember(dest => dest.EmployerTaxes, opt => opt.MapFrom(src => JsonConvert.DeserializeObject<List<PayrollTax>>(src.EmployerTaxes)))
@@ -169,6 +172,7 @@ namespace HrMaxx.OnlinePayroll.ReadServices.Mappers
 				.ForMember(dest => dest.Notes, opt => opt.MapFrom(src => src.Notes))
 				.ForMember(dest => dest.StartingCheckNumber, opt => opt.MapFrom(src => src.StartingCheckNumber))
 				.ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status))
+				.ForMember(dest => dest.Project, opt => opt.MapFrom(src => src.CompanyProject))
 				.ForMember(dest => dest.Warnings, opt => opt.Ignore())
 				.ForMember(dest => dest.QueuePosition, opt => opt.Ignore())
 				.ForMember(dest => dest.UserId, opt => opt.Ignore());
@@ -209,6 +213,7 @@ namespace HrMaxx.OnlinePayroll.ReadServices.Mappers
 				.ForMember(dest => dest.Deductions, opt => opt.MapFrom(src => src.CompanyDeductions))
 				.ForMember(dest => dest.PayCodes, opt => opt.MapFrom(src => src.CompanyPayCodes))
 				.ForMember(dest => dest.CompanyRenewals, opt => opt.MapFrom(src => src.CompanyRenewals))
+				.ForMember(dest => dest.CompanyProjects, opt => opt.MapFrom(src => src.CompanyProjects))
 				.ForMember(dest => dest.WorkerCompensations, opt => opt.MapFrom(src => src.CompanyWorkerCompensations))
 				.ForMember(dest => dest.UserId, opt => opt.Ignore())
 				.ForMember(dest => dest.InsuranceClientNo, opt => opt.MapFrom(src => src.ClientNo))

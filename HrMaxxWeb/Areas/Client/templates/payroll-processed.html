@@ -83,25 +83,31 @@
 
 					<div class="dropdown-menu dropdown-menu-right">
 
-						<a class="dropdown-item" ng-click="printPayrollTimesheet(item)" ng-show="item.status!==1 && item.status!==2 && isPrintable(item)" title="print timesheets"><button class="btn btn-success btn-icon btn-sm"><i class="fa fa-print m-r-5"></i></button> timesheets </a>
+						<a class="dropdown-item" ng-click="printPayrollTimesheet(item)" ng-show="item.status!==1 && item.status!==2 && isPrintable(item)" title="pdf timesheets"><button class="btn btn-success btn-icon btn-sm"><i class="fa fa-download m-5"></i></button> timesheets </a>
 						<div class="dropdown-divider" ng-show="item.status!==1 && item.status!==2 && isPrintable(item)"></div>
-						<a class="dropdown-item" ng-click="printPayrollReport(item)" ng-show="item.status!==1 && item.status!==2 && isPrintable(item)" title="print report"><button class="btn btn-success btn-icon btn-sm"><i class="fa fa-print m-r-5"></i></button> report</a>
+						<a class="dropdown-item" ng-click="printPayrollReport(item, 1)" ng-show="item.status!==1 && item.status!==2 && isPrintable(item)" title="pdf report"><button class="btn btn-success btn-icon btn-sm"><i class="fa fa-download m-5"></i></button> report</a>
 						<div class="dropdown-divider" ng-show="item.status!==1 && item.status!==2 && isPrintable(item)"></div>
-						<a class="dropdown-item" ng-click="printPayrollChecks(item, false)" ng-show="item.status!==1 && item.status!==2 && isPrintable(item)" title="print checks"><button class="btn btn-success btn-icon btn-sm"><i class="fa fa-print m-r-5"></i></button> checks</a>
+						<a class="dropdown-item" ng-click="printPayrollReport(item, 2)" ng-show="item.status!==1 && item.status!==2 && isPrintable(item)" title="excel report"><button class="btn btn-success btn-icon btn-sm"><i class="fa fa-download m-5"></i></button> excel</a>
 						<div class="dropdown-divider" ng-show="item.status!==1 && item.status!==2 && isPrintable(item)"></div>
-						<a class="dropdown-item" ng-click="printPayrollChecks(item, true)" ng-show="item.status!==1 && item.status!==2 && isPrintable(item)" title="re-print checks"><button class="btn btn-danger btn-icon btn-sm"><i class="fa fa-print m-r-5"></i></button> re-print</a>
+						<a class="dropdown-item" ng-click="printCertifiedReport(item, 2)" ng-show="item.isCertified && item.status!==1 && item.status!==2 && isPrintable(item)" title="certified report"><button class="btn btn-success btn-icon btn-sm"><i class="fa fa-certificate m-5"></i></button> certified</a>
+						<div class="dropdown-divider" ng-show="item.status!==1 && item.status!==2 && isPrintable(item)"></div>
+						<a class="dropdown-item" ng-click="printCertifiedReportXml(item, 2)" ng-show="item.isCertified && item.status!==1 && item.status!==2 && isPrintable(item)" title="certified XML report"><button class="btn btn-success btn-icon btn-sm"><i class="fa fa-x-ray m-5"></i></button> certified XML</a>
+						<div class="dropdown-divider" ng-show="item.status!==1 && item.status!==2 && isPrintable(item)"></div>
+						<a class="dropdown-item" ng-click="printPayrollChecks(item, false)" ng-show="item.status!==1 && item.status!==2 && isPrintable(item)" title="print checks"><button class="btn btn-success btn-icon btn-sm"><i class="fa fa-print m-5"></i></button> checks</a>
+						<div class="dropdown-divider" ng-show="item.status!==1 && item.status!==2 && isPrintable(item)"></div>
+						<a class="dropdown-item" ng-click="printPayrollChecks(item, true)" ng-show="item.status!==1 && item.status!==2 && isPrintable(item)" title="re-print checks"><button class="btn btn-danger btn-icon btn-sm"><i class="fa fa-print m-5"></i></button> re-print</a>
 						<div class="dropdown-divider" ng-show="item.status!==1 && item.status!==2 && isPrintable(item)"></div>
 
 						<a class="dropdown-item" ng-click="saveStaging()" ng-show="item.status===2" title="save draft"><button class="btn btn-warning btn-icon btn-sm"><i class="fa fa-print m-r-5 "></i></button> save draft</a>
 						<div class="dropdown-divider" ng-show="item.status===2"></div>
 
-						<a class="dropdown-item" ng-click="printPayrollPack(item)" ng-show="item.status!==1 && item.status!==2 && item.status!==6 && isPrintable(item)" ng-if="!item.isHistory" title="print pacl"><button class="btn btn-warning btn-icon btn-sm"><i class="fa fa-print m-r-5"></i></button> pack</a>
+						<a class="dropdown-item" ng-click="printPayrollPack(item)" ng-show="item.status!==1 && item.status!==2 && item.status!==6 && isPrintable(item)" ng-if="!item.isHistory" title="print pacl"><button class="btn btn-warning btn-icon btn-sm"><i class="fa fa-print m-5"></i></button> pack</a>
 						<div class="dropdown-divider" ng-show="item.status!==1 && item.status!==2 && item.status!==6 && isPrintable(item)" ng-if="!item.isHistory"></div>
 
-						<a class="dropdown-item" ng-click="emailPayrollPack(item)" ng-show="datasvc.canACHEmail && item.status!==1 && item.status!==2 && item.status!==6 && isPrintable(item)" ng-if="!item.isHistory" title="email pack"><button class="btn btn-danger btn-icon btn-sm"><i class="fa fa-envelope m-r-5"></i></button> ACH & Pack</a>
+						<a class="dropdown-item" ng-click="emailPayrollPack(item)" ng-show="datasvc.canACHEmail && item.status!==1 && item.status!==2 && item.status!==6 && isPrintable(item)" ng-if="!item.isHistory" title="email pack"><button class="btn btn-danger btn-icon btn-sm"><i class="fa fa-envelope m-5"></i></button> ACH & Pack</a>
 						<div class="dropdown-divider" ng-show="item.status!==1 && item.status!==2 && item.status!==6 && isPrintable(item)" ng-if="!item.isHistory"></div>
-						<a class="dropdown-item" ng-click="recalculateAccumulations(item)" ng-show="item.status!==1 && item.status!==2 && item.status!==6 && mainData.userRole==='SuperUser1'" ng-if="!item.isHistory" title="recalculate accumulations"><button class="btn btn-danger btn-icon btn-sm"><i class="fa fa-recycle m-r-5"></i></button>  accumulations</a>
-						
+						<a class="dropdown-item" ng-click="recalculateAccumulations(item)" ng-show="item.status!==1 && item.status!==2 && item.status!==6 && mainData.userRole==='SuperUser1'" ng-if="!item.isHistory" title="recalculate accumulations"><button class="btn btn-danger btn-icon btn-sm"><i class="fa fa-recycle m-5"></i></button>  accumulations</a>
+
 					</div>
 				</div>
 			</div>
@@ -208,9 +214,9 @@
 
 							<div class="dropdown-menu dropdown-menu-right">
 
-								<a class="dropdown-item" ng-show="false && item.status>2 && item.status!==6 && !listitem.isVoid && !listitem.isReIssued && listitem.paymentMethod===1" ng-click="reIssueCheck(listitem)" title="Re-Issue"><i class="fa fa-lg fa-share-square-o m-r-5 text-info"></i> re-issue</a>
+								<a class="dropdown-item" ng-show="false && item.status>2 && item.status!==6 && !listitem.isVoid && !listitem.isReIssued && listitem.paymentMethod===1" ng-click="reIssueCheck(listitem)" title="Re-Issue"><i class="fa fa-lg fa-share-square-o m-5 text-info"></i> re-issue</a>
 								<div class="dropdown-divider" ng-show="false && item.status>2 && item.status!==6 && !listitem.isVoid && !listitem.isReIssued && listitem.paymentMethod===1"></div>
-								<a class="dropdown-item" ng-show="item.status>2 && item.status!==6 && !listitem.isVoid" ng-click="markPrinted(listitem)" title="Print Check" ng-if="!item.isHistory"><i class="fa fa-lg fa-print m-r-5 text-success-darker"></i> print</a>
+								<a class="dropdown-item" ng-show="item.status>2 && item.status!==6 && !listitem.isVoid" ng-click="markPrinted(listitem)" title="Print Check" ng-if="!item.isHistory"><i class="fa fa-lg fa-print m-5 text-success-darker"></i> print</a>
 								<div class="dropdown-divider" ng-show="item.status>2 && item.status!==6 && !listitem.isVoid"></div>
 								<a class="dropdown-item" ng-show="datasvc.showUnVoidPaycheck && item.status>2 && listitem.isVoid && mainData.userRole==='SuperUser'" ng-click="unvoidcheck(listitem)" title="Un-Void"><i class="fa fa-lg fa-check text-success-darker"></i> un-void</a>
 								<div class="dropdown-divider" ng-show="datasvc.showUnVoidPaycheck && item.status>2 && listitem.isVoid && mainData.userRole==='SuperUser'"></div>

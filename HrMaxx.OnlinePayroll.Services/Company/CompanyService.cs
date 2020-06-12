@@ -579,11 +579,11 @@ namespace HrMaxx.OnlinePayroll.Services
 			}
 		}
 
-		public void SaveTSImportMap(Guid id, ImportMap importMap)
+		public void SaveTSImportMap(Guid id, ImportMap importMap, int type = 1)
 		{
 			try
 			{
-				_companyRepository.SaveTSImportMap(id, importMap);
+				_companyRepository.SaveTSImportMap(id, importMap, type);
 			}
 			catch (Exception e)
 			{
@@ -834,6 +834,89 @@ namespace HrMaxx.OnlinePayroll.Services
 			catch (Exception e)
 			{
 				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, " save renewal date completion " + renewalId);
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
+
+		public CompanyProject SaveProject(CompanyProject project, Guid userId)
+		{
+			try
+			{
+				var project1 = _companyRepository.SaveProject(project);
+				var returnCompany = _readerService.GetCompany(project.CompanyId);
+				var memento = Memento<Company>.Create(returnCompany, EntityTypeEnum.Company, returnCompany.UserName, string.Format("Project Updated {0}", project.ProjectName), userId);
+				_mementoDataService.AddMementoData(memento, true);
+				return project1;
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, " save project " + project.Id);
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
+
+		public List<TimesheetEntry> GetEmployeeTimesheet(Guid companyId, Guid? employeeId, int month, int year)
+		{
+			try
+			{
+				var data =  _companyRepository.GetEmployeeTimesheet(companyId, employeeId, new DateTime(year, month, 1).Date, new DateTime(year, month, DateTime.DaysInMonth(year, month)).Date);
+				return data;
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, " get time sheet entry for employee " + employeeId);
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
+
+		public TimesheetEntry SaveTimesheetEntry(TimesheetEntry resource)
+		{
+			try
+			{
+				return _companyRepository.SaveTimesheetEntry(resource);
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, " save time sheet entry for employee " + resource.EmployeeId);
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
+
+		public TimesheetEntry DeleteEmployeeTimesheet(int id)
+		{
+			try
+			{
+				return _companyRepository.DeleteTimesheetEntry(id);
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, " delete time sheet entry with id " + id);
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
+
+		public List<TimesheetEntry> SaveTimesheetEntries(List<TimesheetEntry> resources)
+		{
+			try
+			{
+				using(var txn = TransactionScopeHelper.Transaction())
+				{
+					resources.ForEach(t =>
+					{
+						t = _companyRepository.SaveTimesheetEntry(t);
+					});
+					txn.Complete();
+				}
+				return resources;
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, " delete time sheet entry with id ");
 				Log.Error(message, e);
 				throw new HrMaxxApplicationException(message, e);
 			}

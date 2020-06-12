@@ -156,15 +156,7 @@
                                                         <input type="text" name="minwage" class="form-control" data-parsley-group="wizard-step-2" data-parsley-type="number" min="{{getApplicableMinimumWage()}}" ng-model="selectedCompany.minWage" step="0.01" />
 
                                                     </div>
-                                                    <div class="form-group">
-                                                        <label></label>
-                                                        <div>
-                                                            <label for="isrestaurant" class="switch">
-                                                                Restarurant Payroll?
-                                                                <input id="isrestaurant" type="checkbox" ng-model="selectedCompany.isRestaurant" /><i></i>
-                                                            </label>
-                                                        </div>
-                                                    </div>
+                                                   
                                                 </div>
                                                 <div class="col-sm-4">
                                                     <div class="form-group">
@@ -230,24 +222,7 @@
                                                         <label>Insurance Client No</label>
                                                         <input type="text" name="cno" class="form-control" data-parsley-group="wizard-step-2" ng-model="selectedCompany.insuranceClientNo" ng-required="selectedCompany.insuranceGroup" />
                                                     </div>
-                                                    <div class="form-group">
-                                                        <label></label>
-                                                        <div>
-                                                            <label for="directdebitpayer" class="switch">
-                                                                Pay by Direct Deposit
-                                                                <input id="directdebitpayer" type="checkbox" ng-model="selectedCompany.directDebitPayer" ng-disabled="!mainData.selectedHost.isHostAllowsDirectDebit" /><i></i>
-                                                            </label>
-                                                        </div>
-                                                    </div>
-                                                    <div class="form-group">
-                                                        <label></label>
-                                                        <div>
-                                                            <label for="profitstarspayer" class="switch">
-                                                                Pay by ProfitStars
-                                                                <input id="profitstarspayer" type="checkbox" ng-model="selectedCompany.profitStarsPayer" ng-disabled="!mainData.selectedHost.isHostAllowsDirectDebit" /><i></i>
-                                                            </label>
-                                                        </div>
-                                                    </div>
+                                                   
                                                     <div class="form-group">
                                                         <label>Invoice Note</label>
                                                         <input type="text" name="notes" class="form-control" data-parsley-group="wizard-step-2" ng-model="selectedCompany.notes" />
@@ -467,12 +442,13 @@
                                     </div>
                                     <!-- end wizard step-3 -->
                                     <div class="wizard-step-4" ng-if="data.viewContract">
+
                                         <fieldset>
                                             <legend class="width-full">Contract <span class="show-red" ng-show="selectedCompany.contract.invoiceSetup.notSaved">Invoice configurations are not saved</span></legend>
                                             <!-- begin row -->
                                             <div class="row">
                                                 <!-- begin col-4 -->
-                                                <div class="col-sm-4">
+                                                <div class="col-sm-3">
                                                     <div class="form-group block1">
                                                         <label>Type</label>
                                                         <select ng-model="selectedCompany.contract.contractOption" ng-change="contractOptionChanged()" name="contracttype" class="form-control" convert-to-number>
@@ -499,9 +475,10 @@
                                                             <option value="3" ng-if="selectedCompany.contract.contractOption===2">Invoice</option>
                                                         </select>
                                                     </div>
+                                                    
 
                                                 </div>
-                                                <div class="col-sm-4" ng-if="selectedCompany.contract.billingOption===1">
+                                                <div class="col-sm-3" ng-if="selectedCompany.contract.billingOption===1">
 
                                                     <div class="form-group">
                                                         <label>Credit Card Type</label>
@@ -567,7 +544,7 @@
                                                     </div>
                                                 </div>
 
-                                                <div class="col-sm-4" ng-if="selectedCompany.contract.billingOption===2">
+                                                <div class="col-sm-3" ng-if="selectedCompany.contract.billingOption===2">
 
                                                     <div class="form-group">
                                                         <label>Bank Name</label>
@@ -601,7 +578,7 @@
                                                     </div>
 
                                                 </div>
-                                                <div class="col-sm-4" ng-if="selectedCompany.contract.billingOption===3">
+                                                <div class="col-sm-3" ng-if="selectedCompany.contract.billingOption===3">
                                                     <div class="form-group">
                                                         <label>Invoice Type</label>
                                                         <select ng-model="selectedCompany.contract.invoiceSetup.invoiceType" name="invtype" class="form-control" convert-to-number>
@@ -624,14 +601,14 @@
                                                         <input class="form-control" name="adminfee" ng-model="selectedCompany.contract.invoiceSetup.adminFee" required data-parsley-group="wizard-step-4" data-parsley-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" data-parsley-min="0" data-parsley-trigger="blur" step="0.01">
                                                     </div>
                                                     <div class="form-group col-sm-4">
-                                                        <label>Admin Fee Method</label>
+                                                        <label>Method</label>
                                                         <select ng-model="selectedCompany.contract.invoiceSetup.adminFeeMethod" name="adminfeemethod" class="form-control" convert-to-number>
                                                             <option value="1">Amount (per payroll)</option>
                                                             <option value="2">Percentage</option>
                                                         </select>
                                                     </div>
                                                     <div class="form-group col-sm-4">
-                                                        <label>Fee Threshold</label>
+                                                        <label>Threshold</label>
                                                         <input class="form-control" name="threshold" ng-model="selectedCompany.contract.invoiceSetup.adminFeeThreshold" data-parsley-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" data-parsley-min="0" data-parsley-trigger="blur" step="0.01">
                                                     </div>
 
@@ -646,7 +623,7 @@
 
 
                                                 </div>
-                                                <div class="col-sm-4" ng-if="selectedCompany.contract.billingOption===3">
+                                                <div class="col-sm-3" ng-if="selectedCompany.contract.billingOption===3">
 
                                                     <ul class="list-group">
                                                         <li class="list-group-item no-border"><i class="fa fa-lg" ng-class="{'fa-check-circle':selectedCompany.contract.invoiceSetup.invoiceType===1, 'fa-times-circle':selectedCompany.contract.invoiceSetup.invoiceType!==1}" ng-style="(selectedCompany.contract.invoiceSetup.invoiceType===1 && {'color':'green'}) || (selectedCompany.contract.invoiceSetup.invoiceType!==1 && {'color':'red'})"></i> Gross Wages</li>
@@ -659,6 +636,61 @@
                                                     </ul>
 
 
+                                                </div>
+                                                <div class="col-sm-3">
+                                                    <div class="note note-warning note-with-right-icon">
+
+                                                        <div class="note-content text-left">
+                                                            <h4><b>Options!</b></h4>
+                                                            <div class="form-group">
+                                                                <label></label>
+                                                                <div>
+                                                                    <label for="directdebitpayer" class="switch">
+                                                                        Pay by Direct Deposit
+                                                                        <input id="directdebitpayer" type="checkbox" ng-model="selectedCompany.contract.options.directDeposit" ng-disabled="mainData.userRole!=='SuperUser' || mainData.userRole!=='Master')" /><i></i>
+                                                                    </label>
+                                                                </div>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label></label>
+                                                                <div>
+                                                                    <label for="profitstarspayer" class="switch">
+                                                                        Pay by ProfitStars
+                                                                        <input id="profitstarspayer" type="checkbox" ng-model="selectedCompany.contract.options.profitStarsPayer" ng-disabled="mainData.userRole!=='SuperUser' || mainData.userRole!=='Master')" /><i></i>
+                                                                    </label>
+                                                                </div>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label></label>
+                                                                <div>
+                                                                    <label for="timesheets" class="switch">
+                                                                        Employee Timesheets
+                                                                        <input id="timesheets" type="checkbox" ng-model="selectedCompany.contract.options.timesheets" ng-disabled="mainData.userRole!=='SuperUser' || mainData.userRole!=='Master')" /><i></i>
+                                                                    </label>
+                                                                </div>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label></label>
+                                                                <div>
+                                                                    <label for="certifiedpayrolls" class="switch">
+                                                                        Certified Payrolls
+                                                                        <input id="certifiedpayrolls" type="checkbox" ng-model="selectedCompany.contract.options.certifiedPayrolls" ng-disabled="mainData.userRole!=='SuperUser' || mainData.userRole!=='Master')" /><i></i>
+                                                                    </label>
+                                                                </div>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label></label>
+                                                                <div>
+                                                                    <label for="restaurantpayrolls" class="switch">
+                                                                        Restaurant Payroll
+                                                                        <input id="certifiedpayrolls" type="checkbox" ng-model="selectedCompany.contract.options.restaurantPayrolls" ng-disabled="mainData.userRole!=='SuperUser' || mainData.userRole!=='Master')" /><i></i>
+                                                                    </label>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="note-icon"><i class="fa fa-lightbulb"></i></div>
+                                                    </div>
+                                                    
                                                 </div>
                                             </div>
                                             <div class="row" ng-if="selectedCompany.contract.billingOption===3">
@@ -908,6 +940,21 @@
             <div id="collapseEight" class="panel-collapse collapse">
                 <div class="panel-body">
                     <renewal-date-list list="selectedCompany.companyRenewals" company-id="selectedCompany.id" main-data="mainData" show-controls="showControls" />
+                </div>
+            </div>
+        </div>
+        <div class="panel overflow-hidden" ng-if="selectedCompany.id && selectedCompany.contract.options.certifiedPayrolls" ng-class="{'panel-inverse':!isPopup, 'panel-info' : isPopup}">
+            <div class="panel-heading">
+                <h3 class="panel-title">
+                    <a class="accordion-toggle accordion-toggle-styled collapsed" data-toggle="collapse" data-parent="#accordion" data-target="#collapseNine">
+                        <i class="fa fa-plus-circle pull-right"></i>
+                        Govt Projects
+                    </a>
+                </h3>
+            </div>
+            <div id="collapseNine" class="panel-collapse collapse">
+                <div class="panel-body">
+                    <project-list list="selectedCompany.companyProjects" company-id="selectedCompany.id" main-data="mainData" show-controls="showControls" />
                 </div>
             </div>
         </div>

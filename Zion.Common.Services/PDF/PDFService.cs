@@ -179,7 +179,7 @@ namespace HrMaxx.Common.Services.PDF
 				throw new HrMaxxApplicationException(message, e);
 			}
 		}
-		public FileDto AppendAllDocuments(Guid identifier, string fileName, List<FileDto> documents)
+		public FileDto AppendAllDocuments(Guid identifier, string fileName, List<FileDto> documents, bool saveToDisk = false, string path = "")
 		{
 			try
 			{
@@ -205,12 +205,17 @@ namespace HrMaxx.Common.Services.PDF
 					
 				}
 				byte[] fileContents = null;
+
 				
 				using (var stream = new MemoryStream())
 				{
 					objDoc.Save(stream, true);
 					fileContents = stream.ToArray();
 				}
+
+				if (saveToDisk)
+					objDoc.Save(path);
+				
 				return new FileDto
 				{
 					Data = fileContents,
@@ -413,7 +418,7 @@ namespace HrMaxx.Common.Services.PDF
 			}
 		}
 
-		public FileDto PrintReport(ReportTransformed pdfModels, bool saveToDisk = false)
+		public FileDto PrintReport(ReportTransformed pdfModels, bool saveToDisk = false, string path = "")
 		{
 			try
 			{
@@ -500,7 +505,7 @@ namespace HrMaxx.Common.Services.PDF
 					
 					counter++;
 				}
-				return AppendAllDocuments(Guid.Empty, pdfModels.Name, docs);
+				return AppendAllDocuments(Guid.Empty, pdfModels.Name, docs, saveToDisk, path);
 				
 			}
 			catch (Exception e)

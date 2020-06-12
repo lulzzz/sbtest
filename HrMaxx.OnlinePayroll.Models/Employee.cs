@@ -68,6 +68,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public List<PayCheckPayTypeAccumulation> Accumulations { get; set; } 
 		public DateTime? LastPayrollDate { get; set; }
 		public bool IsTipped { get; set; }
+		public string WorkClassification { get; set; }
 		public string GetSearchText
 		{
 			get
@@ -83,6 +84,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public string FullName
 		{
 			get { return string.Format("{0}{2}{1}", FirstName, LastName, string.Format(" {0}",!string.IsNullOrWhiteSpace(MiddleInitial)? MiddleInitial.Substring(0,1) + " " : string.Empty) ); }
+			set { }
 		}
 
 		public string FullNameSpecial

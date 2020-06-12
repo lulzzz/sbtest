@@ -63,8 +63,7 @@ namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
 		public int? CompanyEmployeeNo { get; set; }
 		public bool IsTipped { get; set; }
 		public string Notes { get; set; }
-
-
+		public string WorkClassification { get; set; }
 		public List<EmployeeACA> EmployeeACAs { get; set; }
 		public List<EmployeeDeduction> EmployeeDeductions { get; set; }
 		public CompanyWorkerCompensation CompanyWorkerCompensation { get; set; }

@@ -21,6 +21,8 @@
 		public const string MarkPayCheckPrinted = "Payroll/MarkPrinted/{payCheckId:int}";
 		public const string ReIssuePayCheck = "Payroll/ReIssueCheck/{payCheckId:int}";
 		public const string PrintPayrollReport = "Payroll/PrintPayrollReport";
+		public const string PrintCertifiedReport = "Payroll/PrintCertifiedReport";
+		public const string PrintCertifiedXmlReport = "Payroll/PrintCertifiedXmlReport";
 		public const string EmailPayrollReport = "Payroll/EmailPayrollPack";
 		public const string ReCalculateAccumulations = "Payroll/ReCalculateAccumulations";
 		public const string PrintPayrollPack = "Payroll/PrintPayrollPack";
@@ -67,6 +69,6 @@
 		public const string FixPayrollYTD = "Payroll/FixPayrollYTD/{payrollId:guid}";
 		public const string FixEmployeeYTD = "Payroll/FixEmployeeYTD/{employeeId:guid}";
 		public const string RecalculateEmployeePayTypeAccumulations = "Payroll/RecalculateEmployeePayTypeAccumulations/{employeeId:guid}";
-		
+		public const string PayrollTimesheets = "Payroll/PayrollTimesheets";
 	}
 }

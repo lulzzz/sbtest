@@ -174,12 +174,64 @@ namespace SiteInspectionStatus_Utility
                 case 38:
                     ClearPriorYearAccumulations(container);
                     break;
+                case 39:
+                    GetEmployeeList(container);
+                    break;
+                case 40:
+                    SetCompanyOptions(container);
+                    break;
                 default:
 					break;
 			}
 
 			Console.WriteLine("Utility run finished for ");
 		}
+        private static void SetCompanyOptions(IContainer container)
+        {
+
+            
+            using (var scope = container.BeginLifetimeScope())
+            {
+                var readerservice = scope.Resolve<IReaderService>();
+                var companyRepository = scope.Resolve<ICompanyRepository>();
+                var companies = readerservice.GetCompanies(status:0);
+                companies.ForEach(c =>
+                {
+                    c.Contract.Options.DirectDeposit = c.DirectDebitPayer;
+                    c.Contract.Options.ProfitStarsPayer = c.ProfitStarsPayer;
+                    c.Contract.Options.RestaurantPayrolls = c.IsRestaurant;
+                    companyRepository.SaveCompanyContract(c, c.Contract);
+                });
+            }
+        }
+        private static void GetEmployeeList(IContainer container)
+        {
+            
+            var hostIdstr = Console.ReadLine();
+            var month = Convert.ToInt32(Console.ReadLine());
+            var year = Convert.ToInt32(Console.ReadLine());
+
+            var str = new StringBuilder();
+            using (var scope = container.BeginLifetimeScope())
+            {
+                var readerservice = scope.Resolve<IReadRepository>();
+                var employees = readerservice.GetQueryData<EmployeeListItem>($"select c.CompanyName, e.SSN, e.FirstName + ' ' + e.LastName Employee, e.HireDate, " +
+                    $"m.DateCreated from employee e, company c, Common.Memento m " +
+                    $"where e.CompanyId = c.Id " +
+                    $"and c.HostId = '{hostIdstr}' and e.Id=m.MementoId and m.SourcetypeId=3 and m.Version=1");
+                str.AppendLine("Company, Employee, SSN, Hire Date, Created");
+                employees.Where(e=>e.DateCreated<(new DateTime(year, month, 1)).Date).OrderBy(e=>e.CompanyName).ThenBy(e=>e.Employee).ThenBy(e=>e.HireDate).ToList().ForEach(e =>
+                {
+                    var ssn = Crypto.Decrypt(e.SSN);
+                    str.AppendLine($"{e.CompanyName.Replace(",",string.Empty)}, {e.Employee}, {ssn.Substring(0,3)}-{ssn.Substring(3,2)}-{ssn.Substring(5,4)}, {e.HireDate.ToString("MM/dd/yyyy")}, {e.DateCreated.ToString("MM/dd/yyyy")}");
+                });
+                using (System.IO.StreamWriter file = new System.IO.StreamWriter(@"\Employees.csv"))
+                {
+                    file.WriteLine(str.ToString()); // "sb" is the StringBuilder
+                }
+            }
+        }
+
         private static void ClearPriorYearAccumulations(IContainer container)
         {
             using (var scope = container.BeginLifetimeScope())

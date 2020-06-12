@@ -113,6 +113,16 @@ common.factory('payrollRepository', [
 
 				return deferred.promise;
 			},
+			getPayrollTimesheets: function (payroll) {
+				var deferred = $q.defer();
+				payrollServer.all('PayrollTimesheets').post(payroll).then(function (data) {
+					deferred.resolve(data);
+				}, function (error) {
+					deferred.reject(error);
+				});
+
+				return deferred.promise;
+			},
 			commitPayroll: function (payroll) {
 				var deferred = $q.defer();
 				payrollServer.all('Commit').post(payroll).then(function (data) {
@@ -595,6 +605,14 @@ common.factory('payrollRepository', [
 			printPayrollReport: function (payroll) {
 				return this.getDocument(zionAPI.URL + "Payroll/PrintPayrollReport", payroll);
 				
+			},
+			printCertifiedReport: function (payroll) {
+				return this.getDocument(zionAPI.URL + "Payroll/PrintCertifiedReport", payroll);
+
+			},
+			printCertifiedReportXml: function (payroll) {
+				return this.getDocument(zionAPI.URL + "Payroll/PrintCertifiedXmlReport", payroll);
+
 			},
 			printPayrollPack: function (payroll) {
 				return this.getDocument(zionAPI.URL + "Payroll/PrintPayrollPack", payroll);

@@ -110,6 +110,9 @@
     <Compile Include="DataModel\CompanyPayCode.cs">
       <DependentUpon>OnlinePayrollModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="DataModel\CompanyProject.cs">
+      <DependentUpon>OnlinePayrollModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="DataModel\CompanyRecurringCharge.cs">
       <DependentUpon>OnlinePayrollModel.tt</DependentUpon>
     </Compile>
@@ -314,6 +317,7 @@
     <Compile Include="ProfitStars.cs" />
     <Compile Include="SchedulePayroll.cs" />
     <Compile Include="StaffDashboard.cs" />
+    <Compile Include="TimesheetEntry.cs" />
     <Compile Include="USTaxModels\MTSITTaxTableRow.cs" />
     <Compile Include="USTaxModels\FITW4TaxTableRow.cs" />
     <Compile Include="USTaxModels\FITAlienAdjustmentTableRow.cs" />

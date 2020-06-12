@@ -39,7 +39,7 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 		List<Employee> SaveEmployees(List<Employee> employees, bool ignoreSSNCheck = false);
 
 		
-		void SaveTSImportMap(Guid id, ImportMap importMap);
+		void SaveTSImportMap(Guid id, ImportMap importMap, int type = 1);
 		Company SaveLocation(CompanyLocation mappedResource, string fullName, Guid guid);
 		void RaiseMinWage(MinWageEligibilityCriteria minWage, string user, Guid userId);
 		void CopyEmployees(Guid sourceCompanyId, Guid targetCompanyId, List<Guid> employeeIds, string fullName, bool keepEmployeeNumbers);
@@ -50,5 +50,10 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 		Account GetComanyAccountById(Guid companyId, int accountId);
 		CompanyRenewal SaveRenewal(CompanyRenewal renewal, string username, Guid userid);
         void SaveRenewalDate(Guid companyId, int renewalId, string fullName);
+        CompanyProject SaveProject(CompanyProject resource, Guid userId);
+        List<TimesheetEntry> GetEmployeeTimesheet(Guid companyId, Guid? employeeId, int month, int year);
+        TimesheetEntry SaveTimesheetEntry(TimesheetEntry resource);
+        TimesheetEntry DeleteEmployeeTimesheet(int id);
+		List<TimesheetEntry> SaveTimesheetEntries(List<TimesheetEntry> resources);
     }
 }

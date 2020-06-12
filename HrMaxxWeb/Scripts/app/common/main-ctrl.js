@@ -563,6 +563,11 @@
 			updateInList(dataSvc.selectedCompany.accumulatedPayTypes, pt);
 
 		});
+		$scope.$on('companyProjectUpdated', function (event, args) {
+			var pt = args.pt;
+			updateInList(dataSvc.selectedCompany.companyProjects, pt);
+
+		});
 		var updateInList = function(list, match) {
 			var exists = $filter('filter')(list, { id: match.id });
 			if (exists.length === 0) {

@@ -289,7 +289,8 @@ common.directive('company', ['$uibModal', 'zionAPI', '$timeout', '$window', 'ver
 									applyStatuaryLimits: !$scope.mainData.selectedHost.isPeoHost,
 									applyEnvironmentalFee: $scope.mainData.selectedHost.isPeoHost,
 									printClientName: false,
-									recurringCharges: []
+									recurringCharges: [],
+									salesRep: []
 								}
 							}
 						}
@@ -358,7 +359,8 @@ common.directive('company', ['$uibModal', 'zionAPI', '$timeout', '$window', 'ver
 						}
 					}
 					$scope.addRecurringCharge = function () {
-
+						if (!$scope.selectedCompany.recurringCharges)
+							$scope.selectedCompany.recurringCharges = [];
 						$scope.selectedCompany.recurringCharges.push({
 							id: 0,
 							year: new Date().getFullYear(),
@@ -444,9 +446,9 @@ common.directive('company', ['$uibModal', 'zionAPI', '$timeout', '$window', 'ver
 					}
 					
 					var ready = function () {
-						////$scope.selectedCompany.insuranceGroup = dataSvc.companyMetaData.insuranceGroups.length > 0 ? dataSvc.companyMetaData.insuranceGroups[0] : null;
-						////$scope.selectedCompany.insuranceGroupNo = dataSvc.companyMetaData.insuranceGroups.length > 0 ? dataSvc.companyMetaData.insuranceGroups[0].id : null;
-						////$scope.selectedCompany.insuranceClientNo = '0';
+						$scope.selectedCompany.insuranceGroup = dataSvc.companyMetaData.insuranceGroups.length > 0 ? dataSvc.companyMetaData.insuranceGroups[0] : null;
+						$scope.selectedCompany.insuranceGroupNo = dataSvc.companyMetaData.insuranceGroups.length > 0 ? dataSvc.companyMetaData.insuranceGroups[0].id : null;
+						$scope.selectedCompany.insuranceClientNo = '0';
 						if ($scope.selectedCompany.contract.billingOption === 3 && !$scope.selectedCompany.contract.invoiceSetup) {
 							$scope.selectedCompany.contract.invoiceSetup = {
 								invoiceType: 1,

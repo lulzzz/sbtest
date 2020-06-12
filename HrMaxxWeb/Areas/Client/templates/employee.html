@@ -127,11 +127,12 @@
 											</div>
 										</div>
 										<div class="col-sm-2">
-											<div class="form-group" ng-hide="!selected.id">
-												<label>Employee No</label>
-												<input type="text" name="empno" placeholder="Employee No" class="form-control" ng-model="selected.employeeNo" ng-disabled="true" />
+											<div class="form-group">
+												<label>Employee No (Company)</label>
+												<input type="text" name="empno1" placeholder="Employee No" class="form-control" ng-model="selected.companyEmployeeNo" />
 											</div>
 										</div>
+										
 										<div class="col-sm-4">
 											<div class="form-group">
 												<label>Memo</label>
@@ -156,9 +157,9 @@
 										</div>
 										
 										<div class="col-sm-2">
-											<div class="form-group">
-												<label>Employee No (Company)</label>
-												<input type="text" name="empno1" placeholder="Employee No" class="form-control" ng-model="selected.companyEmployeeNo" />
+											<div class="form-group" ng-hide="!selected.id">
+												<label>Work Classification</label>
+												<input type="text" name="wclass" placeholder="Work Classification" class="form-control" ng-model="selected.workClassification" />
 											</div>
 										</div>
 										<div class="col-sm-4">
@@ -383,7 +384,7 @@
 												<div ng-dropdown-multiselect="" options="data.payCodes" extra-settings="{displayProp: 'dropDownDisplay', idProp: 'id', showCheckAll: true, showUncheckAll: true ,scrollable: true, scrollableHeight: 220, buttonClasses:'btn btn-sm btn-default'}" selected-model="selectedPayCodes" events="payCodeEvents" required data-parsley-group="wizard-step-3"></div>
 
 											</div>
-											<div class="form-group" ng-if="mainData.selectedCompany.isRestaurant && selected.payType===1">
+											<div class="form-group" ng-if="mainData.selectedCompany.contract.options.restaurantPayrolls && selected.payType===1">
 												<label></label>
 												<div>
 													<label for="istipped" class="switch">

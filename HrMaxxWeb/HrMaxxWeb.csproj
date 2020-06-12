@@ -269,8 +269,10 @@
     <Content Include="Areas\Client\templates\awaitingprintpayrolls.html" />
     <Content Include="Areas\Client\templates\documents.html" />
     <Content Include="Areas\Client\templates\company.html" />
+    <Content Include="Areas\Client\templates\employee-timesheet.html" />
     <Content Include="Areas\Client\templates\employee.html" />
     <Content Include="Areas\Client\templates\customer-invoice.html" />
+    <Content Include="Areas\Client\templates\project-list.html" />
     <Content Include="Areas\Client\templates\renewal-date-list.html" />
     <Content Include="Areas\Client\templates\pay-type-list.html" />
     <Content Include="Areas\Client\templates\insurance-group-list.html" />
@@ -283,6 +285,7 @@
     <Content Include="Areas\Client\templates\scheduled-payroll.html" />
     <Content Include="Areas\Client\templates\scheduled-payroll-list.html" />
     <Content Include="Areas\Client\templates\tax-payment.html" />
+    <Content Include="Areas\Client\templates\timesheets.html" />
     <Content Include="Areas\Client\templates\vendor-customer.html" />
     <Content Include="Areas\Reports\templates\ach-report.html" />
     <Content Include="Areas\Reports\templates\ACH.html" />
@@ -306,6 +309,7 @@
     <Content Include="Content\bootstrap-theme\app.css" />
     <Content Include="Content\bootstrap-theme\app.min.css" />
     <Content Include="Content\bootstrap-theme\google.css" />
+    <Content Include="Content\bootstrap-theme\plugins\fullcalendar.css" />
     <Content Include="Content\bootstrap-theme\plugins\jquery.countdown.css" />
     <Content Include="Content\daterangepicker.css" />
     <Content Include="Content\images\coming-soon.jpg" />
@@ -318,6 +322,8 @@
     <Content Include="Scripts\app\common\directives\entity-documents.js" />
     <Content Include="Scripts\app\common\directives\log-viewer.js" />
     <Content Include="Scripts\app\common\directives\pay-type-list.js" />
+    <Content Include="Scripts\app\company\directives\employee-timesheet.js" />
+    <Content Include="Scripts\app\company\directives\project-list.js" />
     <Content Include="Scripts\app\company\directives\renewal-date-list.js" />
     <Content Include="Scripts\app\journal\directives\customer-invoice.js" />
     <Content Include="Scripts\app\payroll\directives\scheduled-payroll.js" />
@@ -1461,6 +1467,7 @@
     <Content Include="Scripts\flot\morris.min.js" />
     <Content Include="Scripts\flot\raphael.min.js" />
     <Content Include="Scripts\form-editable.min.js" />
+    <Content Include="Scripts\fullcalendar\fullcalendar.js" />
     <Content Include="Scripts\html5shiv\html5shiv-printshiv.js" />
     <Content Include="Scripts\html5shiv\html5shiv-printshiv.min.js" />
     <Content Include="Scripts\html5shiv\html5shiv.js" />

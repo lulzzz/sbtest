@@ -112,7 +112,7 @@ common.constant('zionPaths', {
 	Logout: 'Account/LogOff',
 	Token: 'token'
 });
-common.constant('version', '1.0.3.84');
+common.constant('version', '1.0.3.85.25');
 common.constant('EntityTypes', {
 	General:0,
 	Host:1,
@@ -231,7 +231,27 @@ common.constant('Entities', [
 	}
 ]);
 
-
+common.constant('Colors', {
+	aqua: "#00ffff",
+	black: "#000000",
+	blue: "#3788d8",
+	fuchsia: "#ff00ff",
+	gray: "#808080",
+	green: "#00acac",
+	lime: "#00ff00",
+	maroon: "#800000",
+	navy: "#000080",
+	olive: "#808000",
+	purple: "#800080",
+	red: "#ff0000",
+	silver: "#c0c0c0",
+	teal: "#008080",
+	white: "#ffffff",
+	yellow: "#ffff00",
+	orange: "#f59c1a",
+	transparent: [null, null, null, 0],
+	_default: "#ffffff"
+});
 common.factory('commonServer', [
 	'Restangular', 'zionAPI', function (Restangular, zionAPI) {
 

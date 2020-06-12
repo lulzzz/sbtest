@@ -76,6 +76,7 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 		public ContractDetailsResource Contract { get; set; }
 		public List<CompanyPayCodeResource> PayCodes { get; set; }
 		public List<CompanyRenewal> CompanyRenewals { get; set; }
+		public List<CompanyProject> CompanyProjects { get; set; }
 		public List<CompanyLocation> Locations { get; set; } 
 		public Guid? ParentId { get; set; }
 
@@ -117,6 +118,7 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 		public decimal InvoiceCharge { get; set; }
 		public int Method { get; set; }
 		public InvoiceSetupResource InvoiceSetup { get; set; }
+		public CompanyOptions Options { get; set; }
 	}
 
 	public class CreditCardResource
@@ -264,6 +266,7 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 		public List<SalesRepResource> SalesReps { get; set; } 
 		public SalesRepResource SalesRep { get; set; }
 	}
+	
 
 	public class RecurringChargeResource
 	{

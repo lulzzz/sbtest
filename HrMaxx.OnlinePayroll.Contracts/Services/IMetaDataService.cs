@@ -22,7 +22,7 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 		object GetJournalMetaData(Guid companyId, int companyIntId);
 		object GetInvoiceMetaData(Guid companyId);
 		object GetUsersMetaData(Guid? host, Guid? company, Guid? employee);
-
+		object GetCompanyTimesheetMetaData(Guid company);
 		object GetDeductionTypes();
 
 		List<TaxByYear> GetCompanyTaxesForYear(int year);

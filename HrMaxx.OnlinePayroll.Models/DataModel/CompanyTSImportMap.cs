@@ -16,5 +16,6 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
     {
         public System.Guid CompanyId { get; set; }
         public string TimeSheetImportMap { get; set; }
+        public int Type { get; set; }
     }
 }

@@ -182,6 +182,21 @@ namespace HrMaxx.OnlinePayroll.Services
 				throw new HrMaxxApplicationException(message, e);
 			}
 		}
+		public object GetCompanyTimesheetMetaData(Guid company)
+		{
+			try
+			{
+				var importMap = _metaDataRepository.GetCompanyTsImportMap(company, 2);
+				
+				return new { ImportMap = importMap };
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, "Meta Data for Timesheet for company " + company);
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
 
 		public object GetJournalMetaData(Guid companyId, int companyIntId)
 		{

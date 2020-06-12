@@ -92,6 +92,7 @@ common.directive('companyList', ['zionAPI', '$timeout', '$window', 'version', '$
 							payCheckStock: 3,
 							companyCheckPrintOrder: 1,
 							isRestaurant: false,
+							insuranceClientNo: 0,
 							companyAddress: {},
 							states: [],
 							companyTaxRates: [],
@@ -108,8 +109,16 @@ common.directive('companyList', ['zionAPI', '$timeout', '$window', 'version', '$
 									applyStatuaryLimits: $scope.mainData.selectedHost.isPeoHost,
 									applyWCCharge: true,
 									printClientName: false,
-									recurringCharges:[]
-								}
+									recurringCharges: [],
+									salesReps: []
+								},
+								options: {
+									directDeposit: false,
+									profitStarsPayer: false,
+									timesheets: false,
+									certifiedPayrolls: false,
+									restaurantPayrolls: false
+                                }
 							}
 						};
 						if ($scope.mainData.selectedHost.isPeoHost) {

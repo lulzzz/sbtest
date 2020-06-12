@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web.Http;
@@ -19,6 +20,7 @@ using HrMaxxAPI.Code.Filters;
 using HrMaxxAPI.Code.Helpers;
 using HrMaxxAPI.Resources.Common;
 using HrMaxxAPI.Resources.OnlinePayroll;
+using HrMaxxAPI.Resources.Payroll;
 using Microsoft.Ajax.Utilities;
 using Newtonsoft.Json;
 
@@ -29,7 +31,7 @@ namespace HrMaxxAPI.Controllers.Companies
 	  private readonly IMetaDataService _metaDataService;
 		private readonly ICompanyService _companyService;
 		private readonly IPayrollService _payrollService;
-		private readonly IExcelService _excelServce ;
+		private readonly IExcelService _excelService ;
 	  
 	  private readonly IReaderService _readerService;
 	  
@@ -37,7 +39,7 @@ namespace HrMaxxAPI.Controllers.Companies
 	  {
 			_metaDataService = metaDataService;
 		  _companyService = companyService;
-		  _excelServce = excelService;
+		  _excelService = excelService;
 		 
 		  _payrollService = payrollService;
 		  _readerService = readerService;
@@ -92,6 +94,14 @@ namespace HrMaxxAPI.Controllers.Companies
 		public object GetEmployeeMetaData()
 		{
 			return MakeServiceCall(() => _metaDataService.GetEmployeeMetaData(), "Get employee meta data", true);
+		}
+
+		[System.Web.Http.HttpGet]
+		[System.Web.Http.Route(CompanyRoutes.TimesheetMetaData)]
+		[DeflateCompression]
+		public object TimesheetMetaData(Guid companyId)
+		{
+			return MakeServiceCall(() => _metaDataService.GetCompanyTimesheetMetaData(companyId), "Get company timesheet meta data", true);
 		}
 
 		[System.Web.Http.HttpPost]
@@ -270,6 +280,15 @@ namespace HrMaxxAPI.Controllers.Companies
 			return MakeServiceCall(() => _companyService.SaveRenewal(resource, CurrentUser.FullName, new Guid(CurrentUser.UserId)), "save company pay code", true);
 			
 		}
+		[System.Web.Http.HttpPost]
+		[System.Web.Http.Route(CompanyRoutes.SaveProjects)]
+		public CompanyProject SaveProjects(CompanyProject resource)
+		{
+			resource.LastModified = DateTime.Now;
+			resource.LastModifiedBy = CurrentUser.FullName;
+			return MakeServiceCall(() => _companyService.SaveProject(resource, new Guid(CurrentUser.UserId)), "save company project", true);
+
+		}
 
 		[System.Web.Http.HttpPost]
 		[System.Web.Http.Route(CompanyRoutes.SaveLocation)]
@@ -391,7 +410,7 @@ namespace HrMaxxAPI.Controllers.Companies
 		public HttpResponseMessage GetEmployeeImportTemplate(Guid companyId)
 		{
 			
-			var printed = MakeServiceCall(() => _excelServce.GetEmployeeImportTemplate(companyId), "get employee import template for " + companyId, true);
+			var printed = MakeServiceCall(() => _excelService.GetEmployeeImportTemplate(companyId), "get employee import template for " + companyId, true);
 			var response = new HttpResponseMessage { Content = new StreamContent(new MemoryStream(printed.Data)) };
 			response.Content.Headers.ContentType = new MediaTypeHeaderValue(printed.MimeType);
 
@@ -418,7 +437,7 @@ namespace HrMaxxAPI.Controllers.Companies
 				var fileUploadObj = await ProcessMultipartContent();
 				filename = fileUploadObj.file.FullName;
 				var company = Mapper.Map<Company, CompanyResource>(_readerService.GetCompany(fileUploadObj.CompanyId));
-				var importedRows = _excelServce.ImportFromExcel(fileUploadObj.file, 3);
+				var importedRows = _excelService.ImportFromExcel(fileUploadObj.file, 3);
 				var employees = new List<EmployeeResource>();
 				var error = string.Empty;
 				
@@ -514,7 +533,7 @@ namespace HrMaxxAPI.Controllers.Companies
 				if(!companyOverrideableTaxes.Any())
 					throw new Exception("No Company Specific Taxes Found for Year " + fileUploadObj.Year);
 
-				var importedRows = _excelServce.ImportFromExcel(fileUploadObj.file, 2);
+				var importedRows = _excelService.ImportFromExcel(fileUploadObj.file, 2);
 				var taxRates = new List<CaliforniaCompanyTaxResource>();
 				var error = string.Empty;
 				importedRows.ForEach(er =>
@@ -568,7 +587,7 @@ namespace HrMaxxAPI.Controllers.Companies
 				
 				var companies = _readerService.GetCompanies(); //_companyService.GetAllCompanies();
 
-				var importedRows = _excelServce.ImportWithMap(fileUploadObj.file, fileUploadObj.ImportMap, fileUploadObj.FileName, false);
+				var importedRows = _excelService.ImportWithMap(fileUploadObj.file, fileUploadObj.ImportMap, fileUploadObj.FileName, false);
 				var wcRates = new List<CompanyWorkerCompensationRatesResource>();
 				var error = string.Empty;
 				importedRows.ForEach(er =>
@@ -698,7 +717,7 @@ namespace HrMaxxAPI.Controllers.Companies
 		public HttpResponseMessage GetCaliforniaEDDExport()
 		{
 
-			var printed = MakeServiceCall(() => _excelServce.GetCaliforniaEDDExport(), "Get California EDD Export", true);
+			var printed = MakeServiceCall(() => _excelService.GetCaliforniaEDDExport(), "Get California EDD Export", true);
 			var response = new HttpResponseMessage { Content = new StreamContent(new MemoryStream(printed.Data)) };
 			response.Content.Headers.ContentType = new MediaTypeHeaderValue(printed.MimeType);
 
@@ -720,6 +739,114 @@ namespace HrMaxxAPI.Controllers.Companies
 	  public List<EmployeeSSNCheck> SsnCheck(string ssn)
 	  {
 			return MakeServiceCall(() => _companyService.CheckSSN(ssn), "check ssn ", true);
-	  } 
-  }
+	  }
+
+		[System.Web.Http.HttpPost]
+		[System.Web.Http.Route(CompanyRoutes.GetEmployeeTimesheet)]
+		public List<TimesheetEntry> GetEmployeeTimesheet(TimesheetRequestResource resource)
+		{
+			return MakeServiceCall(() => _companyService.GetEmployeeTimesheet(resource.CompanyId, resource.EmployeeId, resource.Month, resource.Year), "get employee timesheet ", true);
+		}
+		[System.Web.Http.HttpGet]
+		[System.Web.Http.Route(CompanyRoutes.DeleteEmployeeTimesheet)]
+		public TimesheetEntry DeleteEmployeeTimesheet(int id)
+		{
+			return MakeServiceCall(() => _companyService.DeleteEmployeeTimesheet(id), "delete employee timesheet entry ", true);
+		}
+		[System.Web.Http.HttpPost]
+		[System.Web.Http.Route(CompanyRoutes.EmployeeTimesheet)]
+		public TimesheetEntry EmployeeTimesheet(TimesheetEntry resource)
+		{
+			resource.LastModified = DateTime.Now;
+			resource.LastModifiedBy = CurrentUser.FullName;
+			return MakeServiceCall(() => _companyService.SaveTimesheetEntry(resource), "save time sheet entry ", true);
+		}
+		[System.Web.Http.HttpPost]
+		[System.Web.Http.Route(CompanyRoutes.EmployeeTimesheets)]
+		public List<TimesheetEntry> EmployeeTimesheeta(List<TimesheetEntry> resources)
+		{
+			resources.ForEach(r =>
+			{
+				r.LastModified = DateTime.Now;
+				r.LastModifiedBy = CurrentUser.FullName;
+				r.ApprovedBy = CurrentUser.FullName;
+				r.ApprovedOn = DateTime.Now;
+				r.IsApproved = true;
+			});
+			
+			return MakeServiceCall(() => _companyService.SaveTimesheetEntries(resources), "save time sheet entries ", true);
+		}
+		private async Task<TimesheetImportWithMapResource> ProcessMultipartContentWithMap()
+		{
+			if (!Request.Content.IsMimeMultipartContent())
+			{
+				throw new HttpResponseException(new HttpResponseMessage
+				{
+					StatusCode = HttpStatusCode.UnsupportedMediaType
+				});
+			}
+
+			var provider = FileUploadHelpers.GetMultipartProvider();
+			var result = await Request.Content.ReadAsMultipartAsync(provider);
+
+			var fileUploadObj = FileUploadHelpers.GetFormData<TimesheetImportWithMapResource>(result);
+
+			var originalFileName = FileUploadHelpers.GetDeserializedFileName(result.FileData.First());
+			var uploadedFileInfo = new FileInfo(result.FileData.First().LocalFileName);
+			fileUploadObj.FileName = originalFileName;
+			fileUploadObj.file = uploadedFileInfo;
+			return fileUploadObj;
+		}
+		[System.Web.Http.HttpPost]
+		[System.Web.Http.Route(CompanyRoutes.ImportTimesheetsWithMap)]
+		[DeflateCompression]
+		public async Task<HttpResponseMessage> ImportTimesheetsWithMapAsync()
+		{
+			var filename = string.Empty;
+			try
+			{
+				var fileUploadObj = await ProcessMultipartContentWithMap();
+				filename = fileUploadObj.file.FullName;
+				var company = Mapper.Map<Company, CompanyResource>(_readerService.GetCompany(fileUploadObj.CompanyId));
+				var employees = _readerService.GetEmployees(company: company.Id);
+				var importedRows = _excelService.ImportWithMap(fileUploadObj.file, fileUploadObj.ImportMap, fileUploadObj.FileName);
+				var timesheets = new List<TimesheetEntryResource>();
+				var error = string.Empty;
+				importedRows.ForEach(er =>
+				{
+					try
+					{
+						var timesheet = new TimesheetEntryResource();
+						timesheet.FillFromImportWithMap(er, company, fileUploadObj.ImportMap, Mapper, employees);
+						
+						timesheets.Add(timesheet);
+					}
+					catch (Exception ex)
+					{
+						error += ex.Message + "<br>";
+					}
+				});
+				if (!string.IsNullOrWhiteSpace(error))
+					throw new Exception(error.Length > 512 ? error.Substring(0, 512) : error);
+				_companyService.SaveTSImportMap(company.Id.Value, fileUploadObj.ImportMap, 2);
+				return this.Request.CreateResponse(HttpStatusCode.OK, timesheets);
+			}
+			catch (Exception e)
+			{
+				Logger.Error("Error importing timesheet entries", e);
+
+				throw new HttpResponseException(new HttpResponseMessage
+				{
+					StatusCode = HttpStatusCode.InternalServerError,
+					ReasonPhrase = e.Message,
+					Content = new StringContent(e.Message)
+				});
+			}
+			finally
+			{
+				if (!string.IsNullOrWhiteSpace(filename))
+					File.Delete(filename);
+			}
+		}
+	}
 }

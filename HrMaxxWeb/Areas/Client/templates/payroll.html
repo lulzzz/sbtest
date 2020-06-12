@@ -9,15 +9,23 @@
 					<div class="col-sm-2 form-group">
 						<div class="form-group">
 							<label class="control-label">Start Date <span class="text-danger">*</span></label>
-							<date-ctrl name="startdate" required="true" model="item.startDate" disabled="false" />
+							<date-ctrl name="startdate" required="true" model="item.startDate" disabled="item.loadFromTimesheets" />
 						</div>
-						<div class="form-group"  ng-show="item.startDate">
+						<div class="form-group" ng-show="item.startDate">
 							<label class="control-label">End Date <span class="text-danger">*</span></label>
-							<date-ctrl name="enddate" required="true" model="item.endDate" min="item.startDate" />
-							
+							<date-ctrl name="enddate" required="true" model="item.endDate" min="item.startDate" disabled="item.loadFromTimesheets" />
+
 
 						</div>
-						
+						<div class="form-group">
+							<label></label>
+							<div>
+								<label for="fromtts" class="switch">
+									Load Timesheets
+									<input id="fromtts" type="checkbox" ng-model="item.loadFromTimesheets" ng-disabled="true" /><i></i>
+								</label>
+							</div>
+						</div>
 					</div>
 					
 					
@@ -34,15 +42,45 @@
 							<date-ctrl name="payday" required="true" model="item.payDay" min="minPayDate" />
 
 						</div>
+						<div class="form-group">
+
+							<label></label>
+							<div>
+								<label for="appr" class="switch">
+									Approved
+									<input id="appr" type="checkbox" ng-model="item.approvedOnly" ng-disabled="true"/><i></i>
+								</label>
+							</div>
+						</div>
+					</div>
+					<div class="col-sm-2 form-group">
+						<div class="form-group">
+							<label class="control-label">Notes</label>
+							<textarea ng-model="item.notes" class="form-control" rows="5"></textarea>
+						</div>
+						<div class="form-group">
+							<label></label>
+							<div>
+								<label for="iscertified" class="switch">
+									Certified
+									<input id="iscertified" type="checkbox" ng-model="item.isCertified" ng-disabled="true" /><i></i>
+								</label>
+							</div>
+						</div>
 						
 					</div>
 					<div class="col-sm-2 form-group">
-						<label class="control-label">Notes</label>
-						<textarea ng-model="item.notes" class="form-control" rows="4"></textarea>
-					</div>
-					<div class="col-sm-2 form-group">
-						<label class="control-label">Invoice Special Request</label>
-						<textarea ng-model="item.invoiceSpecialRequest" class="form-control" rows="4"></textarea>
+						<div class="form-group">
+							<label class="control-label">Invoice Special Request</label>
+							<textarea ng-model="item.invoiceSpecialRequest" class="form-control" rows="5"></textarea>
+						</div>
+						<div class="form-group" ng-show="item.isCertified">
+							<label for="projectid">Project <span class="text-danger">*</span></label>
+							<select id="project" class="form-control" ng-model="item.project" ng-options="e.projectName for e in company.companyProjects | orderBy:'projectId' track by e.id" ng-disabled="item.loadFromTimesheets">
+								<option value="">Select Project</option>
+							</select>
+
+						</div>
 					</div>
 					<div class="col-sm-2">
 						<div class="form-group" ng-show="datasvc.canRunHistoryPayroll">
@@ -61,28 +99,31 @@
 							<a class="btn btn-success btn-icon btn-circle btn-lg" ng-click="importTimesheet()" ng-if="showList()" title="Import"><i class="fa fa-upload"></i></a>
 							<a class="btn btn-info btn-icon btn-circle btn-lg" ng-if="showList()" ng-click="getTimesheetmportTemplate()" title="Export"><i class="fa fa-download"></i></a>
 						</div>
+
 					</div>
+					
 				</div>
 				<div ng-show="list.length===0" class="table table-bordered">
 					No employees found
 				</div>
 				
 				<div class="col-sm-12 dt-buttons button-group m-r-10" ng-if="showList()">
-					<button class="btn btn-sm btn-primary pull-right" ng-click="process()" ng-if="showList()" ng-disabled="isPayrollInvalid()"><i class="fa fa-play-circle-o m-r-5"></i>process <span class="badge">{{correctChecks()}}</span><span></span></button>
-					<button class="btn btn-sm pull-right" ng-class="{'btn-danger':!data.showingErrors, 'btn-success':data.showingErrors}" ng-click="showErrors()" ng-if="showList()" ng-show="erroneousChecks()>0 || data.showingErrors"><i class="fa fa-thumbs-o-up m-r-5" ng-class="{'fa-thumbs-o-down':!data.showingErrors, 'fa-thumbs-o-up':data.showingErrors}"></i>{{data.showingErrors?'show all' : 'show erorrs (' + erroneousChecks() + ')'}}</button>
-					<button class="btn btn-sm pull-right btn-warning" ng-click="showWarnings()" ng-if="showList()" ng-show="warningChecks()>0 || data.showingWarnings"><i class="fa m-r-5" ng-class="{'fa-warning':!data.showingWarnings, 'fa-check':data.showingWarnings}"></i>{{data.showingWarnings?'show all' : 'min wage! (' + warningChecks() + ')'}}</button>
-					<button class="btn btn-sm pull-right btn-warning" ng-click="showWCWarnings()" ng-if="showList()" ng-show="wcWarningChecks()>0 || data.showingWCWarnings"><i class="fa m-r-5" ng-class="{'fa-warning':!data.showingWCWarnings, 'fa-check':data.showingWCWarnings}"></i>{{data.showingWCWarnings?'show all' : 'No WC! (' + wcWarningChecks() + ')'}}</button>
 					
-					
-					<label class="label label-warning" ng-if="showList() && company.payrollMessage"><strong>{{company.payrollMessage}}</strong></label>
+						<button class="btn btn-sm btn-primary pull-right" ng-click="process()" ng-if="showList()" ng-disabled="isPayrollInvalid()"><i class="fa fa-play-circle-o m-r-5"></i>process <span class="badge">{{correctChecks()}}</span><span></span></button>
+						<button class="btn btn-sm pull-right" ng-class="{'btn-danger':!data.showingErrors, 'btn-success':data.showingErrors}" ng-click="showErrors()" ng-if="showList()" ng-show="erroneousChecks()>0 || data.showingErrors"><i class="fa fa-thumbs-o-up m-r-5" ng-class="{'fa-thumbs-o-down':!data.showingErrors, 'fa-thumbs-o-up':data.showingErrors}"></i>{{data.showingErrors?'show all' : 'show erorrs (' + erroneousChecks() + ')'}}</button>
+						<button class="btn btn-sm pull-right btn-warning" ng-click="showWarnings()" ng-if="showList()" ng-show="warningChecks()>0 || data.showingWarnings"><i class="fa m-r-5" ng-class="{'fa-warning':!data.showingWarnings, 'fa-check':data.showingWarnings}"></i>{{data.showingWarnings?'show all' : 'min wage! (' + warningChecks() + ')'}}</button>
+						<button class="btn btn-sm pull-right btn-warning" ng-click="showWCWarnings()" ng-if="showList()" ng-show="wcWarningChecks()>0 || data.showingWCWarnings"><i class="fa m-r-5" ng-class="{'fa-warning':!data.showingWCWarnings, 'fa-check':data.showingWCWarnings}"></i>{{data.showingWCWarnings?'show all' : 'No WC! (' + wcWarningChecks() + ')'}}</button>
 
+
+						<label class="label label-warning" ng-if="showList() && company.payrollMessage"><strong>{{company.payrollMessage}}</strong></label>
+					
 				</div>
 				<div class="col-sm-12 pre-scrollable" ng-if="showList()">
 					<table ng-table="tableParams" class="table table-condensed table-responsive" show-filter="true" template-pagination="custom/pager">
 						<tr ng-repeat="listitem in tableData track by $index" class="mouse-over-pointer" ng-class="{'danger': isPayCheckInvalid(listitem), 'warning':listitem.hasWarning || listitem.hasWCWarning}">
 							<td data-title="'No'" filter="{ 'companyEmployeeNo': 'text' }" sortable=" 'companyEmployeeNo' " class="col-sm-1">
 								<label class="checkbox-inline">
-									<input name="inc{{$index}}" type="checkbox" ng-model="listitem.included" ng-change="itemIncluded(listitem)" tabindex="-1">{{listitem.companyEmployeeNo}}
+									<input name="inc{{$index}}" type="checkbox" ng-model="listitem.included" ng-change="itemIncluded(listitem)" tabindex="-1" ng-disabled="item.loadFromTimesheets">{{listitem.companyEmployeeNo}}
 									<i class="fa fa-check-circle-o" ng-if="listitem.inLastPayroll" style="color:green"></i>
 								</label>
 
@@ -116,9 +157,9 @@
 											<div class="col-sm-3">Overtime</div>
 										</div>
 										<div class="row" ng-repeat="pc1 in listitem.payCodes" ng-if="pc1.payCode.id===-1">
-											<div class="col-sm-6"><input class="form-control" ng-model="pc1.pwAmount" required data-parsley-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" data-parsley-type="number" /></div>
-											<div class="col-sm-3"><input class="form-control" ng-model="pc1.screenHours" required data-parsley-pattern="/^[0-9]+((\.[0-9]{1,2})|(\:[0-5][0-9]{0,1})?)$/" /></div>
-											<div class="col-sm-3"><input class="form-control" ng-model="pc1.screenOvertime" required data-parsley-pattern="/^[0-9]+((\.[0-9]{1,2})|(\:[0-5][0-9]{0,1})?)$/" /></div>
+											<div class="col-sm-6"><input class="form-control" ng-model="pc1.pwAmount" required data-parsley-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" data-parsley-type="number" ng-disabled="item.loadFromTimesheets" /></div>
+											<div class="col-sm-3"><input class="form-control" ng-model="pc1.screenHours" required data-parsley-pattern="/^[0-9]+((\.[0-9]{1,2})|(\:[0-5][0-9]{0,1})?)$/" ng-disabled="item.loadFromTimesheets"/></div>
+											<div class="col-sm-3"><input class="form-control" ng-model="pc1.screenOvertime" required data-parsley-pattern="/^[0-9]+((\.[0-9]{1,2})|(\:[0-5][0-9]{0,1})?)$/" ng-disabled="item.loadFromTimesheets"/></div>
 										</div>
 										<div class="row alert-success">
 											<div class="col-sm-6">Pay Code / Pay Rate</div>
@@ -126,9 +167,9 @@
 											<div class="col-sm-3">Overtime</div>
 										</div>
 										<div class="row" ng-repeat="pc in listitem.payCodes | orderBy:'payCode.id'" ng-if="pc.payCode.id===0">
-											<div class="col-sm-6" ng-show="pc.payCode.id===0"><input class="form-control" ng-model="pc.payCode.hourlyRate" required data-parsley-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" data-parsley-type="number" convert-to-decimal /></div>
-											<div class="col-sm-3"><input class="form-control" ng-model="pc.screenHours" required data-parsley-pattern="/^[0-9]+((\.[0-9]{1,2})|(\:[0-5][0-9]{0,1})?)$/" /></div>
-											<div class="col-sm-3"><input class="form-control" ng-model="pc.screenOvertime" required data-parsley-pattern="/^[0-9]+((\.[0-9]{1,2})|(\:[0-5][0-9]{0,1})?)$/" /></div>
+											<div class="col-sm-6" ng-show="pc.payCode.id===0"><input class="form-control" ng-model="pc.payCode.hourlyRate" required data-parsley-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" data-parsley-type="number" convert-to-decimal ng-disabled="item.loadFromTimesheets"/></div>
+											<div class="col-sm-3"><input class="form-control" ng-model="pc.screenHours" required data-parsley-pattern="/^[0-9]+((\.[0-9]{1,2})|(\:[0-5][0-9]{0,1})?)$/" ng-disabled="item.loadFromTimesheets"/></div>
+											<div class="col-sm-3"><input class="form-control" ng-model="pc.screenOvertime" required data-parsley-pattern="/^[0-9]+((\.[0-9]{1,2})|(\:[0-5][0-9]{0,1})?)$/" ng-disabled="item.loadFromTimesheets"/></div>
 										</div>
 									</div>
 
@@ -142,9 +183,9 @@
 										</div>
 										<div class="row" ng-repeat="pc in listitem.payCodes | orderBy:'payCode.id'">
 											<div class="col-sm-6" ng-show="pc.payCode.id>0">{{pc.payCode.description }} ({{pc.payCode.rateType===1 ? (pc.payCode.hourlyRate | currency:'$') : (pc.payCode.hourlyRate + ' x' + (listitem.employee.rate | currency:'$'))}} per hour)</div>
-											<div class="col-sm-6" ng-show="pc.payCode.id===0"><input class="form-control" ng-model="pc.payCode.hourlyRate" required data-parsley-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" data-parsley-type="number" convert-to-decimal /></div>
-											<div class="col-sm-3"><input class="form-control" ng-model="pc.screenHours" required data-parsley-pattern="/^[0-9]+((\.[0-9]{1,2})|(\:[0-5][0-9]{0,1})?)$/" /></div>
-											<div class="col-sm-3"><input class="form-control" ng-model="pc.screenOvertime" required data-parsley-pattern="/^[0-9]+((\.[0-9]{1,2})|(\:[0-5][0-9]{0,1})?)$/" ng-disabled="pc.payCode.rateType===2"/></div>
+											<div class="col-sm-6" ng-show="pc.payCode.id===0"><input class="form-control" ng-model="pc.payCode.hourlyRate" required data-parsley-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" data-parsley-type="number" convert-to-decimal ng-disabled="item.loadFromTimesheets"/></div>
+											<div class="col-sm-3"><input class="form-control" ng-model="pc.screenHours" required data-parsley-pattern="/^[0-9]+((\.[0-9]{1,2})|(\:[0-5][0-9]{0,1})?)$/" ng-disabled="item.loadFromTimesheets"/></div>
+											<div class="col-sm-3"><input class="form-control" ng-model="pc.screenOvertime" required data-parsley-pattern="/^[0-9]+((\.[0-9]{1,2})|(\:[0-5][0-9]{0,1})?)$/" ng-disabled="pc.payCode.rateType===2 || item.loadFromTimesheets"/></div>
 										</div>
 									</div>
 

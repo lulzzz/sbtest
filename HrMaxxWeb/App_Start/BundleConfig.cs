@@ -55,7 +55,8 @@ namespace HrMaxxWeb
 				"~/Scripts/jquery.countdown.js",
 				"~/Scripts/coming-soon.demo.js",
 				"~/Scripts/bootstrap/sweetalert.min.js",
-				"~/Scripts/daterangepicker.js"
+				"~/Scripts/daterangepicker.js",
+				"~/Scripts/fullcalendar/fullcalendar.js"
 
 
 				);
@@ -169,6 +170,7 @@ namespace HrMaxxWeb
 				"~/Scripts/app/company/directives/accumulated-pay-type-list.js",
 				"~/Scripts/app/company/directives/pay-code-list.js",
 				"~/Scripts/app/company/directives/renewal-date-list.js",
+				"~/Scripts/app/company/directives/project-list.js",
 				"~/Scripts/app/company/directives/company-locations.js",
 				"~/Scripts/app/company/directives/company-list.js",
 				"~/Scripts/app/company/directives/company.js",
@@ -179,6 +181,7 @@ namespace HrMaxxWeb
 				"~/Scripts/app/company/directives/employee-list.js",
 				"~/Scripts/app/company/directives/employee.js",
 				"~/Scripts/app/company/directives/employee-deduction-list.js",
+				"~/Scripts/app/company/directives/employee-timesheet.js",
 
 				"~/Scripts/app/payroll/directives/payroll-list.js", 
 				"~/Scripts/app/payroll/directives/payroll.js",

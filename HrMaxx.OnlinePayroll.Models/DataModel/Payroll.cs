@@ -49,10 +49,15 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
         public string InvoiceSpecialRequest { get; set; }
         public string VoidedBy { get; set; }
         public Nullable<System.DateTime> VoidedOn { get; set; }
+        public Nullable<bool> IsCertified { get; set; }
+        public Nullable<bool> ApprovedOnly { get; set; }
+        public Nullable<int> ProjectId { get; set; }
+        public Nullable<bool> LoadFromTimesheets { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<PayrollInvoice> PayrollInvoices { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<PayrollPayCheck> PayrollPayChecks { get; set; }
+        public virtual CompanyProject CompanyProject { get; set; }
     }
 }
