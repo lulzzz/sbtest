@@ -130,7 +130,7 @@
           <Property Name="ManageTaxPayment" Type="bit" Nullable="false" />
           <Property Name="ManageEFileForms" Type="bit" Nullable="false" />
           <Property Name="FederalEIN" Type="varchar(max)" Nullable="false" />
-          <Property Name="FederalPin" Type="varchar(max)" Nullable="false" />
+          <Property Name="FederalPin" Type="varchar(max)" />
           <Property Name="DepositSchedule941" Type="int" Nullable="false" />
           <Property Name="PayrollSchedule" Type="int" Nullable="false" />
           <Property Name="PayCheckStock" Type="int" Nullable="false" />
@@ -141,7 +141,7 @@
           <Property Name="MinWage" Type="decimal" Precision="18" Scale="2" />
           <Property Name="IsHostCompany" Type="bit" Nullable="false" />
           <Property Name="Memo" Type="varchar(max)" Nullable="false" />
-          <Property Name="ClientNo" Type="varchar(max)" Nullable="false" />
+          <Property Name="ClientNo" Type="varchar(max)" />
           <Property Name="Created" Type="datetime" Nullable="false" />
           <Property Name="ParentId" Type="uniqueidentifier" />
           <Property Name="Notes" Type="varchar(max)" />
@@ -205,7 +205,11 @@
           <Property Name="InvoiceRate" Type="decimal" Precision="18" Scale="2" Nullable="false" />
           <Property Name="Method" Type="int" Nullable="false" />
           <Property Name="InvoiceSetup" Type="varchar(max)" />
-          <Property Name="Options" Type="varchar(max)" />
+          <Property Name="DirectDeposit" Type="bit" Nullable="false" />
+          <Property Name="ProfitStarsPayer" Type="bit" Nullable="false" />
+          <Property Name="Timesheets" Type="bit" Nullable="false" />
+          <Property Name="CertifiedPayrolls" Type="bit" Nullable="false" />
+          <Property Name="RestaurantPayrolls" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="CompanyDeduction">
           <Key>
@@ -299,7 +303,7 @@
           <Property Name="StateCode" Type="varchar(max)" Nullable="false" />
           <Property Name="StateName" Type="varchar(max)" Nullable="false" />
           <Property Name="EIN" Type="varchar(max)" Nullable="false" />
-          <Property Name="Pin" Type="varchar(max)" Nullable="false" />
+          <Property Name="Pin" Type="varchar(max)" />
           <Property Name="UIAccountNumber" Type="varchar(max)" />
           <Property Name="DepositSchedule" Type="int" />
         </EntityType>
@@ -2016,7 +2020,7 @@
           <Property Name="ManageTaxPayment" Type="Boolean" Nullable="false" />
           <Property Name="ManageEFileForms" Type="Boolean" Nullable="false" />
           <Property Name="FederalEIN" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="FederalPin" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="FederalPin" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
           <Property Name="DepositSchedule941" Type="Int32" Nullable="false" />
           <Property Name="PayrollSchedule" Type="Int32" Nullable="false" />
           <Property Name="PayCheckStock" Type="Int32" Nullable="false" />
@@ -2042,7 +2046,7 @@
           <Property Name="Memo" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="VendorCustomers" Relationship="HrMaxxModel.FK_VendorCustomer_Company" FromRole="Company" ToRole="VendorCustomer" />
           <NavigationProperty Name="InsuranceGroup" Relationship="HrMaxxModel.FK_Company_InsuranceGroup" FromRole="Company" ToRole="InsuranceGroup" />
-          <Property Name="ClientNo" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="ClientNo" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
           <Property Name="Created" Type="DateTime" Nullable="false" Precision="3" />
           <NavigationProperty Name="PayrollInvoices" Relationship="HrMaxxModel.FK_PayrollInvoice_Company" FromRole="Company" ToRole="PayrollInvoice" />
           <Property Name="ParentId" Type="Guid" />
@@ -2087,7 +2091,7 @@
           <Property Name="StateCode" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
           <Property Name="StateName" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
           <Property Name="EIN" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="Pin" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="Pin" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="Company" Relationship="HrMaxxModel.FK_CompanyTaxState_Company" FromRole="CompanyTaxState" ToRole="Company" />
           <Property Name="UIAccountNumber" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
           <Property Name="DepositSchedule" Type="Int32" />
@@ -2207,7 +2211,11 @@
           <NavigationProperty Name="Company" Relationship="HrMaxxModel.FK_CompanyContract_Company" FromRole="CompanyContract" ToRole="Company" />
           <Property Name="Method" Type="Int32" Nullable="false" />
           <Property Name="InvoiceSetup" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="Options" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="DirectDeposit" Type="Boolean" Nullable="false" />
+          <Property Name="ProfitStarsPayer" Type="Boolean" Nullable="false" />
+          <Property Name="Timesheets" Type="Boolean" Nullable="false" />
+          <Property Name="CertifiedPayrolls" Type="Boolean" Nullable="false" />
+          <Property Name="RestaurantPayrolls" Type="Boolean" Nullable="false" />
         </EntityType>
         <Association Name="FK_CompanyContract_Company">
           <End Type="HrMaxxModel.Company" Role="Company" Multiplicity="1" />
@@ -3626,7 +3634,11 @@
           <EntitySetMapping Name="CompanyContracts">
             <EntityTypeMapping TypeName="HrMaxxModel.CompanyContract">
               <MappingFragment StoreEntitySet="CompanyContract">
-                <ScalarProperty Name="Options" ColumnName="Options" />
+                <ScalarProperty Name="RestaurantPayrolls" ColumnName="RestaurantPayrolls" />
+                <ScalarProperty Name="CertifiedPayrolls" ColumnName="CertifiedPayrolls" />
+                <ScalarProperty Name="Timesheets" ColumnName="Timesheets" />
+                <ScalarProperty Name="ProfitStarsPayer" ColumnName="ProfitStarsPayer" />
+                <ScalarProperty Name="DirectDeposit" ColumnName="DirectDeposit" />
                 <ScalarProperty Name="InvoiceSetup" ColumnName="InvoiceSetup" />
                 <ScalarProperty Name="Method" ColumnName="Method" />
                 <ScalarProperty Name="InvoiceRate" ColumnName="InvoiceRate" />

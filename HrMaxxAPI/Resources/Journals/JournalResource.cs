@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web;
+using HrMaxx.Common.Models.Dtos;
 using HrMaxx.Common.Models.Enum;
 using HrMaxx.Infrastructure.Helpers;
 using HrMaxx.OnlinePayroll.Models;
 using HrMaxx.OnlinePayroll.Models.Enum;
+
 
 namespace HrMaxxAPI.Resources.Journals
 {
@@ -33,6 +35,7 @@ namespace HrMaxxAPI.Resources.Journals
 		public Guid PayeeId { get; set; }
 		
 		public string PayeeName { get; set; }
+		public Contact Contact { get; set; }
 		[Required]
 		public decimal Amount { get; set; }
 		[Required]

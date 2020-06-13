@@ -220,7 +220,7 @@
                                                 <div class="col-sm-4">
                                                     <div class="form-group">
                                                         <label>Insurance Client No</label>
-                                                        <input type="text" name="cno" class="form-control" data-parsley-group="wizard-step-2" ng-model="selectedCompany.insuranceClientNo" ng-required="selectedCompany.insuranceGroup" />
+                                                        <input type="text" name="cno" class="form-control" data-parsley-group="wizard-step-2" ng-model="selectedCompany.insuranceClientNo" ng-required="selectedCompany.insuranceGroup && selectedCompany.insuranceGroup.id>0" />
                                                     </div>
                                                    
                                                     <div class="form-group">
@@ -315,7 +315,7 @@
                                                     <div class="form-group">
                                                         <label>Federal Tax PIN</label>
                                                         <div>
-                                                            <input type="text" ng-model="selectedCompany.federalPin" class="form-control" ng-required="selectedCompany.allowEFileFormFiling" data-parsley-group="wizard-step-3" ui-mask="9999" ng-disabled="selectedCompany.isLocation" />
+                                                            <input type="text" ng-model="selectedCompany.federalPin" class="form-control" ng-required="selectedCompany.allowTaxPayments" data-parsley-group="wizard-step-3" ui-mask="9999" ng-disabled="selectedCompany.isLocation" />
                                                         </div>
                                                     </div>
 
@@ -397,7 +397,7 @@
                                                     <div class="form-group">
                                                         <label>State Tax PIN</label>
                                                         <div>
-                                                            <input type="text" ng-model="state.statePin" class="form-control" ng-required="selectedCompany.allowEFileFormFiling" data-parsley-group="wizard-step-3" ui-mask="9999" ng-disabled="selectedCompany.isLocation" />
+                                                            <input type="text" ng-model="state.statePin" class="form-control" ng-required="selectedCompany.allowTaxPayments" data-parsley-group="wizard-step-3" ui-mask="9999" ng-disabled="selectedCompany.isLocation" />
 
                                                         </div>
                                                     </div>
@@ -647,7 +647,7 @@
                                                                 <div>
                                                                     <label for="directdebitpayer" class="switch">
                                                                         Pay by Direct Deposit
-                                                                        <input id="directdebitpayer" type="checkbox" ng-model="selectedCompany.contract.options.directDeposit" ng-disabled="mainData.userRole!=='SuperUser' || mainData.userRole!=='Master')" /><i></i>
+                                                                        <input id="directdebitpayer" type="checkbox" ng-model="selectedCompany.contract.directDeposit" ng-disabled="mainData.userRole!=='SuperUser' && mainData.userRole!=='Master'" /><i></i>
                                                                     </label>
                                                                 </div>
                                                             </div>
@@ -656,7 +656,7 @@
                                                                 <div>
                                                                     <label for="profitstarspayer" class="switch">
                                                                         Pay by ProfitStars
-                                                                        <input id="profitstarspayer" type="checkbox" ng-model="selectedCompany.contract.options.profitStarsPayer" ng-disabled="mainData.userRole!=='SuperUser' || mainData.userRole!=='Master')" /><i></i>
+                                                                        <input id="profitstarspayer" type="checkbox" ng-model="selectedCompany.contract.profitStarsPayer" ng-disabled="mainData.userRole!=='SuperUser' && mainData.userRole!=='Master'" /><i></i>
                                                                     </label>
                                                                 </div>
                                                             </div>
@@ -665,7 +665,7 @@
                                                                 <div>
                                                                     <label for="timesheets" class="switch">
                                                                         Employee Timesheets
-                                                                        <input id="timesheets" type="checkbox" ng-model="selectedCompany.contract.options.timesheets" ng-disabled="mainData.userRole!=='SuperUser' || mainData.userRole!=='Master')" /><i></i>
+                                                                        <input id="timesheets" type="checkbox" ng-model="selectedCompany.contract.timesheets" ng-disabled="mainData.userRole!=='SuperUser' && mainData.userRole!=='Master'" /><i></i>
                                                                     </label>
                                                                 </div>
                                                             </div>
@@ -674,7 +674,7 @@
                                                                 <div>
                                                                     <label for="certifiedpayrolls" class="switch">
                                                                         Certified Payrolls
-                                                                        <input id="certifiedpayrolls" type="checkbox" ng-model="selectedCompany.contract.options.certifiedPayrolls" ng-disabled="mainData.userRole!=='SuperUser' || mainData.userRole!=='Master')" /><i></i>
+                                                                        <input id="certifiedpayrolls" type="checkbox" ng-model="selectedCompany.contract.certifiedPayrolls" ng-disabled="mainData.userRole!=='SuperUser' && mainData.userRole!=='Master'" /><i></i>
                                                                     </label>
                                                                 </div>
                                                             </div>
@@ -683,7 +683,7 @@
                                                                 <div>
                                                                     <label for="restaurantpayrolls" class="switch">
                                                                         Restaurant Payroll
-                                                                        <input id="certifiedpayrolls" type="checkbox" ng-model="selectedCompany.contract.options.restaurantPayrolls" ng-disabled="mainData.userRole!=='SuperUser' || mainData.userRole!=='Master')" /><i></i>
+                                                                        <input id="restaurantpayrolls" type="checkbox" ng-model="selectedCompany.contract.restaurantPayrolls" ng-disabled="mainData.userRole!=='SuperUser' && mainData.userRole!=='Master'" /><i></i>
                                                                     </label>
                                                                 </div>
                                                             </div>
@@ -943,7 +943,7 @@
                 </div>
             </div>
         </div>
-        <div class="panel overflow-hidden" ng-if="selectedCompany.id && selectedCompany.contract.options.certifiedPayrolls" ng-class="{'panel-inverse':!isPopup, 'panel-info' : isPopup}">
+        <div class="panel overflow-hidden" ng-if="selectedCompany.id && selectedCompany.contract.certifiedPayrolls" ng-class="{'panel-inverse':!isPopup, 'panel-info' : isPopup}">
             <div class="panel-heading">
                 <h3 class="panel-title">
                     <a class="accordion-toggle accordion-toggle-styled collapsed" data-toggle="collapse" data-parent="#accordion" data-target="#collapseNine">

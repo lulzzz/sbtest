@@ -57,8 +57,7 @@ namespace HrMaxx.OnlinePayroll.ReadServices.Mappers
 				.ForMember(dest => dest.PrePaidSubscriptionOption, opt => opt.MapFrom(src => src.PrePaidSubscriptionType.HasValue ? (PrePaidSubscriptionOption)src.PrePaidSubscriptionType.Value : PrePaidSubscriptionOption.NA))
 				.ForMember(dest => dest.BankDetails,
 				opt => opt.MapFrom(src => !string.IsNullOrWhiteSpace(src.BankDetails) ? JsonConvert.DeserializeObject<BankAccount>(src.BankDetails) : null))
-				.ForMember(dest => dest.Options,
-				opt => opt.MapFrom(src => !string.IsNullOrWhiteSpace(src.Options) ? JsonConvert.DeserializeObject<CompanyOptions>(src.Options) : new CompanyOptions()))
+				
 				.ForMember(dest => dest.InvoiceSetup,
 				opt => opt.MapFrom(src => !string.IsNullOrWhiteSpace(src.InvoiceSetup) ? JsonConvert.DeserializeObject<InvoiceSetup>(src.InvoiceSetup) : null));
 
@@ -229,6 +228,7 @@ namespace HrMaxx.OnlinePayroll.ReadServices.Mappers
 				.ForMember(dest => dest.PayTypeAccruals, opt => opt.MapFrom(src =>string.IsNullOrWhiteSpace(src.PayTypeAccruals) ? new List<int>() : JsonConvert.DeserializeObject<List<int>>(src.PayTypeAccruals)))
 				.ForMember(dest => dest.State, opt => opt.MapFrom(src => JsonConvert.DeserializeObject<EmployeeState>(src.State)))
 				.ForMember(dest => dest.UserId, opt => opt.Ignore())
+				.ForMember(dest => dest.FullName, opt => opt.Ignore())
 				.ForMember(dest => dest.SickLeaveHireDate, opt => opt.MapFrom(src=> src.SickLeaveHireDate.HasValue? src.SickLeaveHireDate.Value : src.HireDate))
 				.ForMember(dest => dest.WorkerCompensation, opt => opt.MapFrom(src => src.CompanyWorkerCompensation))
 				.ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.LastModifiedBy))
@@ -270,6 +270,7 @@ namespace HrMaxx.OnlinePayroll.ReadServices.Mappers
 
 			CreateMap<Models.JsonDataModel.JournalJson, Models.Journal>()
 				.ForMember(dest => dest.JournalDetails, opt => opt.MapFrom(src => JsonConvert.DeserializeObject<List<Models.JournalDetail>>(src.JournalDetails)))
+				.ForMember(dest => dest.Contact, opt => opt.MapFrom(src => !string.IsNullOrWhiteSpace(src.Contact) ? JsonConvert.DeserializeObject<Contact>(src.Contact) : null))
 				.ForMember(dest => dest.ListItems, opt => opt.MapFrom(src =>!string.IsNullOrWhiteSpace(src.ListItems) ? JsonConvert.DeserializeObject<List<Models.JournalItem>>(src.ListItems) : new List<JournalItem>()));
 
 			CreateMap<Models.JsonDataModel.ExtractInvoicePaymentJson, Models.ExtractInvoicePayment>();

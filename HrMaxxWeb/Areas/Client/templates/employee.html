@@ -255,8 +255,8 @@
 												<label>Payment Method</label>
 												<select ng-model="selected.paymentMethod" name="method" class="form-control" data-parsley-group="wizard-step-3" required convert-to-number data-parsley-type="number">
 													<option value="1">Check</option>
-													<option value="2" ng-show="mainData.selectedCompany.directDebitPayer">Direct Deposit</option>
-													<option value="3" ng-show="mainData.selectedCompany.profitStarsPayer">Direct Deposit - ProfitStars</option>
+													<option value="2" ng-show="mainData.selectedCompany.contract.directDeposit">Direct Deposit</option>
+													<option value="3" ng-show="mainData.selectedCompany.contract.profitStarsPayer">Direct Deposit - ProfitStars</option>
 												</select>
 											</div>
 											<div class="row" ng-if="selected.paymentMethod>1">
@@ -384,7 +384,7 @@
 												<div ng-dropdown-multiselect="" options="data.payCodes" extra-settings="{displayProp: 'dropDownDisplay', idProp: 'id', showCheckAll: true, showUncheckAll: true ,scrollable: true, scrollableHeight: 220, buttonClasses:'btn btn-sm btn-default'}" selected-model="selectedPayCodes" events="payCodeEvents" required data-parsley-group="wizard-step-3"></div>
 
 											</div>
-											<div class="form-group" ng-if="mainData.selectedCompany.contract.options.restaurantPayrolls && selected.payType===1">
+											<div class="form-group" ng-if="mainData.selectedCompany.contract.restaurantPayrolls && selected.payType===1">
 												<label></label>
 												<div>
 													<label for="istipped" class="switch">

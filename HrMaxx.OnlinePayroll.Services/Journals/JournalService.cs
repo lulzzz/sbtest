@@ -837,11 +837,10 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 		{
 			try
 			{
-				journal.IsCleared = true;
-				journal.ClearedBy = fullName;
-				journal.ClearedOn = DateTime.Now;
+				journal.ClearedBy = journal.IsCleared ? fullName : null;
+				journal.ClearedOn = journal.IsCleared ? DateTime.Now : default(DateTime?);
 				_journalRepository.ClearJournal(journal);
-				var memento = Memento<Journal>.Create(journal, (EntityTypeEnum)journal.EntityType1, journal.ClearedBy, string.Format("Check Cleared {0}", journal.CheckNumber), userId);
+				var memento = Memento<Journal>.Create(journal, (EntityTypeEnum)journal.EntityType1, fullName, string.Format("Check Cleared {0}", journal.CheckNumber), userId);
 				_mementoDataService.AddMementoData(memento);
 					
 				return journal;

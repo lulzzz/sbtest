@@ -1,4 +1,4 @@
-﻿<div ng-if="data.selectedCompany && data.selectedCompany.contract.options.timesheets">
+﻿<div ng-if="data.selectedCompany && data.selectedCompany.contract.timesheets">
     
     <div ng-if="data.userRole && data.userRole==='Employee'">
         <employee-timesheet main-data="data" mode="1" />
@@ -8,6 +8,6 @@
     </div>
 
 </div>
-<div ng-if="data.selectedCompany && !data.selectedCompany.contract.options.timesheets">
+<div ng-if="data.selectedCompany && !data.selectedCompany.contract.timesheets">
     <h5><i>Timesheets feature is not available to the selected company</i></h5>
 </div>

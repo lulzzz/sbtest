@@ -177,33 +177,14 @@ namespace SiteInspectionStatus_Utility
                 case 39:
                     GetEmployeeList(container);
                     break;
-                case 40:
-                    SetCompanyOptions(container);
-                    break;
+                
                 default:
 					break;
 			}
 
 			Console.WriteLine("Utility run finished for ");
 		}
-        private static void SetCompanyOptions(IContainer container)
-        {
-
-            
-            using (var scope = container.BeginLifetimeScope())
-            {
-                var readerservice = scope.Resolve<IReaderService>();
-                var companyRepository = scope.Resolve<ICompanyRepository>();
-                var companies = readerservice.GetCompanies(status:0);
-                companies.ForEach(c =>
-                {
-                    c.Contract.Options.DirectDeposit = c.DirectDebitPayer;
-                    c.Contract.Options.ProfitStarsPayer = c.ProfitStarsPayer;
-                    c.Contract.Options.RestaurantPayrolls = c.IsRestaurant;
-                    companyRepository.SaveCompanyContract(c, c.Contract);
-                });
-            }
-        }
+       
         private static void GetEmployeeList(IContainer container)
         {
             

@@ -118,7 +118,11 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 		public decimal InvoiceCharge { get; set; }
 		public int Method { get; set; }
 		public InvoiceSetupResource InvoiceSetup { get; set; }
-		public CompanyOptions Options { get; set; }
+		public bool DirectDeposit { get; set; }
+		public bool ProfitStarsPayer { get; set; }
+		public bool Timesheets { get; set; }
+		public bool CertifiedPayrolls { get; set; }
+		public bool RestaurantPayrolls { get; set; }
 	}
 
 	public class CreditCardResource

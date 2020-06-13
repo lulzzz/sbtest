@@ -3933,12 +3933,14 @@ body .fc button:active {
     margin: 0 -20px;
     background: #f0f3f4;
     padding: 20px;
+    
 }
 .invoice-from,
 .invoice-to,
 .invoice-date {
     display: table-cell;
     width: 1%;
+    
 }
 .invoice-from,
 .invoice-to {
@@ -3959,6 +3961,28 @@ body .fc button:active {
     display: table;
     width: 100%;
 }
+
+.invoice-dateci {
+    display: table-cell;
+    width: 20%;
+    text-align: right;
+    padding-left: 20px;
+}
+
+.invoice-fromci,
+.invoice-toci {
+    display: table-cell;
+    padding-left: 1in;
+    width: 50%;
+
+}
+
+    .invoice-fromci strong,
+    .invoice-toci strong,
+    .invoice-dateci .date {
+        font-size: 16px;
+        font-weight: 600;
+    }
 .invoice-price .invoice-price-left,
 .invoice-price .invoice-price-right {
     display: table-cell;

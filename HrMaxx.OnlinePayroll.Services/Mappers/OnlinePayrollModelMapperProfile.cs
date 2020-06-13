@@ -177,9 +177,7 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 				.ForMember(dest => dest.BankDetails,
 				opt => opt.MapFrom(src => !string.IsNullOrWhiteSpace(src.BankDetails) ? JsonConvert.DeserializeObject<BankAccount>(src.BankDetails) : null))
 				.ForMember(dest => dest.InvoiceSetup,
-				opt => opt.MapFrom(src => !string.IsNullOrWhiteSpace(src.InvoiceSetup) ? JsonConvert.DeserializeObject<InvoiceSetup>(src.InvoiceSetup) : null))
-			.ForMember(dest => dest.Options,
-				opt => opt.MapFrom(src => !string.IsNullOrWhiteSpace(src.Options) ? JsonConvert.DeserializeObject<CompanyOptions>(src.Options) : new CompanyOptions()));
+				opt => opt.MapFrom(src => !string.IsNullOrWhiteSpace(src.InvoiceSetup) ? JsonConvert.DeserializeObject<InvoiceSetup>(src.InvoiceSetup) : null));
 
 			CreateMap<Models.ContractDetails, Models.DataModel.CompanyContract>()
 				.ForMember(dest => dest.Id, opt => opt.Ignore())
@@ -193,8 +191,7 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 				.ForMember(dest => dest.PrePaidSubscriptionType, opt => opt.MapFrom(src => src.PrePaidSubscriptionOption))
 				.ForMember(dest => dest.BankDetails,
 					opt => opt.MapFrom(src => JsonConvert.SerializeObject(src.BankDetails)))
-				.ForMember(dest => dest.Options,
-					opt => opt.MapFrom(src => JsonConvert.SerializeObject(src.Options)))
+				
 				.ForMember(dest => dest.InvoiceSetup,
 					opt => opt.MapFrom(src => JsonConvert.SerializeObject(src.InvoiceSetup)));
 
@@ -379,6 +376,7 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 				.ForMember(dest => dest.PayTypeAccruals, opt => opt.MapFrom(src => string.IsNullOrWhiteSpace(src.PayTypeAccruals) ? new List<int>() : JsonConvert.DeserializeObject<List<int>>(src.PayTypeAccruals)))
 				.ForMember(dest => dest.State, opt => opt.MapFrom(src => JsonConvert.DeserializeObject<EmployeeState>(src.State)))
 				.ForMember(dest => dest.UserId, opt => opt.Ignore())
+				.ForMember(dest => dest.FullName, opt => opt.Ignore())
 				.ForMember(dest => dest.Accumulations, opt => opt.Ignore())
 				.ForMember(dest => dest.WorkerCompensation, opt => opt.MapFrom(src => src.CompanyWorkerCompensation))
 				.ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.LastModifiedBy))
@@ -560,9 +558,11 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 				.ForMember(dest => dest.AccountBalance, opt => opt.MapFrom(src=>(decimal)0));
 
 			CreateMap<Models.DataModel.Journal, Models.Journal>()
+				.ForMember(dest => dest.Contact, opt => opt.Ignore())
 				.ForMember(dest => dest.JournalDetails, opt => opt.MapFrom(src => JsonConvert.DeserializeObject<List<Models.JournalDetail>>(src.JournalDetails)))
 				.ForMember(dest => dest.ListItems, opt => opt.MapFrom(src => !string.IsNullOrWhiteSpace(src.ListItems) ? JsonConvert.DeserializeObject<List<Models.JournalItem>>(src.ListItems) : new List<JournalItem>()));
 			CreateMap<Models.DataModel.CheckbookJournal, Models.Journal>()
+				.ForMember(dest => dest.Contact, opt => opt.Ignore())
 				.ForMember(dest => dest.JournalDetails, opt => opt.MapFrom(src => JsonConvert.DeserializeObject<List<Models.JournalDetail>>(src.JournalDetails)))
 				.ForMember(dest => dest.ListItems, opt => opt.MapFrom(src => !string.IsNullOrWhiteSpace(src.ListItems) ? JsonConvert.DeserializeObject<List<Models.JournalItem>>(src.ListItems) : new List<JournalItem>()));
 

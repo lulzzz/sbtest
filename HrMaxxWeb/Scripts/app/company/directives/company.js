@@ -73,6 +73,7 @@ common.directive('company', ['$uibModal', 'zionAPI', '$timeout', '$window', 'ver
 							state: {},
 							stateEin: '',
 							statePin: '',
+							depositSchedule: $scope.selectedCompany.depositSchedule,
 							isNew: true
 						};
 						var available = $scope.availableStates();

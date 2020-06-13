@@ -138,7 +138,11 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 				dbContract.Method = mapped.Method;
 				dbContract.Type = mapped.Type;
 				dbContract.InvoiceSetup = mapped.InvoiceSetup;
-				dbContract.Options = mapped.Options;
+				dbContract.DirectDeposit = mapped.DirectDeposit;
+				dbContract.ProfitStarsPayer = mapped.ProfitStarsPayer;
+				dbContract.Timesheets = mapped.Timesheets;
+				dbContract.CertifiedPayrolls = mapped.CertifiedPayrolls;
+				dbContract.RestaurantPayrolls = mapped.RestaurantPayrolls;
 			}
 			_dbContext.SaveChanges();
 			return _mapper.Map<CompanyContract, ContractDetails>(mapped);

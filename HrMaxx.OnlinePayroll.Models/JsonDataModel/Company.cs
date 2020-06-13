@@ -146,7 +146,11 @@ namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
 		public decimal InvoiceRate { get; set; }
 		public int Method { get; set; }
 		public string InvoiceSetup { get; set; }
-		public string Options { get; set; }
+		public bool DirectDeposit { get; set; }
+		public bool ProfitStarsPayer { get; set; }
+		public bool Timesheets { get; set; }
+		public bool CertifiedPayrolls { get; set; }
+		public bool RestaurantPayrolls { get; set; }
 	}
 	
 	public class CompanyDeduction

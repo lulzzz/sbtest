@@ -128,16 +128,13 @@ namespace HrMaxx.OnlinePayroll.Models
 		public decimal InvoiceCharge { get; set; }
 		public int Method { get; set; }
 		public InvoiceSetup InvoiceSetup { get; set; }
-		public CompanyOptions Options { get; set; }
-	}
-	public class CompanyOptions
-	{
 		public bool DirectDeposit { get; set; }
 		public bool ProfitStarsPayer { get; set; }
 		public bool Timesheets { get; set; }
 		public bool CertifiedPayrolls { get; set; }
 		public bool RestaurantPayrolls { get; set; }
 	}
+	
 	public class CreditCard
 	{
 		public int? CardType { get; set; }

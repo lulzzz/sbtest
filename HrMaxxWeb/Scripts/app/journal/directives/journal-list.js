@@ -118,18 +118,19 @@ common.directive('journalList', ['zionAPI', '$timeout', '$window','version',
 
 					}
                     $scope.markJournalCleared = function (listitem, event) {
-                        event.stopPropagation();
-						if (!listitem.isCleared) {
-							
+						event.stopPropagation();
+						if (event.target.type === 'checkbox') {
 							journalRepository.markJournalCleared(listitem).then(function (data) {
 								listitem.isCleared = data.isCleared;
 								listitem.clearedBy = data.clearedBy;
 								listitem.clearedOn = data.clearedOn;
-                               
+
 							}, function (error) {
-									$scope.mainData.handleError('error marking check cleared', error, 'danger');
+								$scope.mainData.handleError('error marking check cleared', error, 'danger');
 							});
-						}
+                        }
+
+						
 						
 					}
 					$scope.markPrinted = function (listitem) {

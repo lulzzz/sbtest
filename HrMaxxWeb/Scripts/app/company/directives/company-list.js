@@ -112,13 +112,11 @@ common.directive('companyList', ['zionAPI', '$timeout', '$window', 'version', '$
 									recurringCharges: [],
 									salesReps: []
 								},
-								options: {
-									directDeposit: false,
-									profitStarsPayer: false,
-									timesheets: false,
-									certifiedPayrolls: false,
-									restaurantPayrolls: false
-                                }
+								directDeposit: false,
+								profitStarsPayer: false,
+								timesheets: false,
+								certifiedPayrolls: false,
+								restaurantPayrolls: false
 							}
 						};
 						if ($scope.mainData.selectedHost.isPeoHost) {

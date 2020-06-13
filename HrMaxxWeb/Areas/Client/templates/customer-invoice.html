@@ -165,36 +165,36 @@
 			<!-- end invoice-company -->
 			<!-- begin invoice-header -->
 			<div class="invoice-header">
-				<div class="invoice-from">
+				<div class="invoice-fromci ">
 					<small>from</small>
 					<address class="m-t-5 m-b-5">
 						<strong>{{mainData.selectedCompany.name}}</strong><br />
 						{{mainData.selectedCompany.companyAddress.addressLine1}}<br />
-						{{mainData.selectedCompany.companyAddress.city}}, CA, {{mainData.selectedCompany.companyAddress.zip}}{{mainData.selectedCompany.companyAddress.zipExtension? ' - ' +mainData.selectedCompany.companyAddress.zipExtension : ''}}<br />
-						Phone: {{ getContactPhone(mainData.selectedCompany.contact) }}<br />
-						Fax: {{ getContactFax(mainData.selectedCompany.contact) }}<br />
-						{{ mainData.selectedCompany.contact.firstName + ' ' + mainData.selectedCompany.contact.lastName}}
-					</address>
-				</div>
-				<div class="invoice-to">
-					<small>to</small>
+						{{mainData.selectedCompany.companyAddress.city}}, CA, {{mainData.selectedCompany.companyAddress.zip}}{{mainData.selectedCompany.companyAddress.zipExtension? ' - ' +mainData.selectedCompany.companyAddress.zipExtension : ''}}<br />						
+						
+					</address>					
+					<small class="m-t-20">to</small>
 					<address class="m-t-5 m-b-5">
 						<strong class="text-inverse">{{item.payeeName}}</strong><br />
-						
+						{{item.contact.address.addressLine1}}<br />
+						{{item.contact.address.addressLine2}}<br />
 					</address>
 				</div>
-				<div class="invoice-date">
+				
+				<div class="invoice-dateci ">
 					<small>Invoice</small>
+					<div class="invoice-detail">
+						#{{item.checkNumber}}						
+					</div>
 					<div class="date text-inverse m-t-5">{{item.transactionDate | date: 'MMMM dd, yyyy'}}</div>
 					<div class="invoice-detail">
-						#{{item.checkNumber}}<br />
 						{{item.memo}}
 					</div>
 				</div>
 			</div>
 			<!-- end invoice-header -->
 			<!-- begin invoice-content -->
-			<div class="invoice-content">
+			<div class="invoice-content p-t-20">
 				<!-- begin table-responsive -->
 				<div class="table-responsive">
 					<table class="table table-invoice">
@@ -236,8 +236,8 @@
 			<!-- begin invoice-note -->
 			<div class="invoice-note">
 				* Make all cheques payable to {{mainData.selectedCompany.taxFilingName}}<br />
-				* Payment is due within 30 days<br />
-				* If you have any questions concerning this invoice, contact  [Name, Phone Number, Email]
+				* Payment is due immediately unless stated otherwise above.<br />
+				* If you have any questions concerning this invoice, please see contact information below
 			</div>
 			<!-- end invoice-note -->
 			<!-- begin invoice-footer -->
@@ -246,7 +246,9 @@
 					THANK YOU FOR YOUR BUSINESS
 				</p>
 				<p class="text-center">
-					<span class="m-r-10"><i class="fa fa-fw fa-lg fa-phone-volume"></i> T:{{getContactPhone(mainData.selectedCompany.contact)}}</span>
+					{{ mainData.selectedCompany.contact.firstName + ' ' + mainData.selectedCompany.contact.lastName}}
+					<span class="m-r-10"><i class="fa fa-fw fa-lg fa-phone"></i> Tel: {{getContactPhone(mainData.selectedCompany.contact)}}</span>
+					<span class="m-r-10"><i class="fa fa-fw fa-lg fa-fax"></i> Fax: {{getContactFax(mainData.selectedCompany.contact)}}</span>
 					<span class="m-r-10"><i class="fa fa-fw fa-lg fa-envelope"></i> {{ mainData.selectedCompany.contact.email }}</span>
 				</p>
 			</div>

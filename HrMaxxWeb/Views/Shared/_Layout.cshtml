@@ -487,12 +487,12 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="row">
+                                <div class="row" ng-show="company.contract.certifiedPayrolls">
                                     <div class="form-group col-sm-6 m-b-15">
                                         <label class="col-md-4 col-sm-4 col-form-label">Certified</label>
                                         <div class="col-md-8 col-sm-8">
                                             <label for="iscertified" class="switch">
-                                                <input id="iscertified" type="checkbox" ng-model="item.isCertified" ng-disabled="company.companyProjects.length===0" /><i></i>
+                                                <input id="iscertified" type="checkbox" ng-model="item.isCertified" ng-disabled="company.companyProjects.length===0 || !item.loadFromTimesheets" /><i></i>
                                             </label>
                                         </div>
                                     </div>
@@ -515,7 +515,10 @@
                                         </div>
                                     </div>
                                 </div>
-                                
+                                <div class="row">
+                                    <span ng-show="company.contract.certifiedPayrolls && !item.loadFromTimesheets"><h6><i>* Certified Payrolls require data from timesheets</i></h6></span>
+                                    <span ng-show="item.isCertified && !item.project"><h6><i>* Certified Payrolls require a govt project</i></h6></span>
+                                </div>
 
 
                             </form>
