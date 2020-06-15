@@ -1,4 +1,5 @@
-﻿IF  EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[FK_TimesheetEntry_Employee]') AND parent_object_id = OBJECT_ID(N'[dbo].[TimesheetEntry]'))
+﻿
+IF  EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[FK_TimesheetEntry_Employee]') AND parent_object_id = OBJECT_ID(N'[dbo].[TimesheetEntry]'))
 ALTER TABLE [dbo].[TimesheetEntry] DROP CONSTRAINT [FK_TimesheetEntry_Employee]
 GO
 IF  EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[FK_TimesheetEntry_CompanyProject]') AND parent_object_id = OBJECT_ID(N'[dbo].[TimesheetEntry]'))
@@ -171,5 +172,13 @@ BEGIN
 
 END
 GO
+IF Not EXISTS(SELECT *
+          FROM   INFORMATION_SCHEMA.COLUMNS
+          WHERE  TABLE_NAME = 'companytsimportmap'
+                 AND COLUMN_NAME = 'Type')
+Alter table companytsimportmap Add Type int not null default(1);
+Go
+if exists(SELECT 'x' FROM information_schema.table_constraints WHERE constraint_type = 'PRIMARY KEY' AND table_name = 'companytsimportmap')
+	alter table companytsimportmap drop constraint PK_CompanyTSImportMap;
 if not exists(SELECT 'x' FROM information_schema.table_constraints WHERE constraint_type = 'PRIMARY KEY' AND table_name = 'companytsimportmap')
 	alter table companytsimportmap add primary key (CompanyId, Type);

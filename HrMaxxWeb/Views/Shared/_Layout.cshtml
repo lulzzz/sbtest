@@ -481,7 +481,7 @@
                                             </label>
                                         </div>
                                     </div>
-                                    <div class="form-group col-sm-6 m-b-15">
+                                    <div class="form-group col-sm-6 m-b-15" ng-show="company.contract.timesheets">
                                         <label class="col-md-4 col-sm-4 col-form-label">Load Timesheet</label>
                                         <div class="col-md-8 col-sm-8">
                                             <label for="fromtts" class="switch">
@@ -508,7 +508,7 @@
                                     </div>
 
                                 </div>
-                                <div class="row" ng-show="item.isCertified">
+                                <div class="row" ng-show="item.loadFromTimesheets">
                                     <div class="form-group col-sm-6 m-b-15">
                                         <label class="col-md-4 col-sm-4 col-form-label">Approved</label>
                                         <div class="col-md-8 col-sm-8">

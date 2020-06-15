@@ -128,3 +128,49 @@ select CompanyId, ROW_NUMBER() OVER (
     partition by companyid order by Id
 )+100, PayeeId, PayeeName, Amount, Memo, IsVoid, TransactionDate, LastModified, LastModifiedBy, ListItems
 from CheckbookJournal where TransactionType=8 and EntityType=15 order by Id;
+
+/****** Object:  UserDefinedFunction [dbo].[GetMaxASOCheckNumber]    Script Date: 15/06/2020 12:44:10 PM ******/
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[GetMaxASOCheckNumber]') AND type in (N'FN', N'IF', N'TF', N'FS', N'FT'))
+DROP FUNCTION [dbo].[GetMaxASOCheckNumber]
+GO
+/****** Object:  UserDefinedFunction [dbo].[GetMaxASOCheckNumber]    Script Date: 15/06/2020 12:44:10 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE FUNCTION [dbo].[GetMaxASOCheckNumber] 
+(
+	@CompanyId int,
+	@PayrollId uniqueidentifier = null
+)
+RETURNS int
+AS
+BEGIN
+	declare @CompanyId1 int = @CompanyId,
+	@PayrollId1 uniqueidentifier = @PayrollId
+	 
+	DECLARE @checknumbers TABLE (
+    chk int
+	);
+
+	declare @result int = 0
+	insert into @checknumbers
+	select CheckNumber from 
+	(select checknumber from dbo.CompanyJournalCheckbook where companyintid=@CompanyId1
+	union
+	select CheckNumber from dbo.CompanyPayCheckNumber cpn, company c, CompanyContract cc 
+	where cpn.CompanyIntId=@CompanyId1 and (@PayrollId1 is null or (@PayrollId1 is not null and PayrollId<>@PayrollId))
+	and cpn.CompanyIntId=c.CompanyIntId and c.id=cc.CompanyId 
+	and ((JSON_VALUE(cc.invoicesetup, '$.InvoiceType')>1 and cc.InvoiceSetup is not null) or cc.InvoiceSetup is null)
+	)a;
+
+	if @PayrollId1 is null or exists(select 'x' from PayrollPayCheck pc where pc.PayrollId=@PayrollId1 and pc.CheckNumber in (select chk from @checknumbers))
+		select @result = isnull(max(chk),0) from @checknumbers;
+	else
+		select @result = startingchecknumber-1 from Payroll where Id=@PayrollId1;
+
+	return @result;
+
+END
+GO
+

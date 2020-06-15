@@ -17,7 +17,7 @@
 
 
 						</div>
-						<div class="form-group">
+						<div class="form-group" ng-show="item.company.contract.timesheets">
 							<label></label>
 							<div>
 								<label for="fromtts" class="switch">
@@ -42,7 +42,7 @@
 							<date-ctrl name="payday" required="true" model="item.payDay" min="minPayDate" />
 
 						</div>
-						<div class="form-group">
+						<div class="form-group" ng-show="item.company.contract.timesheets && item.loadFromTimesheets">
 
 							<label></label>
 							<div>
@@ -58,7 +58,7 @@
 							<label class="control-label">Notes</label>
 							<textarea ng-model="item.notes" class="form-control" rows="5"></textarea>
 						</div>
-						<div class="form-group">
+						<div class="form-group" ng-show="item.company.contract.certifiedPayrolls">
 							<label></label>
 							<div>
 								<label for="iscertified" class="switch">
@@ -74,7 +74,7 @@
 							<label class="control-label">Invoice Special Request</label>
 							<textarea ng-model="item.invoiceSpecialRequest" class="form-control" rows="5"></textarea>
 						</div>
-						<div class="form-group" ng-show="item.isCertified">
+						<div class="form-group" ng-show="item.company.contract.certifiedPayrolls && item.isCertified">
 							<label for="projectid">Project <span class="text-danger">*</span></label>
 							<select id="project" class="form-control" ng-model="item.project" ng-options="e.projectName for e in company.companyProjects | orderBy:'projectId' track by e.id" ng-disabled="item.loadFromTimesheets">
 								<option value="">Select Project</option>
