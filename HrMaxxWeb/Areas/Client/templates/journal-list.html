@@ -56,7 +56,7 @@
 						<button class="btn btn-sm btn-info pull-right m-5" ng-click="add(3, false)">Record a Deposit</button>
 						<button class="btn btn-sm btn-info pull-right m-5" ng-click="add(2, true)">Record an EFT</button>
 						<button class="btn btn-sm btn-info pull-right m-5" ng-click="add(2, false)">Write a Check</button>
-						<button class="btn btn-sm btn-info pull-right m-5" ng-click="add(8, false)">Customer Invoice</button>
+						
 
 
 					</div>
@@ -179,11 +179,7 @@
 				</div>
 
 			</div>
-			<div class="panel panel-info" ng-if="selected && selected.transactionType===8">
-				<div class="panel-body tab-content">
-					<customer-invoice item="selected" datasvc="data" company="mainData.selectedCompany" show-controls="true" main-data="mainData" />
-				</div>
-			</div>
+			
 		</div>
 		<div class="col-sm-2 hidden-print" ng-if="selected.id" ng-show="mainData.userRole==='SuperUser' || mainData.userRole==='Master'">
 			<memento-list main-data="mainData" source-type-id="selected.entityType1" memento-id="selected.mementoId" heading="'Check Versions'" data="data" />

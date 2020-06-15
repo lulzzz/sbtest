@@ -345,7 +345,24 @@ namespace HrMaxx.OnlinePayroll.Repository
 			
 			
 		}
+		public int GetMaxVendorInvoiceNumber(Guid companyId)
+		{
+			string sql = $"select max(InvoiceNumber) as maxnumber from CompanyInvoice where CompanyId=@CompanyId ";
+			using (var conn = GetConnection())
+			{
+				dynamic result =
+					conn.Query(sql, new { CompanyId = companyId }).FirstOrDefault();
 
+				if (result != null && result.maxnumber != null)
+				{
+					return result.maxnumber + 1;
+				}
+				else
+				{
+					return 101;
+				}
+			}
+		}
 		public int GetMaxRegularCheckNumber(int companyId)
 		{
 			//const string sql = "select max(CheckNumber) as maxnumber from dbo.CompanyJournalCheckbook where CompanyIntId=@CompanyId and TransactionType in (2,6)";

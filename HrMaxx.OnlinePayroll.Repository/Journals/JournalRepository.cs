@@ -9,6 +9,7 @@ using HrMaxx.Infrastructure.Repository;
 using HrMaxx.OnlinePayroll.Models;
 using HrMaxx.OnlinePayroll.Models.DataModel;
 using HrMaxx.OnlinePayroll.Models.Enum;
+using HrMaxx.OnlinePayroll.Models.JsonDataModel;
 using Newtonsoft.Json;
 using Journal = HrMaxx.OnlinePayroll.Models.DataModel.Journal;
 using MasterExtract = HrMaxx.OnlinePayroll.Models.MasterExtract;
@@ -129,6 +130,43 @@ namespace HrMaxx.OnlinePayroll.Repository.Journals
 				}
 			}
 			
+			return journal;
+		}
+		public CompanyInvoice SaveVendorInvoice(Models.CompanyInvoice journal, Guid userId)
+		{
+			const string insertinvoice = "insert into CompanyInvoice(CompanyId, InvoiceNumber, PayeeId, PayeeName, Amount, Memo, IsVoid, InvoiceDate, LastModified, LastModifiedBy, ListItems) values(@CompanyId, @InvoiceNumber, @PayeeId, @PayeeName, @Amount, @Memo, @IsVoid, @InvoiceDate, @LastModified, @LastModifiedBy, @ListItemsDb); select cast(scope_identity() as int)";
+			var mapped = Mapper.Map<CompanyInvoice, CompanyInvoiceJson>(journal);
+			using (var conn = GetConnection())
+			{
+				if (journal.Id == 0)
+				{
+					mapped.Id = conn.Query<int>(insertinvoice, mapped).Single();
+				}
+				else
+				{
+					const string updatejournal =
+							"update CompanyInvoice set Amount=@Amount, Memo=@Memo, InvoiceDate=@InvoiceDate, PayeeId=@PayeeId, PayeeName=@PayeeName, ListItems=@ListItems Where Id=@Id";
+					var rowsUpdated = conn.Execute(updatejournal, mapped);
+					if (rowsUpdated == 0)
+					{
+						mapped.Id = conn.Query<int>(insertinvoice, mapped).Single();
+					}
+				}
+			}
+			return Mapper.Map<CompanyInvoiceJson, CompanyInvoice>(mapped);
+		}
+		public CompanyInvoice VoidVendorInvoice(CompanyInvoice journal, string name)
+		{
+			journal.IsVoid = true;
+			journal.LastModified = DateTime.Now;
+			journal.LastModifiedBy = name;
+			using (var conn = GetConnection())
+			{
+				const string voidinvoice = @"update CompanyInvoice set IsVoid=1, LastModifiedBy=@LastModifiedBy, LastModified=getdate() Where Id=@Id";
+				conn.Execute(voidinvoice, new { Id = journal.Id, LastModifiedBy = name });
+				
+			}
+
 			return journal;
 		}
 

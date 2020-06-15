@@ -290,6 +290,7 @@
     <Compile Include="HostHomePageDocument.cs" />
     <Compile Include="InvoiceRecurringCharge.cs" />
     <Compile Include="InvoiceStatusList.cs" />
+    <Compile Include="CompanyInvoice.cs" />
     <Compile Include="JournalPayee.cs" />
     <Compile Include="JsonDataModel\Company.cs" />
     <Compile Include="JsonDataModel\CompanyDashboard.cs" />
@@ -297,6 +298,7 @@
     <Compile Include="JsonDataModel\EmployeeJson.cs" />
     <Compile Include="JsonDataModel\ExtractInvoicePaymentJson.cs" />
     <Compile Include="JsonDataModel\Host.cs" />
+    <Compile Include="JsonDataModel\CompanyInvoice.cs" />
     <Compile Include="JsonDataModel\Journal.cs" />
     <Compile Include="JsonDataModel\JournalPayeeJson.cs" />
     <Compile Include="JsonDataModel\KeyValueResult.cs" />

@@ -213,7 +213,7 @@ common.directive('company', ['$uibModal', 'zionAPI', '$timeout', '$window', 'ver
 						var returnVal = true;
 						if (!c.isAddressSame && (!c.businessAddress.addressLine1 || !c.businessAddress.countryId || !c.businessAddress.stateId || !c.businessAddress.zip))
 							returnVal = false;
-						else if (!c.federalEIN || !c.federalPin) {
+						else if (!c.federalEIN || (c.allowTaxPayments && !c.federalPin)) {
 							returnVal = false;
 						}
 						else {
@@ -222,7 +222,7 @@ common.directive('company', ['$uibModal', 'zionAPI', '$timeout', '$window', 'ver
 								return false;
 							}
 							$.each(c.states, function (index, state1) {
-								if (!state1.state.stateId || !state1.stateEIN || !state1.statePin) {
+								if (!state1.state.stateId || !state1.stateEIN || (c.allowTaxPayments && !state1.statePin)) {
 									returnVal = false;
 									return false;
 								}

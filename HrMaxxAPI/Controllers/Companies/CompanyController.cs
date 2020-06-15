@@ -848,5 +848,6 @@ namespace HrMaxxAPI.Controllers.Companies
 					File.Delete(filename);
 			}
 		}
+		
 	}
 }

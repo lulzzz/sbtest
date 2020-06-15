@@ -196,6 +196,18 @@ namespace HrMaxx.Common.Services.Mementos
 					});
 					ms.ForEach(m => result.Add(new { Version = m.Version, DateCreated = m.DateCreated, Object = m.Object, CreatedBy = m.CreatedBy, Comments = m.Comments }));
 				}
+				else if (sourceTypeId == EntityTypeEnum.CompanyInvoice)
+				{
+					mems = _repository.GetMementos<CompanyInvoice>((int)sourceTypeId, sourceId).ToList();
+					var ms = new List<Memento<CompanyInvoice>>();
+					mems.ForEach(m =>
+					{
+						m.Memento = _fileRepository.GetArchiveJson(ArchiveTypes.Mementos.GetDbName(), ((EntityTypeEnum)m.SourceTypeId).GetDbName() + "\\" + m.MementoId, m.Id.ToString());
+						ms.Add(Memento<CompanyInvoice>.Create(m.MementoId, m.Version, m.DateCreated, m.Memento, m.CreatedBy,
+							(EntityTypeEnum)m.SourceTypeId, m.Comments, m.UserId));
+					});
+					ms.ForEach(m => result.Add(new { Version = m.Version, DateCreated = m.DateCreated, Object = m.Object, CreatedBy = m.CreatedBy, Comments = m.Comments }));
+				}
 
 				return result;
 			}

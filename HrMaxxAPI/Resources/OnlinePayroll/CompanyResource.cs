@@ -53,7 +53,7 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 		public bool AllowEFileFormFiling { get; set; }
 		[Required]
 		public string FederalEIN { get; set; }
-		[Required]
+		
 		public string FederalPin { get; set; }
 		public bool isFiler944 { get; set; }
 		public bool IsFiler1095 { get; set; }
@@ -204,7 +204,6 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 		public State State { get; set; }
 		[Required]
 		public string StateEIN { get; set; }
-		[Required]
 		public string StatePin { get; set; }
         public string StateUIAccount { get; set; }
 		public DepositSchedule941 DepositSchedule { get; set; }

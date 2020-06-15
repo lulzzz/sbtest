@@ -28,6 +28,32 @@ common.factory('journalRepository', [
 
 				return deferred.promise;
 			},
+			getVendorInvoiceMetaData: function (companyId, companyIntId) {
+				var deferred = $q.defer();
+				journalServer.one('VendorInvoiceMetaData').one(companyId, companyIntId).get().then(function (data) {
+					deferred.resolve(data);
+				}, function (error) {
+					deferred.reject(error);
+				});
+
+				return deferred.promise;
+			},
+			getVendorInvoiceList: function (companyId, startDate, endDate) {
+				var deferred = $q.defer();
+				journalServer.all('VendorInvoices').post({
+					companyId: companyId,
+					
+					startDate: startDate,
+					endDate: endDate
+					
+				}).then(function (data) {
+					deferred.resolve(data);
+				}, function (error) {
+					deferred.reject(error);
+				});
+
+				return deferred.promise;
+			},
 			getAccountJournalList: function (companyId, startDate, endDate) {
 				var deferred = $q.defer();
 				journalServer.all('Accounts').post({
@@ -66,6 +92,26 @@ common.factory('journalRepository', [
 			voidCheck: function (check) {
 				var deferred = $q.defer();
 				journalServer.all('Void').post(check).then(function (data) {
+					deferred.resolve(data);
+				}, function (error) {
+					deferred.reject(error);
+				});
+
+				return deferred.promise;
+			},
+			saveVendorInvoice: function (check) {
+				var deferred = $q.defer();
+				journalServer.all('SaveVendorInvoice').post(check).then(function (data) {
+					deferred.resolve(data);
+				}, function (error) {
+					deferred.reject(error);
+				});
+
+				return deferred.promise;
+			},
+			voidVendorInvoice: function (check) {
+				var deferred = $q.defer();
+				journalServer.all('VoidInvoice').post(check).then(function (data) {
 					deferred.resolve(data);
 				}, function (error) {
 					deferred.reject(error);

@@ -171,5 +171,5 @@ BEGIN
 
 END
 GO
-alter table companytsimportmap drop constraint PK_CompanyTSImportMap;
-alter table companytsimportmap add primary key (CompanyId, Type);
+if not exists(SELECT 'x' FROM information_schema.table_constraints WHERE constraint_type = 'PRIMARY KEY' AND table_name = 'companytsimportmap')
+	alter table companytsimportmap add primary key (CompanyId, Type);

@@ -271,7 +271,9 @@
     <Content Include="Areas\Client\templates\company.html" />
     <Content Include="Areas\Client\templates\employee-timesheet.html" />
     <Content Include="Areas\Client\templates\employee.html" />
-    <Content Include="Areas\Client\templates\customer-invoice.html" />
+    <Content Include="Areas\Client\templates\vendorinvoices.html" />
+    <Content Include="Areas\Client\templates\vendor-invoice-list.html" />
+    <Content Include="Areas\Client\templates\vendor-invoice.html" />
     <Content Include="Areas\Client\templates\project-list.html" />
     <Content Include="Areas\Client\templates\renewal-date-list.html" />
     <Content Include="Areas\Client\templates\pay-type-list.html" />
@@ -322,7 +324,9 @@
     <Content Include="Scripts\app\common\directives\entity-documents.js" />
     <Content Include="Scripts\app\common\directives\log-viewer.js" />
     <Content Include="Scripts\app\common\directives\pay-type-list.js" />
+    <Content Include="Scripts\app\company\directives\vendor-invoice.js" />
     <Content Include="Scripts\app\company\directives\employee-timesheet.js" />
+    <Content Include="Scripts\app\company\directives\vendor-invoice-list.js" />
     <Content Include="Scripts\app\company\directives\project-list.js" />
     <Content Include="Scripts\app\company\directives\renewal-date-list.js" />
     <Content Include="Scripts\app\journal\directives\customer-invoice.js" />

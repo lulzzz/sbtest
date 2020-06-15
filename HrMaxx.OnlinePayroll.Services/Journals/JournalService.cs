@@ -141,6 +141,41 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 				throw new HrMaxxApplicationException(message, e);
 			}
 		}
+		public CompanyInvoice SaveVendorInvoice(CompanyInvoice invoice, Guid userId)
+		{
+			try
+			{
+				var j = _journalRepository.SaveVendorInvoice(invoice, userId);
+				var memento = Memento<CompanyInvoice>.Create(j, EntityTypeEnum.CompanyInvoice, invoice.LastModifiedBy, string.Format("Vendor invoice created"), userId);
+				_mementoDataService.AddMementoData(memento);
+
+				return j;
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, " Save Journal");
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
+
+		public CompanyInvoice VoidVendorInvoice(CompanyInvoice invoice, string name, Guid userId)
+		{
+			try
+			{
+				var j = _journalRepository.VoidVendorInvoice(invoice, name);
+				var memento = Memento<CompanyInvoice>.Create(j, EntityTypeEnum.CompanyInvoice, name, string.Format("Vendor invoice voided"), userId);
+				_mementoDataService.AddMementoData(memento);
+				
+				return j;
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, " Void Journal with id=" + invoice.Id);
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
 
 		public JournalList GetJournalListByCompanyAccount(Guid companyId, int accountId, DateTime? startDate, DateTime? endDate, bool includePayrolls)
 		{
@@ -1119,5 +1154,7 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 			}
 			return string.Empty;
 		}
+
+		
 	}
 }

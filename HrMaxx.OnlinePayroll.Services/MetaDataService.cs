@@ -215,6 +215,23 @@ namespace HrMaxx.OnlinePayroll.Services
 				throw new HrMaxxApplicationException(message, e);
 			}
 		}
+		public object GetVendorInvoiceMetaData(Guid companyId, int companyIntId)
+		{
+			try
+			{
+				
+				var payees = _readerService.GetJournalPayees(companyId).Where(jp=>jp.PayeeType==EntityTypeEnum.Vendor || jp.PayeeType==EntityTypeEnum.Customer).ToList();
+				var maxInvoiceNumber = _metaDataRepository.GetMaxVendorInvoiceNumber(companyId);
+				
+				return new { Payees = payees, MaxInvoiceNumber = maxInvoiceNumber };
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, "Meta Data for Journal for company " + companyId);
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
 
 		public object GetInvoiceMetaData(Guid companyId)
 		{

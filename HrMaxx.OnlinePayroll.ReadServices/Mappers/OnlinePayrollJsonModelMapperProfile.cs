@@ -273,6 +273,15 @@ namespace HrMaxx.OnlinePayroll.ReadServices.Mappers
 				.ForMember(dest => dest.Contact, opt => opt.MapFrom(src => !string.IsNullOrWhiteSpace(src.Contact) ? JsonConvert.DeserializeObject<Contact>(src.Contact) : null))
 				.ForMember(dest => dest.ListItems, opt => opt.MapFrom(src =>!string.IsNullOrWhiteSpace(src.ListItems) ? JsonConvert.DeserializeObject<List<Models.JournalItem>>(src.ListItems) : new List<JournalItem>()));
 
+			CreateMap<Models.JsonDataModel.CompanyInvoiceJson, Models.CompanyInvoice>()
+				.ForMember(dest => dest.Contact, opt => opt.MapFrom(src => !string.IsNullOrWhiteSpace(src.Contact) ? JsonConvert.DeserializeObject<Contact>(src.Contact) : null))
+				.ForMember(dest => dest.ListItems, opt => opt.MapFrom(src => !string.IsNullOrWhiteSpace(src.ListItems) ? JsonConvert.DeserializeObject<List<Models.JournalItem>>(src.ListItems) : new List<JournalItem>()));
+
+			CreateMap<Models.CompanyInvoice, Models.JsonDataModel.CompanyInvoiceJson>()
+				.ForMember(dest => dest.Contact, opt => opt.Ignore())
+				.ForMember(dest => dest.ListItems, opt => opt.MapFrom(src => JsonConvert.SerializeObject(src.ListItems)));
+
+
 			CreateMap<Models.JsonDataModel.ExtractInvoicePaymentJson, Models.ExtractInvoicePayment>();
 			CreateMap<Models.JsonDataModel.PayrollInvoiceMiscCharges, Models.PayrollInvoiceMiscCharges>()
 				.ForMember(dest => dest.MiscCharges, opt => opt.MapFrom(src => JsonConvert.DeserializeObject<List<Models.MiscFee>>(src.MiscCharges)));

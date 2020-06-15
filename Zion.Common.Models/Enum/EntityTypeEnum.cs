@@ -54,6 +54,8 @@ namespace HrMaxx.Common.Models.Enum
 		[HrMaxxSecurity(DbId = 21, DbName = "Extract")]
 		Extract = 21,
 		[HrMaxxSecurity(DbId = 22, DbName = "Invoice Deposit")]
-		InvoiceDeposit = 22
+		InvoiceDeposit = 22,
+		[HrMaxxSecurity(DbId = 23, DbName = "Vendor Invoice")]
+		CompanyInvoice = 23
 	}
 }

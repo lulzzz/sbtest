@@ -40,5 +40,6 @@ namespace HrMaxx.OnlinePayroll.Repository
         PayType SavePayType(PayType payType);
         List<PreTaxDeduction> GetDeductionTaxPrecendence();
 		void SaveDeductionPrecedence(List<PreTaxDeduction> precedence);
-	}
+        int GetMaxVendorInvoiceNumber(Guid companyIntId);
+    }
 }

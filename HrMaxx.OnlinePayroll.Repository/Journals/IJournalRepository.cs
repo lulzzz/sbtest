@@ -24,5 +24,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Journals
 		void DeletePayrollJournals(List<Journal> toList);
 		void NormalizeExtractJournal(MasterExtract masterExtract);
 		void ClearJournal(Journal journal);
-	}
+        CompanyInvoice SaveVendorInvoice(CompanyInvoice invoice, Guid userId);
+		CompanyInvoice VoidVendorInvoice(CompanyInvoice invoice, string name);
+    }
 }

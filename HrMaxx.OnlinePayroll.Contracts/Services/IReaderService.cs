@@ -46,7 +46,7 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 		//Journals
 		List<Models.Journal> GetJournals(Guid? companyId = null, Guid? payrollId = null, int? payCheckId = null, DateTime? startDate = null, DateTime? endDate = null, int transactionType = 0, int? isvoid = null, int? year = null, int accountId = 0, bool? PEOASOCoCheck = null, int id = 0, bool includePayrolls = false, bool includeDetails = true);
 		List<int> GetJournalIds(Guid companyId, int accountId, DateTime startDate, DateTime endDate, int transactionType);
-
+		List<Models.CompanyInvoice> GetVendorInvoices(Guid? companyId = null, DateTime? startDate = null, DateTime? endDate = null, int? isvoid = null, int? year = null, int id = 0);
 		//Companies
 		List<Company> GetCompanies(Guid? host = null, Guid? company = null, int? status = 1);
 		Company GetCompany(Guid companyId);

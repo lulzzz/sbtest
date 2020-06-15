@@ -642,7 +642,55 @@ namespace HrMaxx.OnlinePayroll.ReadServices
 			}
 	  }
 
-	  public List<int> GetJournalIds(Guid companyId, int accountId, DateTime startDate, DateTime endDate, int transactionType)
+		public List<Models.CompanyInvoice> GetVendorInvoices(Guid? companyId = null, DateTime? startDate = null, DateTime? endDate = null, int? isvoid = null, int? year = null, int id = 0)
+		{
+			try
+			{
+				var paramList = new List<FilterParam>();
+				if (companyId.HasValue)
+				{
+					paramList.Add(new FilterParam { Key = "company", Value = companyId.Value.ToString() });
+				}
+				
+				if (startDate.HasValue)
+				{
+					paramList.Add(new FilterParam { Key = "startdate", Value = startDate.Value.Date.ToString("MM/dd/yyyy") });
+				}
+				if (endDate.HasValue)
+				{
+					paramList.Add(new FilterParam { Key = "enddate", Value = endDate.Value.Date.ToString("MM/dd/yyyy") });
+				}
+
+				
+				if (isvoid.HasValue)
+				{
+					paramList.Add(new FilterParam { Key = "void", Value = isvoid.Value.ToString() });
+				}
+				
+
+				if (year.HasValue)
+				{
+					paramList.Add(new FilterParam { Key = "year", Value = year.ToString() });
+				}
+				if (id > 0)
+				{
+					paramList.Add(new FilterParam { Key = "id", Value = id.ToString() });
+				}
+				var journals = GetDataFromStoredProc<List<CompanyInvoice>, List<Models.JsonDataModel.CompanyInvoiceJson>>(
+					"GetVendorInvoices", paramList, new XmlRootAttribute("CompanyInvoiceList"));
+
+				return journals;
+			}
+
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, " Company Invoice list through XML");
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
+
+		public List<int> GetJournalIds(Guid companyId, int accountId, DateTime startDate, DateTime endDate, int transactionType)
 	  {
 			try
 			{

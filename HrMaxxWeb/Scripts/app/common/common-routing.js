@@ -102,6 +102,9 @@ common.config(['$httpProvider', '$routeProvider', '$locationProvider', 'zionAPI'
 	$routeProvider.when('/Client/Checkbook', {
 		templateUrl: zionAPI.Web + 'Areas/Client/templates/checkbook.html'
 	});
+	$routeProvider.when('/Client/Receivables', {
+		templateUrl: zionAPI.Web + 'Areas/Client/templates/vendorinvoices.html'
+	});
 	$routeProvider.when('/Client/Documents/:time', {
 		templateUrl: zionAPI.Web + 'Areas/Client/templates/documents.html'
 	});
