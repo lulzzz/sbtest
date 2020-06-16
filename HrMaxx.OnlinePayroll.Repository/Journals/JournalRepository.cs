@@ -134,7 +134,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Journals
 		}
 		public CompanyInvoice SaveVendorInvoice(Models.CompanyInvoice journal, Guid userId)
 		{
-			const string insertinvoice = "insert into CompanyInvoice(CompanyId, InvoiceNumber, PayeeId, PayeeName, Amount, Memo, IsVoid, InvoiceDate, LastModified, LastModifiedBy, ListItems) values(@CompanyId, @InvoiceNumber, @PayeeId, @PayeeName, @Amount, @Memo, @IsVoid, @InvoiceDate, @LastModified, @LastModifiedBy, @ListItemsDb); select cast(scope_identity() as int)";
+			const string insertinvoice = "insert into CompanyInvoice(CompanyId, InvoiceNumber, PayeeId, PayeeName, Amount, Memo, IsVoid, InvoiceDate, LastModified, LastModifiedBy, ListItems) values(@CompanyId, @InvoiceNumber, @PayeeId, @PayeeName, @Amount, @Memo, @IsVoid, @InvoiceDate, @LastModified, @LastModifiedBy, @ListItems); select cast(scope_identity() as int)";
 			var mapped = Mapper.Map<CompanyInvoice, CompanyInvoiceJson>(journal);
 			using (var conn = GetConnection())
 			{
