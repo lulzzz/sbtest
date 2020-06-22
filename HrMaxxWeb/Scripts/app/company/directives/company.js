@@ -447,9 +447,9 @@ common.directive('company', ['$uibModal', 'zionAPI', '$timeout', '$window', 'ver
 					}
 					
 					var ready = function () {
-						$scope.selectedCompany.insuranceGroup = dataSvc.companyMetaData.insuranceGroups.length > 0 ? dataSvc.companyMetaData.insuranceGroups[0] : null;
-						$scope.selectedCompany.insuranceGroupNo = dataSvc.companyMetaData.insuranceGroups.length > 0 ? dataSvc.companyMetaData.insuranceGroups[0].id : null;
-						$scope.selectedCompany.insuranceClientNo = '0';
+						//$scope.selectedCompany.insuranceGroup = $scope.selectedCompany.insuranceGroup ? $scope.selectedCompany.insuranceGroup : (dataSvc.companyMetaData.insuranceGroups.length > 0 ? dataSvc.companyMetaData.insuranceGroups[0] : null);
+						//$scope.selectedCompany.insuranceGroupNo = $scope.selectedCompany.insuranceGroupNo ? $scope.selectedCompany.insuranceGroupNo : (dataSvc.companyMetaData.insuranceGroups.length > 0 ? dataSvc.companyMetaData.insuranceGroups[0].id : null);
+						//$scope.selectedCompany.insuranceClientNo = $scope.selectedCompany.insuranceClientNo ? $scope.selectedCompany.insuranceClientNo : '0';
 						if ($scope.selectedCompany.contract.billingOption === 3 && !$scope.selectedCompany.contract.invoiceSetup) {
 							$scope.selectedCompany.contract.invoiceSetup = {
 								invoiceType: 1,
