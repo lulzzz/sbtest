@@ -1757,6 +1757,22 @@ namespace HrMaxx.OnlinePayroll.ReadServices
 				throw new HrMaxxApplicationException(message, e);
 			}
 	  }
-		
-  }
+
+		public List<Product> GetProducts(Guid? companyId = null)
+		{
+			try
+			{
+				var query = "select * from ProductService ";
+				if (companyId.HasValue)
+					query += " where CompanyId='" + companyId.Value.ToString() +"'";
+				return _reader.GetQueryData<Product>(query);
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, " product list ");
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
+	}
 }

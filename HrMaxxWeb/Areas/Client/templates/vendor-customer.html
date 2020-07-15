@@ -64,7 +64,7 @@
 					<fieldset>
 						<legend class="width-full">Contact</legend>
 						<div class="col-sm-12">
-							<contact data="selected.contact" sourcetypeid="data.sourceTypeId" sourceid="selected.id" type="0" data-parsley-group="vendorcustomer" show-primary="false" />
+							<contact data="selected.contact" sourcetypeid="data.sourceTypeId" sourceid="selected.id" type="0" data-parsley-group="vendorcustomer" show-primary="false" show-phones="!selected.id"/>
 						</div>
 					</fieldset>
 					<fieldset ng-if="isVendor && !isGlobal">

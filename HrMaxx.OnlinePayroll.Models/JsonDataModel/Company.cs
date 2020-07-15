@@ -60,6 +60,7 @@ namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
 		public bool HasLocations { get; set; }
 
 		public bool IsRestaurant { get; set; }
+		public decimal SalesTaxRate { get; set; }
 
 		public List<CompanyTaxRate> CompanyTaxRates { get; set; }
 
@@ -98,6 +99,7 @@ namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
 		public string Classification { get; set; }
 		public string LastModifiedBy { get; set; }
 		public DateTime LastModified { get; set; }
+
 	}
 	public class CompanyTaxRate
 	{
@@ -151,6 +153,10 @@ namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
 		public bool Timesheets { get; set; }
 		public bool CertifiedPayrolls { get; set; }
 		public bool RestaurantPayrolls { get; set; }
+		public bool Payrolls { get; set; }
+		public bool Bookkeeping { get; set; }
+		public bool Invoicing { get; set; }
+		public bool Taxation { get; set; }
 	}
 	
 	public class CompanyDeduction

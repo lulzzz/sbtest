@@ -18,6 +18,7 @@ using HrMaxx.Infrastructure.Security;
 using HrMaxx.OnlinePayroll.Models;
 using HrMaxx.OnlinePayroll.Models.DataModel;
 using HrMaxx.OnlinePayroll.Models.Enum;
+using HrMaxx.OnlinePayroll.Models.JsonDataModel;
 using Newtonsoft.Json;
 using Company = HrMaxx.OnlinePayroll.Models.Company;
 using CompanyDeduction = HrMaxx.OnlinePayroll.Models.CompanyDeduction;
@@ -96,6 +97,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 				dbCompany.City = dbMappedCompany.City;
 				dbCompany.ControlId = dbMappedCompany.ControlId;
 				dbCompany.IsRestaurant = dbMappedCompany.IsRestaurant;
+				dbCompany.SalesTaxRate = dbMappedCompany.SalesTaxRate;
 			}
 			_dbContext.SaveChanges();
 			if (!ignoreEinCheck)
@@ -121,7 +123,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 			//	});
 			//}
 			
-			var mapped = _mapper.Map<ContractDetails, CompanyContract>(contract);
+			var mapped = _mapper.Map<ContractDetails, Models.DataModel.CompanyContract>(contract);
 			mapped.CompanyId = savedcompany.Id;
 			
 			var dbContract = _dbContext.CompanyContracts.FirstOrDefault(c => c.CompanyId == savedcompany.Id);
@@ -143,9 +145,13 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 				dbContract.Timesheets = mapped.Timesheets;
 				dbContract.CertifiedPayrolls = mapped.CertifiedPayrolls;
 				dbContract.RestaurantPayrolls = mapped.RestaurantPayrolls;
+				dbContract.Payrolls = mapped.Payrolls;
+				dbContract.Bookkeeping = mapped.Bookkeeping;
+				dbContract.Invoicing = mapped.Invoicing;
+				dbContract.Taxation = mapped.Taxation;
 			}
 			_dbContext.SaveChanges();
-			return _mapper.Map<CompanyContract, ContractDetails>(mapped);
+			return _mapper.Map<Models.DataModel.CompanyContract, ContractDetails>(mapped);
 		}
 
 		public List<CompanyTaxState> SaveTaxStates(Company savedcompany, List<CompanyTaxState> states)
@@ -342,10 +348,17 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 			return _mapper.Map<Models.DataModel.CompanyRenewal, Models.CompanyRenewal>(mappedpc);
 		}
 
-		public List<VendorCustomer> GetVendorCustomers(Guid? companyId, bool isVendor)
+		public List<VendorCustomer> GetVendorCustomers(Guid? companyId, bool? isVendor = null)
 		{
-			var list = _dbContext.VendorCustomers.Where(vc => ((companyId.HasValue && vc.CompanyId.HasValue && vc.CompanyId == companyId.Value) || (!companyId.HasValue && !vc.CompanyId.HasValue)) && vc.IsVendor == isVendor);
-			return _mapper.Map<List<Models.DataModel.VendorCustomer>, List<VendorCustomer>>(list.ToList());
+			var sql = "select *, dbo.GetCustomerOpenBalance(vc.Id) as OpenBalance from VendorCustomer vc " +
+				"where ((@CompanyId is not null and vc.CompanyId=@CompanyId) or (@CompanyId is null)) and ((@IsVendor is not null and vc.IsVendor=@IsVendor) or (@IsVendor is null))";
+			var list = Query<VendorCustomerJson>(sql, new { CompanyId = companyId, IsVendor = isVendor });
+			return _mapper.Map<List<VendorCustomerJson>, List<VendorCustomer>>(list);
+			//var list = _dbContext.VendorCustomers.Where(vc => (
+			//				(companyId.HasValue && vc.CompanyId.HasValue && vc.CompanyId == companyId.Value) || 
+			//				(!companyId.HasValue && !vc.CompanyId.HasValue)) 
+			//				&& ((isVendor.HasValue && vc.IsVendor == isVendor) || (!isVendor.HasValue)));
+			//return _mapper.Map<List<Models.DataModel.VendorCustomer>, List<VendorCustomer>>(list.ToList());
 		}
 
 		public VendorCustomer SaveVendorCustomer(VendorCustomer mappedResource)
@@ -905,6 +918,17 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 				conn.Execute(deletesql, new { Id = id });
 				return result;
 			}
+		}
+
+		public Product SaveProduct(Product product)
+		{
+			const string save = "If @Id>0 begin update ProductService set Name=@Name, CostPrice=@CostPrice, SalePrice=@SalePrice, Type=@Type, SerialNo=@SerialNo, IsTaxable=@IsTaxable, LastModified=@LastModified, LastModifiedBy=@LastModifiedBy where Id=@Id; select @Id; end " +
+				"else begin insert into ProductService(CompanyId, Name, SerialNo, CostPrice, SalePrice, Type, IsTaxable, LastModified, LastModifiedBy) values(@CompanyId, @Name, @SerialNo, @CostPrice, @SalePrice, @Type, @IsTaxable, @LastModified, @LastModifiedBy); select cast(scope_identity() as int) end";
+			using(var conn = GetConnection())
+			{
+				product.Id = conn.Query<int>(save, product).Single();
+			}
+			return product;
 		}
 	}
 }

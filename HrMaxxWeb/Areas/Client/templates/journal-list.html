@@ -24,16 +24,7 @@
 								<select id="bank" class="form-control" ng-change="accountSelected()" ng-disabled="data.bankAccounts.length===1" ng-model="data.selectedAccount" ng-options="bank.accountName for bank in data.bankAccounts | orderBy:'useInPayroll' track by bank.id"></select>
 							</div>
 						</div>
-						<div class="form-group">
-							<label></label>
-							<div>
-								<label for="includepayrolls" class="switch">
-									Include Pay Checks?
-									<input id="includepayrolls" type="checkbox" ng-model="data.includePayrolls" ng-change="getJournalList()" /><i></i>
-								</label>
-							</div>
-
-						</div>
+						
 					</div>
 
 					<div class="col-sm-4">

@@ -1,7 +1,7 @@
 ﻿'use strict';
 
-common.directive('depositTicket', ['zionAPI','version',
-	function (zionAPI, version) {
+common.directive('depositTicket', ['$uibModal', 'zionAPI','version',
+	function ($modal, zionAPI, version) {
 		return {
 			restrict: 'E',
 			replace: true,
@@ -35,7 +35,61 @@ common.directive('depositTicket', ['zionAPI','version',
 						$scope.$parent.$parent.cancel();
 					}
 
-					
+					$scope.newAccount = function () {
+						var account = {
+							companyId: $scope.mainData.selectedCompany.id,
+							type: 4,
+							subType: null,
+							name: null,
+							taxCode: null,
+							openingBalance: 0,
+							templateId: null,
+							bankAccount: null,
+							useInPayroll: false,
+							usedInInvoiceDeposit: false,
+							isBank: function () {
+								if (type === 1 && subType === 2)
+									return true;
+								return false;
+							}
+
+						};
+						$scope.showaccount(account);
+					}
+					$scope.showaccount = function (account) {
+						var modalInstance = $modal.open({
+							templateUrl: 'popover/coa.html',
+							controller: 'coaCtrl',
+							size: 'md',
+							windowClass: 'my-modal-popup',
+							backdrop: true,
+							keyboard: true,
+							backdropClick: true,
+							resolve: {
+								account: function () {
+									return account;
+								},
+								mainData: function () {
+									return $scope.mainData;
+								}
+
+							}
+						});
+						modalInstance.result.then(function (result) {
+							dataSvc.companyAccounts.push(result);
+							$scope.selectedjd.account = result;
+							$scope.selectedjd.accountId = result.id;
+							$scope.selectedjd.accountName = result.accountName;
+						}, function () {
+							return false;
+						});
+					}
+					$scope.changeAccount = function (jd) {
+
+						$scope.selectedjd.accountId = jd.account.id;
+						$scope.selectedji.accountName = jd.account.accountName;
+						
+                    }
 					$scope.payeeSelected = function() {
 						if (dataSvc.selectedPayee) {
 							if (dataSvc.selectedPayee.id) {
@@ -49,7 +103,8 @@ common.directive('depositTicket', ['zionAPI','version',
 							}
 						}
 					}
-					$scope.setselectedjd = function(jd) {
+					$scope.setselectedjd = function (jd, index) {
+						$scope.selectedjdindex = index;
 						if (!jd.account && jd.accountId) {
 							var account = $filter('filter')(dataSvc.companyAccounts, { templateId: jd.accountId })[0];
 							if (account) {
@@ -73,7 +128,7 @@ common.directive('depositTicket', ['zionAPI','version',
 						};
 						var currentLength = $scope.item.journalDetails.length;
 						$scope.item.journalDetails.push(newJD);
-						$scope.selectedjd = $scope.item.journalDetails[currentLength];
+						$scope.setselectedjd($scope.item.journalDetails[currentLength], currentLength-1);
 					}
 					
 					$scope.saveJournalDetail = function (jd) {
@@ -113,6 +168,7 @@ common.directive('depositTicket', ['zionAPI','version',
 							$scope.item.journalDetails.splice($index+1, 1);
 						}
 						$scope.selectedjd = null;
+						$scope.selectedjdindex = null;
 					}
 					var updateItemAmount = function() {
 						var amount = 0;

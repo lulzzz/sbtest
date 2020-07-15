@@ -278,6 +278,26 @@
                                             <div class="row">
                                                 <div class="col-sm-3">
                                                     <div class="form-group">
+                                                        <label>Control Id</label>
+                                                        <div>
+                                                            <input type="text" ng-model="selectedCompany.controlId" class="form-control" data-parsley-group="wizard-step-3" ng-disabled="selectedCompany.isLocation" />
+                                                        </div>
+                                                    </div>
+
+                                                </div>
+                                                <div class="col-sm-3">
+                                                    <div class="form-group">
+                                                        <label>Sales Tax Rate</label>
+                                                        <div>
+                                                            <input type="text" ng-model="selectedCompany.salesTaxRate" class="form-control" data-parsley-group="wizard-step-3" ng-disabled="selectedCompany.isLocation" convert-to-number />
+                                                        </div>
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-sm-3">
+                                                    <div class="form-group">
                                                         <label></label>
                                                         <div>
                                                             <label for="taxpayments" class="switch">
@@ -346,15 +366,7 @@
                                                 </div>
                                             </div>
                                             <div class="row">
-                                                <div class="col-sm-3">
-                                                    <div class="form-group">
-                                                        <label>Control Id</label>
-                                                        <div>
-                                                            <input type="text" ng-model="selectedCompany.controlId" class="form-control" data-parsley-group="wizard-step-3" ng-disabled="selectedCompany.isLocation" />
-                                                        </div>
-                                                    </div>
-
-                                                </div>
+                                                
                                                 <div class="col-sm-3">
                                                     <div class="form-group">
                                                         <label></label>
@@ -642,51 +654,56 @@
 
                                                         <div class="note-content text-left">
                                                             <h4><b>Options!</b></h4>
-                                                            <div class="form-group">
-                                                                <label></label>
-                                                                <div>
-                                                                    <label for="directdebitpayer" class="switch">
-                                                                        Pay by Direct Deposit
-                                                                        <input id="directdebitpayer" type="checkbox" ng-model="selectedCompany.contract.directDeposit" ng-disabled="mainData.userRole!=='SuperUser' && mainData.userRole!=='Master'" /><i></i>
-                                                                    </label>
+                                                            
+                                                            <div class="col-sm-12">
+                                                                <div class="col-sm-12 m-b-2"><i class="fa fa-lg" ng-class="{'fa-plus-square': data.viewOption!==1, 'fa-minus-square': data.viewOption===1}" ng-click="data.viewOption = (data.viewOption!==1? 1 : null)" /> Payrolls <i class="fa fa-lg" ng-class="{'fa-check-circle':selectedCompany.contract.payrolls, 'fa-times-circle':!selectedCompany.contract.payrolls}" ng-style="(selectedCompany.contract.payrolls && {'color':'green'}) || (!selectedCompany.contract.payrolls && {'color':'red'})"></i></div>
+                                                                <div class="col-sm-10 col-sm-offset-1" ng-show="data.viewOption===1">
+                                                                    <ul class="list-group list-unstyled">
+                                                                        <li class="widget-list-item"><input type="checkbox" class="checkbox-warning checkbox-css" ng-model="selectedCompany.contract.payrolls" /> Payrolls</li>
+                                                                        <li class="widget-list-item"><input type="checkbox" class="checkbox-warning checkbox-css" ng-model="selectedCompany.contract.directDeposit" /> Pay by Direct Deposit</li>
+                                                                        <li class="widget-list-item"><input type="checkbox" class="checkbox-warning checkbox-css" ng-model="selectedCompany.contract.profitStarsPayer" /> Pay by ProfitStars</li>
+                                                                        <li class="widget-list-item"><input type="checkbox" class="checkbox-warning checkbox-css" ng-model="selectedCompany.contract.timesheets" /> Timesheets</li>
+                                                                        <li class="widget-list-item"><input type="checkbox" class="checkbox-warning checkbox-css" ng-model="selectedCompany.contract.certifiedPayrolls" /> Certified Payrolls</li>
+                                                                        <li class="widget-list-item"><input type="checkbox" class="checkbox-warning checkbox-css" ng-model="selectedCompany.contract.restaurantPayrolls" /> Restaurant Payrolls</li>
+                                                                    </ul>
+
+
                                                                 </div>
-                                                            </div>
-                                                            <div class="form-group">
-                                                                <label></label>
-                                                                <div>
-                                                                    <label for="profitstarspayer" class="switch">
-                                                                        Pay by ProfitStars
-                                                                        <input id="profitstarspayer" type="checkbox" ng-model="selectedCompany.contract.profitStarsPayer" ng-disabled="mainData.userRole!=='SuperUser' && mainData.userRole!=='Master'" /><i></i>
-                                                                    </label>
+
+                                                                <div class="col-sm-12 m-b-2"><i class="fa fa-lg" ng-class="{'fa-plus-square': data.viewOption!==2, 'fa-minus-square': data.viewOption===2}" ng-click="data.viewOption = (data.viewOption!==2 ? 2 : null)" /> Boookkeeping <i class="fa fa-lg" ng-class="{'fa-check-circle':selectedCompany.contract.bookkeeping, 'fa-times-circle':!selectedCompany.contract.bookkeeping}" ng-style="(selectedCompany.contract.bookkeeping && {'color':'green'}) || (!selectedCompany.contract.bookkeeping && {'color':'red'})"></i></div>
+                                                                <div class="col-sm-10 col-sm-offset-1" ng-show="data.viewOption===2">
+                                                                    <ul class="list-group list-unstyled">
+                                                                        <li class="widget-list-item"><input type="checkbox" class="checkbox-warning checkbox-css" ng-model="selectedCompany.contract.bookkeeping" /> Bookkeeping</li>
+
+                                                                    </ul>
+
+
                                                                 </div>
-                                                            </div>
-                                                            <div class="form-group">
-                                                                <label></label>
-                                                                <div>
-                                                                    <label for="timesheets" class="switch">
-                                                                        Employee Timesheets
-                                                                        <input id="timesheets" type="checkbox" ng-model="selectedCompany.contract.timesheets" ng-disabled="mainData.userRole!=='SuperUser' && mainData.userRole!=='Master'" /><i></i>
-                                                                    </label>
+                                                                <div class="col-sm-12"><i class="fa fa-lg" ng-class="{'fa-plus-square': data.viewOption!==3, 'fa-minus-square': data.viewOption===3}" ng-click="data.viewOption = (data.viewOption!==3 ? 3 : null)" /> Invoicing <i class="fa fa-lg" ng-class="{'fa-check-circle':selectedCompany.contract.invoicing, 'fa-times-circle':!selectedCompany.contract.invoicing}" ng-style="(selectedCompany.contract.invoicing && {'color':'green'}) || (!selectedCompany.contract.invoicing && {'color':'red'})"></i></div>
+                                                                <div class="col-sm-10 col-sm-offset-1" ng-show="data.viewOption===3">
+                                                                    <ul class="list-group list-unstyled">
+                                                                        <li class="widget-list-item"><input type="checkbox" class="checkbox-warning checkbox-css" ng-model="selectedCompany.contract.invoicing" /> Invoicing</li>
+
+                                                                    </ul>
+
+
                                                                 </div>
-                                                            </div>
-                                                            <div class="form-group">
-                                                                <label></label>
-                                                                <div>
-                                                                    <label for="certifiedpayrolls" class="switch">
-                                                                        Certified Payrolls
-                                                                        <input id="certifiedpayrolls" type="checkbox" ng-model="selectedCompany.contract.certifiedPayrolls" ng-disabled="mainData.userRole!=='SuperUser' && mainData.userRole!=='Master'" /><i></i>
-                                                                    </label>
+                                                                <div class="col-sm-12"><i class="fa fa-lg" ng-class="{'fa-plus-square': data.viewOption!==4, 'fa-minus-square': data.viewOption===4}" ng-click="data.viewOption = (data.viewOption!==4 ? 4 : null)" /> Taxation <i class="fa fa-lg" ng-class="{'fa-check-circle':selectedCompany.contract.taxation, 'fa-times-circle':!selectedCompany.contract.taxation}" ng-style="(selectedCompany.contract.taxation && {'color':'green'}) || (!selectedCompany.contract.taxation && {'color':'red'})"></i></div>
+                                                                <div class="col-sm-10 col-sm-offset-1" ng-show="data.viewOption===4">
+                                                                    <ul class="list-group list-unstyled">
+                                                                        <li class="widget-list-item"><input type="checkbox" class="checkbox-warning checkbox-css" ng-model="selectedCompany.contract.taxation" /> Taxation</li>
+
+                                                                    </ul>
+
+
                                                                 </div>
+
                                                             </div>
-                                                            <div class="form-group">
-                                                                <label></label>
-                                                                <div>
-                                                                    <label for="restaurantpayrolls" class="switch">
-                                                                        Restaurant Payroll
-                                                                        <input id="restaurantpayrolls" type="checkbox" ng-model="selectedCompany.contract.restaurantPayrolls" ng-disabled="mainData.userRole!=='SuperUser' && mainData.userRole!=='Master'" /><i></i>
-                                                                    </label>
-                                                                </div>
-                                                            </div>
+                                                            
+                                                           
+                                                            
+                                                            
+                                                            
                                                         </div>
                                                         <div class="note-icon"><i class="fa fa-lightbulb"></i></div>
                                                     </div>

@@ -145,11 +145,24 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 		{
 			try
 			{
-				var j = _journalRepository.SaveVendorInvoice(invoice, userId);
-				var memento = Memento<CompanyInvoice>.Create(j, EntityTypeEnum.CompanyInvoice, invoice.LastModifiedBy, string.Format("Vendor invoice created"), userId);
+				using(var txn = TransactionScopeHelper.Transaction())
+				{
+					invoice = _journalRepository.SaveVendorInvoice(invoice, userId);
+					var vendor = _companyService.GetVendorCustomersById(invoice.PayeeId);
+					if (!vendor.Contact.Equals(invoice.Contact))
+					{
+						vendor.Contact = invoice.Contact;
+						vendor.UserName = invoice.LastModifiedBy;
+						vendor.LastModified = invoice.LastModified;
+						_companyService.SaveVendorCustomers(vendor);
+					}
+					txn.Complete();					
+				}
+				
+				var memento = Memento<CompanyInvoice>.Create(invoice, EntityTypeEnum.CompanyInvoice, invoice.LastModifiedBy, string.Format("Vendor invoice created"), userId);
 				_mementoDataService.AddMementoData(memento);
 
-				return j;
+				return invoice;
 			}
 			catch (Exception e)
 			{
@@ -643,12 +656,13 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 				"Please ensure you have sufficient funds in your bank account.<br/><br/>" +
 				"If you have any questions, please contact your CPA or Paxol Support Team.<br/><br/>";
 				var emailSubject = $"Paxol: Notice of Your Impending {report.Description} Payment";
+				
 				journals.ForEach(j =>
 				{
 					var journal = _readerService.GetJournals(id: j, includePayrolls: false, includeDetails: false).First();
 					var company = _readerService.GetCompany(journal.CompanyId);
-					
-					var contact = _commonService.GetAllTargets<Contact>(EntityTypeEnum.Contact).FirstOrDefault();
+
+					var contact = _commonService.GetRelatedEntities<Contact>(EntityTypeEnum.Company, EntityTypeEnum.Contact, company.Id).FirstOrDefault();
 					if (contact != null && !string.IsNullOrWhiteSpace(contact.Email) && contact.Email.ToLower()!="na@na.com")
 					{
 						var emailBody = string.Format(emailBodyTemplate, contact.FullName, journal.PayeeName, journal.Amount.ToString("c"), report.DepositDate.Value.ToString("MM/dd/yyyy")

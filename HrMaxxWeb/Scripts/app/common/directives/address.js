@@ -12,12 +12,15 @@ common.directive('addressPaxol', ['zionAPI','localStorageService','version',
 				type: "=type",
 				showDisabled: "=?showDisabled",
 				valGroup: "=?valGroup",
-				showTaxable: "=?showTaxable"
+				showTaxable: "=?showTaxable",
+				showContent: "=?showContent",
+				legend: "=?legend"
 			},
 			templateUrl: zionAPI.Web + 'Content/templates/address.html?v=' + version,
 
 			controller: ['$scope', '$element', '$location', '$filter', 'commonRepository', 'EntityTypes', function ($scope, $element, $location, $filter, commonRepository, EntityTypes) {
 				$scope.targetTypeId = EntityTypes.Address;
+				$scope.legend = $scope.legend ? $scope.legend : 'Address';
 				$scope.countries = localStorageService.get('countries');
 				$scope.availableStates = [];
 				if (!$scope.valGroup)

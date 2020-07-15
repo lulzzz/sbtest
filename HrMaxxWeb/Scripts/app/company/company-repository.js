@@ -231,6 +231,26 @@ common.factory('companyRepository', [
 
 				return deferred.promise;
 			},
+			getProducts: function (companyId) {
+				var deferred = $q.defer();
+				companyServer.one('Products').one(companyId).getList().then(function (data) {
+					deferred.resolve(data);
+				}, function (error) {
+					deferred.reject(error);
+				});
+
+				return deferred.promise;
+			},
+			saveProduct: function (input) {
+				var deferred = $q.defer();
+				companyServer.all('Products').post(input).then(function (data) {
+					deferred.resolve(data);
+				}, function (error) {
+					deferred.reject(error);
+				});
+
+				return deferred.promise;
+			},
 			getVendorCustomers: function (companyId, isVendor) {
 				var deferred = $q.defer();
 				if (companyId) {

@@ -27,5 +27,7 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 
 		public string TypeText { get { return Type.GetDbName(); } }
 		public string SubTypeText { get { return SubType.GetDbName(); } }
+		public string AccountName { get; set; }
+		public bool IsBank { get; set; }
 	}
 }

@@ -16,6 +16,7 @@ common.directive('vendorInvoiceList', ['zionAPI', '$timeout', '$window','version
 						isBodyOpen: true,
 						payees: [],
 						maxInvoiceNumber: 0,
+						print: false,
 						reportFilter: {
 							filterStartDate: moment().add(-2, 'week').toDate(),
 							filterEndDate: null,
@@ -78,6 +79,7 @@ common.directive('vendorInvoiceList', ['zionAPI', '$timeout', '$window','version
 					};
 					$scope.cancel = function () {
 						$scope.selected = null;
+						dataSvc.print = false;
 						dataSvc.isBodyOpen = true;
 					}
 					
@@ -86,12 +88,17 @@ common.directive('vendorInvoiceList', ['zionAPI', '$timeout', '$window','version
 						$timeout(function() {
 							$scope.selected = angular.copy(item);
 							$scope.selected.invoiceDate = moment($scope.selected.invoiceDate).toDate();
+							$scope.selected.dueDate = moment($scope.selected.dueDate).toDate();
 							
 							dataSvc.isBodyOpen = false;
 						}, 1);
 						
 
 					}
+					$scope.print = function (item) {
+						dataSvc.print = true;
+						$scope.set(item);
+                    }
                    
 					$scope.void = function () {
 						if ($window.confirm('Are you sure you want to mark this invoice Void?')) {
@@ -115,15 +122,22 @@ common.directive('vendorInvoiceList', ['zionAPI', '$timeout', '$window','version
 					$scope.save = function () {
 						var check = $scope.selected;
 						check.invoiceDate = moment(check.invoiceDate).format("MM/DD/YYYY");
+						check.dueDate = moment(check.dueDate).format("MM/DD/YYYY");
 						journalRepository.saveVendorInvoice(check).then(function (data) {
 							dataSvc.maxInvoiceNumber = data.invoiceNumber + 1;
-
-							$scope.list.push(data);
+							if (check.id) {
+								var match = $filter('filter')($scope.list, { id: check.id })[0];
+								var ind = $scope.list.indexOf(match);
+								$scope.list[ind] = data;
+							}
+							else
+								$scope.list.push(data);
 
 							$scope.tableParams.reload();
 							$scope.fillTableData($scope.tableParams);
 							$scope.mainData.showMessage('successfully saved invoice item', 'success');
 							$scope.cancel();
+							dataSvc.print = false;
 							$scope.set(data);
 						}, function (erorr) {
 							$scope.set(check);
@@ -163,7 +177,7 @@ common.directive('vendorInvoiceList', ['zionAPI', '$timeout', '$window','version
 						journalRepository.getVendorInvoiceMetaData(companyId, $scope.mainData.selectedCompany.companyIntId).then(function (data) {
 							dataSvc.maxInvoiceNumber = data.maxInvoiceNumber + 1;
 							dataSvc.payees = data.payees;
-							
+							dataSvc.products = data.products;
 						}, function (erorr) {
 								$scope.mainData.handleError('' , erorr, 'danger');
 						});
@@ -190,13 +204,21 @@ common.directive('vendorInvoiceList', ['zionAPI', '$timeout', '$window','version
 							payeeId : null,
 							payeeName : '',
 							amount : 0,
-							
-							invoiceDate : new Date(),
+							total: 0,
+							balance: 0,
+							salesTaxRate: $scope.mainData.selectedCompany.salesTaxRate ?? 10 ,
+							salesTax: 0,
+							discountType: 1,
+							discountRate: 0,
+							discount: 0,
+							invoiceDate: new Date(),
+							dueDate: new Date(),
 							memo : '',
 							
 							isVoid : false,
 							
-							listItems: []
+							invoiceItems: [],
+							invoicePayments: []
 						};
 						
 						$scope.selected = newItem;

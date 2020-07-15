@@ -24,24 +24,39 @@
 
 					<div class="row" ng-show="list.length>0">
 						<table ng-table="tableParams" class="table" show-filter="true" template-pagination="custom/pager">
-							<tr ng-repeat="item in tableData track by $index" class="mouse-over-pointer" ng-click="set(item)" ng-class="{'success':selected.id===item.id, 'warning' : !selected && item.isVoid}">
-								<td data-title=" 'Date' " sortable=" 'invoiceDate' " class="col-sm-1 text-center">
-									{{item.invoiceDate | date:'MM/dd/yyyy'}}
-								</td>
+							<tr ng-repeat="item in tableData track by $index" class="mouse-over-pointer" ng-class="{'success':selected.id===item.id, 'danger' : !selected && item.isVoid}">
 								<td data-title=" 'Number' " filter="{ 'invoiceNumber': 'text' }" sortable="'invoiceNumber'" class="col-sm-1 text-center">
 									{{item.invoiceNumber}}
 								</td>
-								<td data-title=" 'Payee' " filter="{ 'payeeName': 'text' }" sortable=" 'payeeName' " class="col-sm-1 text-center">
+								<td data-title=" 'Date' " sortable=" 'invoiceDate' " class="col-sm-1 text-center">
+									{{item.invoiceDate | date:'MM/dd/yyyy'}}
+								</td>
+								<td data-title=" 'Due Date' " sortable=" 'dueDate' " class="col-sm-1 text-center">
+									{{item.dueDate | date:'MM/dd/yyyy'}}
+								</td>
+								<td data-title=" 'Overdue' " sortable=" 'daysOverDue' " class="col-sm-1 text-center">
+									{{item.daysOverdue}}
+								</td>
+								<td data-title=" 'Payee' " filter="{ 'payeeName': 'text' }" sortable=" 'payeeName' " class="col-sm-3 text-center">
 									{{item.payeeName}}
 								</td>
-								<td data-title=" 'Amount' " class="col-sm-1 text-center show-red">
-									{{item.amount | currency:'$'}}
+								<td data-title=" 'Total' " class="col-sm-1 text-center show-red">
+									{{item.total | currency:'$'}}
+								</td>
+								<td data-title=" 'Balance' " class="col-sm-1 text-center show-red">
+									{{item.balance | currency:'$'}}
 								</td>
 								<td data-title=" 'Memo' " class="col-sm-1 text-center">
 									{{item.memo}}
 								</td>
-								
-								
+								<td data-title=" 'Is Quotation' " class="col-sm-1 text-center">
+									<input type="checkbox" ng-model="item.isQuote" ng-disabled="item.id!==selected.id">
+								</td>
+								<td>
+									<button class="btn btn-primary" ng-click="set(item)"><i class="fa fa-eye"></i></button>
+									<button class="btn btn-primary" ng-click="print(item)"><i class="fa fa-print"></i></button>
+								</td>
+
 							</tr>
 
 						</table>
@@ -71,17 +86,15 @@
 	</div>
 	<div class="row" ng-if="selected">
 		<div class="col-sm-10">
-			
-			<div class="panel panel-info" ng-if="selected">
-				<div class="panel-body tab-content">
-					<vendor-invoice item="selected" datasvc="data" company="mainData.selectedCompany" show-controls="true" main-data="mainData" />
-				</div>
-			</div>
-		</div>
-		<div class="col-sm-2 hidden-print" ng-if="selected.id" ng-show="mainData.userRole==='SuperUser' || mainData.userRole==='Master'">
-			<memento-list main-data="mainData" source-type-id="23" memento-id="selected.mementoId" heading="'Invoice Versions'" data="data" />
+			<vendor-invoice item="selected" datasvc="data" company="mainData.selectedCompany" show-controls="true" main-data="mainData" print="data.print" />
 		</div>
 		
+		
+		<div class="col-sm-2 hidden-print p-0" ng-if="selected.id" >
+			<memento-list main-data="mainData" source-type-id="23" memento-id="selected.mementoId" heading="'Invoice Versions'" data="data" ng-show="mainData.userRole==='SuperUser' || mainData.userRole==='Master'"/>
+			<entity-documents main-data="mainData" source-type-id="23" heading="'Documents'" source-id="selected.id" />
+		</div>
+
 	</div>
 	
 	

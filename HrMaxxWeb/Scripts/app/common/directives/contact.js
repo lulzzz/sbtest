@@ -10,7 +10,8 @@ common.directive('contact', ['zionAPI','localStorageService','version',
 				sourceTypeId: "=sourceTypeId",
 				sourceId: "=sourceId",
 				valGroup: "=?valGroup",
-				showPrimary: "=?showPrimary"
+				showPrimary: "=?showPrimary",
+				showPhones: "=?showPhones"
 			},
 			templateUrl: zionAPI.Web + 'Content/templates/contact.html?v=' + version,
 
@@ -18,7 +19,10 @@ common.directive('contact', ['zionAPI','localStorageService','version',
 				if (!$scope.valGroup) {
 					$scope.valGroup = "contact";
 				}
-				
+				var dataSvc = {
+					showPhones: $scope.showPhones
+                }
+				$scope.dataSvc = dataSvc;
 				
 
 				

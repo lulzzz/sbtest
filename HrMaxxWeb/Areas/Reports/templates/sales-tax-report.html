@@ -1,0 +1,101 @@
+﻿<div class="row">
+	
+	<!-- begin panel -->
+	<div class="panel panel-inverse" data-sortable-id="form-stuff-4" ng-if="mainData.selectedCompany">
+		<div class="panel-heading hidden-print" ng-click="data.isBodyOpen=!data.isBodyOpen">
+			<h4 class="panel-title">Sales Tax Report <i class="pull-right fa fa-lg fa-print" ng-click="print1()"></i></h4>
+		</div>
+		<div class="panel-body">
+			
+			<div class="row hidden-print">
+				<report-filter filter="mainData.reportFilter" callback="getReport()" show-include-clients="showincludeclients" defaults-provided="true" />
+			</div>
+			<div ng-show="list.length===0" class="table table-bordered">
+				No invoice with sales tax found
+			</div>
+			<div ng-show="list.length>0" class="row text-center p-5 visible-print">
+				<h5><em><u>{{mainData.selectedCompany.name}}</u></em></h5>
+			</div>
+			<div ng-show="list.length>0" class="row text-center p-5">
+				<strong><em>Sales Tax Report <span ng-show="mainData.reportFilter.filterStartDate || mainData.reportFilter.filterEndDate"> ({{mainData.reportFilter.filterEndDate ? '' : 'From'}} {{mainData.reportFilter.filterStartDate? (mainData.reportFilter.filterStartDate | date:'MM/dd/yyyy') : 'Till'}}{{mainData.reportFilter.filterEndDate? ' - ' + (mainData.reportFilter.filterEndDate | date:'MM/dd/yyyy') : ''}} )</span></em></strong>
+			</div>
+			<div class="col-sm-12" ng-show="list.length>0">
+
+				<table ng-table="tableParams" class="table" show-filter="true" template-pagination="custom/nopager">
+					<tr ng-repeat-start="item in tableData track by $index" ng-class="{'danger':item.isVoid, 'info': item.isOpen}">
+						<td data-title="' Customer'" filter="{'payeeName': 'text'}" sortable="'payeeName'" class="col-sm-2 text-bold">
+							<i class="fa hidden-print" ng-class="{'fa-plus-square': !item.isOpen, 'fa-minus-square':item.isOpen}" ng-click="item.isOpen=!item.isOpen"></i> {{item.payeeName}}
+						</td>
+						<td data-title=" 'Taxable Amount' " sortable=" 'amount' " class="col-sm-1 text-center">
+							{{item.amount | currency:'$'}}
+						</td>
+
+						<td data-title=" 'Date' " sortable=" 'invoiceDate' " class="col-sm-1 text-center">
+							{{item.invoiceDate | date:'MM/dd/yyyy'}}
+						</td>
+
+						<td data-title=" 'Sales Tax Rate' " sortable=" 'salesTaxRate' " class="col-sm-1 text-center">
+							{{item.salesTaxRate | currency:''}} %
+						</td>
+						<td data-title=" 'Tax' " sortable=" 'salesTax' " class="col-sm-1 text-center">
+							{{item.salesTax | currency:'$'}}
+						</td>
+
+					</tr>
+					<tr ng-repeat-end ng-show="item.isOpen">
+						<td></td>
+						<td colspan="3">
+							<table class="table">
+								<thead>
+									<tr>
+										<th>Product/Service</th>
+										<th>Description</th>
+										<th>Rate</th>
+										<th>Quantity</th>
+										<th>Is Taxable</th>
+										<th>Amount</th>
+										<th>Tax</th>
+
+									</tr>
+								</thead>
+								<tbody>
+									<tr ng-repeat="pay in item.invoiceItems" class="table-active">
+										<td><span class="visible-print"> - </span>{{pay.product.name}}</td>
+										<td>{{pay.description}}</td>
+										<td>{{pay.rate | currency:'$'}}</td>
+										<td>{{pay.quantity }}</td>
+										<td><input type="checkbox" ng-model="pay.isTaxable" disabled="disabled" /></td>
+										<td>{{pay.amount | currency:'$'}}</td>
+										<td>{{ (pay.amount * item.salesTaxRate/100) | currency:'$'}}</td>
+									</tr>
+								</tbody>
+							</table>
+						</td>
+						<td></td>
+					</tr>
+
+				</table>
+				<script type="text/ng-template" id="custom/nopager">
+
+				</script>
+				<div class="invoice invoice-price">
+					<div class="invoice-price-left">
+						<div class="invoice-price-row">
+							
+						</div>
+					</div>
+					<div class="invoice-price-right">
+						<small>TOTAL</small> <span class="f-w-600">{{totalTax | currency:'$'}}</span>
+					</div>
+					
+				</div>
+
+			</div>
+
+
+		</div>
+	</div>
+
+</div>
+
+

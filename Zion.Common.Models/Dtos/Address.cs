@@ -8,7 +8,7 @@ using HrMaxx.Infrastructure.Helpers;
 
 namespace HrMaxx.Common.Models.Dtos
 {
-	public class Address : BaseEntityDto
+	public class Address : BaseEntityDto, IEquatable<Address>
 	{
 		public string AddressLine1 { get; set; }
 		public string City { get; set; }
@@ -33,6 +33,13 @@ namespace HrMaxx.Common.Models.Dtos
 					!string.IsNullOrWhiteSpace(ZipExtension) ? "-" + ZipExtension : string.Empty, !string.IsNullOrWhiteSpace(County) ? " " + County + "," : string.Empty);
 			}
 			set { }
+		}
+
+		public bool Equals(Address other)
+		{
+			if (!this.AddressLine1.Equals(other.AddressLine1) || !this.City.Equals(other.City) || !this.StateId.Equals(other.StateId) || !this.Zip.Equals(other.Zip) || !this.ZipExtension.Equals(other.ZipExtension))
+				return false;
+			return true;
 		}
 	}
 

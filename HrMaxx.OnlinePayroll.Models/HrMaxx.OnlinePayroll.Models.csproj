@@ -311,6 +311,7 @@
     <Compile Include="JsonDataModel\ProfitStarsFundJson.cs" />
     <Compile Include="JsonDataModel\ScheduledPayrollJson.cs" />
     <Compile Include="JsonDataModel\StaffDashboardJson.cs" />
+    <Compile Include="JsonDataModel\VendorCustomerJson.cs" />
     <Compile Include="JsonDataModel\VoidedPayCheckInvoiceCredit.cs" />
     <Compile Include="MetaDataModels\PreTaxDeduction.cs" />
     <Compile Include="MinWageEligibileCompany.cs" />

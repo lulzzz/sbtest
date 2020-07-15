@@ -344,7 +344,7 @@ namespace HrMaxx.OnlinePayroll.Services
 			}
 		}
 
-		public List<VendorCustomer> GetVendorCustomers(Guid? companyId, bool isVendor)
+		public List<VendorCustomer> GetVendorCustomers(Guid? companyId, bool? isVendor = null)
 		{
 			try
 			{
@@ -917,6 +917,21 @@ namespace HrMaxx.OnlinePayroll.Services
 			catch (Exception e)
 			{
 				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, " delete time sheet entry with id ");
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
+
+		public Product SaveProduct(Product product)
+		{
+			try
+			{
+				
+				return _companyRepository.SaveProduct(product);
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, " save product ");
 				Log.Error(message, e);
 				throw new HrMaxxApplicationException(message, e);
 			}

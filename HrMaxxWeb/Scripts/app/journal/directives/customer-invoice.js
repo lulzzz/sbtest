@@ -1,7 +1,7 @@
 ﻿'use strict';
 
-common.directive('customerInvoice', ['zionAPI','version','$window',
-	function (zionAPI, version, $window) {
+common.directive('customerInvoice', ['$uibModal','zionAPI','version','$window',
+	function ($modal, zionAPI, version, $window) {
 		return {
 			restrict: 'E',
 			replace: true,
@@ -32,19 +32,44 @@ common.directive('customerInvoice', ['zionAPI','version','$window',
 						$scope.$parent.$parent.cancel();
 						
 					}
+					$scope.showvendorcustomer = function () {
+						var modalInstance = $modal.open({
+							templateUrl: 'popover/vendorcustomer.html',
+							controller: 'vendorCustomerCtrl',
+							size: 'md',
+							windowClass: 'my-modal-popup',
+							backdrop: true,
+							keyboard: true,
+							backdropClick: true,
+							resolve: {
+								vendor: function () {
+									return $scope.selectedPayee;
+								},
+								mainData: function () {
+									return $scope.mainData;
+								},
+								isVendor: function () {
+									return $scope.selectedPayee.isVendor;
+								},
+								isGlobal: function () {
+									return $scope.selectedPayee.isGlobal;
+								}
 
+							}
+						});
+					}
 					
 					$scope.payeeSelected = function() {
 						if (dataSvc.selectedPayee) {
-							if (dataSvc.selectedPayee.id) {
+							//if (dataSvc.selectedPayee.id) {
 								$scope.item.payeeId = dataSvc.selectedPayee.id;
-								$scope.item.payeeName = dataSvc.selectedPayee.payeeName;
-								$scope.item.entityType = dataSvc.selectedPayee.payeeType;
-							} else {
-								$scope.item.payeeId = '00000000-0000-0000-0000-000000000000';
-								$scope.item.payeeName = dataSvc.selectedPayee;
-								$scope.item.entityType = EntityTypes.Vendor;
-							}
+								$scope.item.payeeName = dataSvc.selectedPayee.name;
+								$scope.item.entityType = dataSvc.selectedPayee.entityType;
+							//} else {
+							//	$scope.item.payeeId = '00000000-0000-0000-0000-000000000000';
+							//	$scope.item.payeeName = dataSvc.selectedPayee;
+							//	$scope.item.entityType = EntityTypes.Vendor;
+							//}
 						}
 					}
 					$scope.setselectedji = function(ji) {

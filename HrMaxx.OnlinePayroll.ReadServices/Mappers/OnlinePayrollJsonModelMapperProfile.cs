@@ -277,9 +277,7 @@ namespace HrMaxx.OnlinePayroll.ReadServices.Mappers
 				.ForMember(dest => dest.Contact, opt => opt.MapFrom(src => !string.IsNullOrWhiteSpace(src.Contact) ? JsonConvert.DeserializeObject<Contact>(src.Contact) : null))
 				.ForMember(dest => dest.ListItems, opt => opt.MapFrom(src => !string.IsNullOrWhiteSpace(src.ListItems) ? JsonConvert.DeserializeObject<List<Models.JournalItem>>(src.ListItems) : new List<JournalItem>()));
 
-			CreateMap<Models.CompanyInvoice, Models.JsonDataModel.CompanyInvoiceJson>()
-				.ForMember(dest => dest.Contact, opt => opt.Ignore())
-				.ForMember(dest => dest.ListItems, opt => opt.MapFrom(src => JsonConvert.SerializeObject(src.ListItems)));
+			
 
 
 			CreateMap<Models.JsonDataModel.ExtractInvoicePaymentJson, Models.ExtractInvoicePayment>();
@@ -334,6 +332,15 @@ namespace HrMaxx.OnlinePayroll.ReadServices.Mappers
 
 			CreateMap<Models.JsonDataModel.EmployeeACA, Models.EmployeeACA>();
 			CreateMap<Models.EmployeeACA, Models.JsonDataModel.EmployeeACA>();
+
+			CreateMap<Models.JsonDataModel.VendorCustomerJson, VendorCustomer>()
+				.ForMember(dest => dest.IndividualSSN, opt => opt.MapFrom(src => !string.IsNullOrWhiteSpace(src.IndividualSSN) ? Crypto.Decrypt(src.IndividualSSN) : src.IndividualSSN))
+				.ForMember(dest => dest.BusinessFIN, opt => opt.MapFrom(src => !string.IsNullOrWhiteSpace(src.BusinessFIN) ? Crypto.Decrypt(src.BusinessFIN) : src.BusinessFIN))
+				.ForMember(dest => dest.UserId, opt => opt.Ignore())
+				.ForMember(dest => dest.Contact, opt => opt.MapFrom(src => JsonConvert.DeserializeObject<Contact>(src.Contact)))
+				.ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.LastModifiedBy));
+
+			
 
 		}
 	}

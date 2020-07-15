@@ -2166,6 +2166,12 @@ legend {
     padding: 10px 15px;
     background: #fff;
 }
+.table-active,
+.table-active > td,
+.table-active > th {
+    background-color: #f2f4f5!important
+}
+
 .table-condensed > thead > tr > th, 
 .table-condensed > tbody > tr > th, 
 .table-condensed > tfoot > tr > th, 
@@ -3940,7 +3946,7 @@ body .fc button:active {
 .invoice-date {
     display: table-cell;
     width: 1%;
-    
+    vertical-align: top;
 }
 .invoice-from,
 .invoice-to {

@@ -20,8 +20,10 @@ namespace HrMaxx.OnlinePayroll.Models
 		public List<TaxExtract> DelayedExtractsBySchedule { get; set; }
 		public EmployeeDocumentMetaData EmployeeDocumentMetaData { get; set; }
 		public List<PayrollMetric> PayrollHistory { get; set; }
-        
-        public List<PayCheckPayTypeAccumulation> Accumulations { get; set; }
+		public List<InvoiceMetric> InvoiceHistory { get; set; }
+		public List<ProductRevenue> ProductRevenues { get; set; }
+		public List<ExpenseMetric> Expenses { get; set; }
+		public List<PayCheckPayTypeAccumulation> Accumulations { get; set; }
 		public int? YTDYear { get { return LastPayroll!=null ? LastPayroll.PayDay.Year : default(int?); } }
         public TaxExtract Last941Extract 
 		{ 
@@ -161,9 +163,25 @@ namespace HrMaxx.OnlinePayroll.Models
             };
 		} 
 		}
+		public decimal PaidInvoices { get { return InvoiceHistory.Where(i => i.Balance == 0).Sum(i=>i.Total); } }
+		public decimal UnPaidInvoices { get { return InvoiceHistory.Where(i => i.Balance > 0).Sum(i => i.Balance); } }
+		public decimal InvoiceOverDueAmount { get { return InvoiceHistory.Where(ii => ii.IsOverDue).Sum(ii => ii.Balance); } }
+		public decimal InvoiceNotOverDueAmount { get { return InvoiceHistory.Where(ii => !ii.IsOverDue).Sum(ii => ii.Balance); } }
+		public PieChart InvoiceDueByCustomers { get { return new PieChart() { Items = InvoiceHistory.Where(i=>i.IsOverDue).GroupBy(p => p.PayeeName).Select(g => new PieChartItem { Label = g.Key, Value = g.ToList().Sum(i=>i.Balance) }).ToList() }; } }
+		public PieChart ProductRevenueShare { get { return new PieChart() { Items = ProductRevenues.Select(pr => new PieChartItem { Label = pr.Name, Value = pr.Amount }).ToList() }; } }
+		public PieChart VendorExpenses { get { return new PieChart() { Items = Expenses.GroupBy(ex=>new { ex.PayeeId, ex.PayeeName }).Select(ex=>new PieChartItem { Label=ex.Key.PayeeName, Value=ex.ToList().Sum(ex1=>ex1.Amount)}).ToList() }; } }
+		public PieChart ExpenseTypes { get {
+				var mergedExpenses = new List<ExpenseMetric>();
+				InvoiceHistory.Where(i => i.Balance == 0).ToList().ForEach(i => mergedExpenses.Add(new ExpenseMetric { TransactionType = 7, TransactionDate = i.InvoiceDate, Amount = i.Total, PayeeId = i.PayeeId, PayeeName = i.PayeeName }));
+				mergedExpenses.AddRange(Expenses);
+				return new PieChart() { Items = mergedExpenses.GroupBy(ex => ex.Type.GetDbName() ).Select(ex => new PieChartItem { Label = ex.Key, Value = ex.ToList().Sum(ex1 => ex1.Amount) }).ToList() }; } }
+		public decimal GeneralExpense { get { return Expenses.Where(ex => ex.TransactionType == 2).Sum(ex=>ex.Amount); } }
+		public decimal TaxExpense { get { return Expenses.Where(ex => ex.TransactionType == 5).Sum(ex => ex.Amount); } }
+		public decimal DeductionExpense { get { return Expenses.Where(ex => ex.TransactionType == 6).Sum(ex => ex.Amount); } }
+		public decimal DepositIncome { get { return Expenses.Where(ex => ex.TransactionType == 3).Sum(ex => ex.Amount); } }
+		public decimal InvoiceIncome { get { return Expenses.Where(ex => ex.TransactionType == 7).Sum(ex => ex.Amount); } }
+	}
 
-        
-    }
 
 	public class TaxExtract
 	{
@@ -194,4 +212,29 @@ namespace HrMaxx.OnlinePayroll.Models
         public List<PayTypeAccumulation> Accumulations { get; set; }
         
     }
+	public class InvoiceMetric
+	{
+		public DateTime InvoiceDate { get; set; }
+		public DateTime DueDate { get; set; }
+		public decimal Total { get; set; }
+		public decimal Balance { get; set; }
+		public Guid PayeeId { get; set; }
+		public string PayeeName { get; set; }
+		public bool IsOverDue { get { return DueDate < DateTime.Today.Date && Balance > 0; } }
+	}
+	public class ProductRevenue
+	{
+		public int Id { get; set; }
+		public string Name { get; set; }
+		public decimal Amount { get; set; }
+	}
+	public class ExpenseMetric
+	{
+		public int TransactionType { get; set; }
+		public TransactionType Type { get { return (TransactionType)TransactionType; } }
+		public DateTime TransactionDate { get; set; }
+		public decimal Amount { get; set; }
+		public Guid PayeeId { get; set; }
+		public string PayeeName { get; set; }
+	}
 }

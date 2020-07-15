@@ -116,7 +116,11 @@ common.directive('companyList', ['zionAPI', '$timeout', '$window', 'version', '$
 								profitStarsPayer: false,
 								timesheets: false,
 								certifiedPayrolls: false,
-								restaurantPayrolls: false
+								restaurantPayrolls: false,
+								payrolls: false,
+								bookkeeping: false,
+								invoicing: false,
+								taxation: false
 							}
 						};
 						if ($scope.mainData.selectedHost.isPeoHost) {

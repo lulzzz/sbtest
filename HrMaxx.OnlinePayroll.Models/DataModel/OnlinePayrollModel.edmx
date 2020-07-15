@@ -155,6 +155,7 @@
           <Property Name="ProfitStarsPayer" Type="bit" Nullable="false" />
           <Property Name="ControlId" Type="varchar(max)" />
           <Property Name="IsRestaurant" Type="bit" Nullable="false" />
+          <Property Name="SalesTaxRate" Type="decimal" Precision="18" Scale="2" Nullable="false" />
         </EntityType>
         <EntityType Name="CompanyAccount">
           <Key>
@@ -210,6 +211,10 @@
           <Property Name="Timesheets" Type="bit" Nullable="false" />
           <Property Name="CertifiedPayrolls" Type="bit" Nullable="false" />
           <Property Name="RestaurantPayrolls" Type="bit" Nullable="false" />
+          <Property Name="Payrolls" Type="bit" Nullable="false" />
+          <Property Name="Bookkeeping" Type="bit" Nullable="false" />
+          <Property Name="Invoicing" Type="bit" Nullable="false" />
+          <Property Name="Taxation" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="CompanyDeduction">
           <Key>
@@ -860,18 +865,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_ComapnyProject_Company">
-          <End Role="Company" Type="Self.Company" Multiplicity="1" />
-          <End Role="CompanyProject" Type="Self.CompanyProject" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Company">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="CompanyProject">
-              <PropertyRef Name="CompanyId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_CommissionExtract_MasterExtracts">
           <End Role="MasterExtracts" Type="Self.MasterExtracts" Multiplicity="1" />
           <End Role="CommissionExtract" Type="Self.CommissionExtract" Multiplicity="*" />
@@ -1497,10 +1490,6 @@
             <End Role="EntityType" EntitySet="EntityType" />
             <End Role="CheckbookJournal" EntitySet="CheckbookJournal" />
           </AssociationSet>
-          <AssociationSet Name="FK_ComapnyProject_Company" Association="Self.FK_ComapnyProject_Company">
-            <End Role="Company" EntitySet="Company" />
-            <End Role="CompanyProject" EntitySet="CompanyProject" />
-          </AssociationSet>
           <AssociationSet Name="FK_CommissionExtract_MasterExtracts" Association="Self.FK_CommissionExtract_MasterExtracts">
             <End Role="MasterExtracts" EntitySet="MasterExtracts" />
             <End Role="CommissionExtract" EntitySet="CommissionExtract" />
@@ -2067,6 +2056,7 @@
           <Property Name="IsRestaurant" Type="Boolean" Nullable="false" />
           <NavigationProperty Name="CompanyRenewals" Relationship="HrMaxxModel.FK_CompanyRenewal_Company" FromRole="Company" ToRole="CompanyRenewal" />
           <NavigationProperty Name="CompanyProjects" Relationship="HrMaxxModel.FK_ComapnyProject_Company" FromRole="Company" ToRole="CompanyProject" />
+          <Property Name="SalesTaxRate" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
         </EntityType>
         <EntityType Name="CompanyTaxRate">
           <Key>
@@ -2216,6 +2206,10 @@
           <Property Name="Timesheets" Type="Boolean" Nullable="false" />
           <Property Name="CertifiedPayrolls" Type="Boolean" Nullable="false" />
           <Property Name="RestaurantPayrolls" Type="Boolean" Nullable="false" />
+          <Property Name="Payrolls" Type="Boolean" Nullable="false" />
+          <Property Name="Bookkeeping" Type="Boolean" Nullable="false" />
+          <Property Name="Invoicing" Type="Boolean" Nullable="false" />
+          <Property Name="Taxation" Type="Boolean" Nullable="false" />
         </EntityType>
         <Association Name="FK_CompanyContract_Company">
           <End Type="HrMaxxModel.Company" Role="Company" Multiplicity="1" />
@@ -3532,6 +3526,7 @@
           <EntitySetMapping Name="Companies">
             <EntityTypeMapping TypeName="HrMaxxModel.Company">
               <MappingFragment StoreEntitySet="Company">
+                <ScalarProperty Name="SalesTaxRate" ColumnName="SalesTaxRate" />
                 <ScalarProperty Name="IsRestaurant" ColumnName="IsRestaurant" />
                 <ScalarProperty Name="ControlId" ColumnName="ControlId" />
                 <ScalarProperty Name="ProfitStarsPayer" ColumnName="ProfitStarsPayer" />
@@ -3634,6 +3629,10 @@
           <EntitySetMapping Name="CompanyContracts">
             <EntityTypeMapping TypeName="HrMaxxModel.CompanyContract">
               <MappingFragment StoreEntitySet="CompanyContract">
+                <ScalarProperty Name="Taxation" ColumnName="Taxation" />
+                <ScalarProperty Name="Invoicing" ColumnName="Invoicing" />
+                <ScalarProperty Name="Bookkeeping" ColumnName="Bookkeeping" />
+                <ScalarProperty Name="Payrolls" ColumnName="Payrolls" />
                 <ScalarProperty Name="RestaurantPayrolls" ColumnName="RestaurantPayrolls" />
                 <ScalarProperty Name="CertifiedPayrolls" ColumnName="CertifiedPayrolls" />
                 <ScalarProperty Name="Timesheets" ColumnName="Timesheets" />

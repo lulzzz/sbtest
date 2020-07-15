@@ -14,6 +14,9 @@ namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
 		public List<PayrollMetricJson> PayrollHistory { get; set; }
 		public EmployeeDocumentMetaData EmployeeDocumentMetaData { get; set; }
         public List<PayCheckPayTypeAccumulation> Accumulations { get; set; }
+		public List<InvoiceMetric> InvoiceHistory { get; set; }
+		public List<ProductRevenue> ProductRevenues { get; set; }
+		public List<ExpenseMetric> Expenses { get; set; }
     }
 
 	public class TaxExtractJson
@@ -40,4 +43,5 @@ namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
         public string DeductionJson { get; set; }
         public string Accumulations { get; set; }
     }
+	
 }

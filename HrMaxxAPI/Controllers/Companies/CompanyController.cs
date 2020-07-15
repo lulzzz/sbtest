@@ -289,6 +289,23 @@ namespace HrMaxxAPI.Controllers.Companies
 			return MakeServiceCall(() => _companyService.SaveProject(resource, new Guid(CurrentUser.UserId)), "save company project", true);
 
 		}
+		[System.Web.Http.HttpPost]
+		[System.Web.Http.Route(CompanyRoutes.SaveProducts)]
+		public Product SaveProducts(Product resource)
+		{
+			resource.LastModified = DateTime.Now;
+			resource.LastModifiedBy = CurrentUser.FullName;
+			return MakeServiceCall(() => _companyService.SaveProduct(resource), "save company product", true);
+
+		}
+		[System.Web.Http.HttpGet]
+		[System.Web.Http.Route(CompanyRoutes.Products)]
+		public List<Product> GetProducts(Guid companyId)
+		{
+			
+			return MakeServiceCall(() => _readerService.GetProducts(companyId), "get company product", true);
+
+		}
 
 		[System.Web.Http.HttpPost]
 		[System.Web.Http.Route(CompanyRoutes.SaveLocation)]

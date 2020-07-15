@@ -89,8 +89,8 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 		//Companies
 		List<JournalPayee> GetJournalPayees(Guid companyId);
 		JournalPayee GetPayee(Guid company, Guid id, int payeeType);
-
-		ACHMasterExtract GetACHExtract(int id);
+        List<Product> GetProducts(Guid? companyId = null);
+        ACHMasterExtract GetACHExtract(int id);
 		CommissionsResponse GetCommissionsExtractResponse(CommissionsReportRequest request);
 		CommissionsExtract GetCommissionsExtract(int id);
 		List<Accumulation> GetAccumulations(Guid? company = null, DateTime? startdate = null, DateTime? enddate = null, string ssns = null);

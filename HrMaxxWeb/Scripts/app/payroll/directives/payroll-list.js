@@ -70,7 +70,52 @@ common.directive('payrollList', ['$uibModal', 'zionAPI', '$timeout', '$window', 
 						}
 
 					}
+					$scope.newAccount = function () {
+						var account = {
+							companyId: $scope.mainData.selectedCompany.id,
+							type: 1,
+							subType: 2,
+							name: null,
+							taxCode: null,
+							openingBalance: 0,
+							templateId: null,
+							bankAccount: null,
+							useInPayroll: true,
+							usedInInvoiceDeposit: false,
+							isBank: function () {
+								if (type === 1 && subType === 2)
+									return true;
+								return false;
+							}
 
+						};
+						$scope.showaccount(account);
+					}
+					$scope.showaccount = function (account) {
+						var modalInstance = $modal.open({
+							templateUrl: 'popover/coa.html',
+							controller: 'coaCtrl',
+							size: 'md',
+							windowClass: 'my-modal-popup',
+							backdrop: true,
+							keyboard: true,
+							backdropClick: true,
+							resolve: {
+								account: function () {
+									return account;
+								},
+								mainData: function () {
+									return $scope.mainData;
+								}
+
+							}
+						});
+						modalInstance.result.then(function (result) {
+							dataSvc.payrollAccount = result;
+						}, function () {
+							return false;
+						});
+					}
 					var addNew = function() {
 						var selected = {
 							company: $scope.mainData.selectedCompany,

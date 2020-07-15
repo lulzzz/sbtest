@@ -10,7 +10,8 @@ common.directive('vendorCustomer', ['zionAPI', '$timeout', '$window', 'version',
 				selected: "=vendor",
 				isVendor: "=isVendor",
 				isGlobal: "=isGlobal",
-				showControls: "=showControls"
+				showControls: "=showControls",
+				isPopup: "=?isPopup"
 			},
 			templateUrl: zionAPI.Web + 'Areas/Client/templates/vendor-customer.html?v=' + version,
 
@@ -57,7 +58,11 @@ common.directive('vendorCustomer', ['zionAPI', '$timeout', '$window', 'version',
 						if (false === $('form[name="vendorcustomer"]').parsley().validate())
 							return false;
 						companyRepository.saveVendorCustomer($scope.selected).then(function (result) {
-							$scope.$parent.$parent.save(result);
+							if (!$scope.isPopup)
+								$scope.$parent.$parent.save(result);
+							else {
+								$scope.$parent.save(result);
+                            }
 						}, function (error) {
 							$scope.mainData.showMessage('error saving ' + ($scope.isVendor ? 'vendor' : 'customer'), 'danger');
 						});

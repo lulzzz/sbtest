@@ -17,6 +17,8 @@ namespace HrMaxxAPI.Controllers.Companies
 		public const string SavePayCode = "Company/PayCode";
 		public const string SaveRenewal = "Company/Renewal";
 		public const string SaveProjects = "Company/Projects";
+		public const string Products = "Company/Products/{companyId:guid}";
+		public const string SaveProducts = "Company/Products";
 		public const string SaveLocation = "Company/SaveLocation";
 		public const string VendorCustomerList = "Company/Vendors/{isVendor:bool}/{companyId:guid?}";
 		public const string GlobalVendors = "Company/GlobalVendors";

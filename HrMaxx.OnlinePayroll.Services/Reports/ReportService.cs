@@ -99,6 +99,8 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 					return GetWorkerCompensationReport(request);
 				else if (request.ReportName.Equals("IncomeStatement"))
 					return GetIncomeStatementReport(request);
+				else if (request.ReportName.Equals("SalesTaxReport"))
+					return GetSalesTaxReport(request);
 				else //if (request.ReportName.Equals("BalanceSheet"))
 					return GetBalanceSheet(request);
 			
@@ -2369,7 +2371,15 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			return _pdfService.PrintHtml(transformed.Reports.First());
 		}
 
-		
+		private ReportResponse GetSalesTaxReport(ReportRequest request)
+		{
+			var response = new ReportResponse();
+			//response.PayChecks = _reportRepository.GetReportPayChecks(request, true);
+			response.CompanyInvoices = _readerService.GetVendorInvoices(request.CompanyId, startDate: request.StartDate,
+				endDate: request.EndDate).Where(i=>i.SalesTax>0).ToList();
+			
+			return response;
+		}
 
 
 		private ReportResponse GetIncomeStatementReport(ReportRequest request)

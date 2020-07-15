@@ -265,12 +265,15 @@
     <Content Include="Areas\Administration\templates\config.html" />
     <Content Include="Areas\Administration\templates\Configurations.html" />
     <Content Include="Areas\Administration\templates\Taxes.html" />
+    <Content Include="Areas\Client\templates\account.html" />
     <Content Include="Areas\Client\templates\awaiting-print-payroll-list.html" />
     <Content Include="Areas\Client\templates\awaitingprintpayrolls.html" />
     <Content Include="Areas\Client\templates\documents.html" />
     <Content Include="Areas\Client\templates\company.html" />
     <Content Include="Areas\Client\templates\employee-timesheet.html" />
     <Content Include="Areas\Client\templates\employee.html" />
+    <Content Include="Areas\Client\templates\product-list.html" />
+    <Content Include="Areas\Client\templates\products.html" />
     <Content Include="Areas\Client\templates\vendorinvoices.html" />
     <Content Include="Areas\Client\templates\vendor-invoice-list.html" />
     <Content Include="Areas\Client\templates\vendor-invoice.html" />
@@ -292,6 +295,7 @@
     <Content Include="Areas\Reports\templates\ach-report.html" />
     <Content Include="Areas\Reports\templates\ACH.html" />
     <Content Include="Areas\Reports\templates\commissions-view.html" />
+    <Content Include="Areas\Reports\templates\sales-tax-report.html" />
     <Content Include="Areas\Reports\templates\news-ticker.html" />
     <Content Include="Areas\Reports\templates\staff-dashboard.html" />
     <Content Include="Areas\Reports\templates\extract-dashboard.html" />
@@ -315,6 +319,10 @@
     <Content Include="Content\bootstrap-theme\plugins\jquery.countdown.css" />
     <Content Include="Content\daterangepicker.css" />
     <Content Include="Content\images\coming-soon.jpg" />
+    <Content Include="Content\images\svg\img-1.svg" />
+    <Content Include="Content\images\svg\img-2.svg" />
+    <Content Include="Content\images\svg\img-3.svg" />
+    <Content Include="Content\images\svg\img-4.svg" />
     <Content Include="Content\morris.css" />
     <Content Include="Content\jstree.min.css" />
     <Content Include="Content\templates\entity-documents.html" />
@@ -324,6 +332,8 @@
     <Content Include="Scripts\app\common\directives\entity-documents.js" />
     <Content Include="Scripts\app\common\directives\log-viewer.js" />
     <Content Include="Scripts\app\common\directives\pay-type-list.js" />
+    <Content Include="Scripts\app\company\directives\account.js" />
+    <Content Include="Scripts\app\company\directives\product-list.js" />
     <Content Include="Scripts\app\company\directives\vendor-invoice.js" />
     <Content Include="Scripts\app\company\directives\employee-timesheet.js" />
     <Content Include="Scripts\app\company\directives\vendor-invoice-list.js" />
@@ -332,6 +342,7 @@
     <Content Include="Scripts\app\journal\directives\customer-invoice.js" />
     <Content Include="Scripts\app\payroll\directives\scheduled-payroll.js" />
     <Content Include="Scripts\app\payroll\directives\scheduled-payroll-list.js" />
+    <Content Include="Scripts\app\reports\directives\sales-tax-report.js" />
     <Content Include="Scripts\app\reports\directives\news-ticker.js" />
     <Content Include="Scripts\app\reports\directives\staff-dashboard.js" />
     <Content Include="Scripts\app\reports\directives\extract-dashboard.js" />

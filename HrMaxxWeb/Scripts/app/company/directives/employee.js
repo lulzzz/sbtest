@@ -238,7 +238,7 @@ common.directive('employee', ['zionAPI', '$timeout', '$window', 'version', '$uib
 					}
 					$scope.showAccruals = function() {
 						var exists = $filter('filter')($scope.mainData.selectedCompany.accumulatedPayTypes, { isEmployeeSpecific: true });
-						return exists.length > 0;
+						return exists && exists.length > 0;
 					}
 					$scope.payCodeEvents = {
 						onItemSelect: function (item) {

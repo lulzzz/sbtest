@@ -219,11 +219,13 @@ namespace HrMaxx.OnlinePayroll.Services
 		{
 			try
 			{
-				
-				var payees = _readerService.GetJournalPayees(companyId).Where(jp=>jp.PayeeType==EntityTypeEnum.Vendor || jp.PayeeType==EntityTypeEnum.Customer).ToList();
+
+				//var payees = _readerService.GetJournalPayees(companyId).Where(jp=>jp.PayeeType==EntityTypeEnum.Vendor || jp.PayeeType==EntityTypeEnum.Customer).ToList();
+				var payees = _companyService.GetVendorCustomers(companyId);
+				var products = _readerService.GetProducts(companyId: companyId);
 				var maxInvoiceNumber = _metaDataRepository.GetMaxVendorInvoiceNumber(companyId);
 				
-				return new { Payees = payees, MaxInvoiceNumber = maxInvoiceNumber };
+				return new { Payees = payees, MaxInvoiceNumber = maxInvoiceNumber, Products = products };
 			}
 			catch (Exception e)
 			{

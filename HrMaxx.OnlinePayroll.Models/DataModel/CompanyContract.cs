@@ -29,6 +29,10 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
         public bool Timesheets { get; set; }
         public bool CertifiedPayrolls { get; set; }
         public bool RestaurantPayrolls { get; set; }
+        public bool Payrolls { get; set; }
+        public bool Bookkeeping { get; set; }
+        public bool Invoicing { get; set; }
+        public bool Taxation { get; set; }
     
         public virtual Company Company { get; set; }
     }

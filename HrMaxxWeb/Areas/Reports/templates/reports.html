@@ -1,10 +1,10 @@
 ﻿<div>
-	
+
 	<div class="row" ng-if="params['reportName']==='PayrollRegister'">
 		<payroll-register main-data="data" />
 	</div>
 	<div class="row" ng-if="params['reportName']==='PayrollSummary'">
-		<payroll-summary main-data="data"  />
+		<payroll-summary main-data="data" />
 	</div>
 	<div class="row" ng-if="params['reportName']==='Deductions'">
 		<deduction-report main-data="data" />
@@ -35,5 +35,8 @@
 	</div>
 	<div class="row" ng-if="params['reportName']==='CPAReport'">
 		<cpa-report main-data="data" />
+	</div>
+	<div class="row" ng-if="params['reportName']==='SalesTaxReport'">
+		<sales-tax-report main-data="data" />
 	</div>
 </div>

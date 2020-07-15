@@ -79,6 +79,7 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
         public bool ProfitStarsPayer { get; set; }
         public string ControlId { get; set; }
         public bool IsRestaurant { get; set; }
+        public decimal SalesTaxRate { get; set; }
     
         public virtual Host Host { get; set; }
         public virtual Status Status { get; set; }

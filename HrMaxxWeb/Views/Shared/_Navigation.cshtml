@@ -88,65 +88,99 @@
 
             @if (!CurrentUser.IsInRole(RoleTypeEnum.Employee.GetDbName()))
             {
-                <li><a href="#" onclick=" this.href = '#!/Client/Company/' + (new Date().getTime()); " data-toggle="tooltip" data-placement="right" title="Company"><i class="fa fa-empire"></i><span>Company</span></a></li>
+                <li><a href="#" onclick=" this.href = '#!/Client/Company/' + (new Date().getTime()); " data-toggle="tooltip" data-placement="right" title="Company"><i class="fa fa-home"></i><span>Company</span></a></li>
                 if (CurrentUser.HasClaim(HrMaxxClaimTypes.EmployeeManageEmployees))
                 {
                     <li><a href="#" onclick=" this.href = '#!/Client/Employees/' + (new Date().getTime()); " data-toggle="tooltip" data-placement="right" title="Employee"><i class="fa fa-users"></i><span>Employee</span></a></li>
                 }
-                if (CurrentUser.HasClaim(HrMaxxClaimTypes.PayrollProcess))
-                {
-                    <li><a onclick=" this.href = '#!/Client/Payrolls/' + (new Date().getTime())"><i class="fa fa-paypal" data-toggle="tooltip" data-placement="right" title="Payroll"></i><span>Payroll</span></a></li>
-                }
-                if (CurrentUser.HasClaim(HrMaxxClaimTypes.PayrollSchedule))
-                {
-                    <li><a onclick=" this.href = '#!/Client/SchedulePayrolls' "><i class="fa fa-calendar" data-toggle="tooltip" data-placement="right" title="Schedule Payroll"></i><span>Schedule Payrolls</span></a></li>
-                }
-                if (CurrentUser.HasClaim(HrMaxxClaimTypes.CheckbookManage))
-                {
-                    <li><a href="#!/Client/Checkbook" data-toggle="tooltip" data-placement="right" title="Checkbook"><i class="fa fa-bank"></i><span>Checkbook</span></a></li>
-                    <li><a href="#!/Client/Receivables" data-toggle="tooltip" data-placement="right" title="Receivables"><i class="fa fa-dollar"></i><span>Receivables</span></a></li>
-                }
-                <li><a onclick=" this.href = '#!/Client/Documents/' + (new Date().getTime())"><i class="fa fa-file-archive-o" data-toggle="tooltip" data-placement="right" title="Documents"></i><span>Documents</span></a></li>
-                if (CurrentUser.HasClaim(HrMaxxClaimTypes.VendorsManage))
-                {
-                    <li><a href="#!/Client/Vendors" data-toggle="tooltip" data-placement="right" title="Vendors"><i class="fa fa-building-o"></i><span>Vendors</span></a></li>
-                }
-                if (CurrentUser.HasClaim(HrMaxxClaimTypes.CustomersManage))
-                {
-                    <li><a href="#!/Client/Customers" data-toggle="tooltip" data-placement="right" title="Customers"><i class="fa fa-user"></i><span>Customers</span></a></li>
-                }
-                if (CurrentUser.HasClaim(HrMaxxClaimTypes.COAManage))
-                {
-                    <li><a href="#!/Client/Accounts" data-toggle="tooltip" data-placement="right" title="COA"><i class="fa fa-money"></i><span>COA</span></a></li>
-                }
-                if (CurrentUser.HasClaim(HrMaxxClaimTypes.ReportsManage))
-                {
-                    <li class="has-sub">
-                        <a href="javascript:;">
-                            <b class="caret pull-right"></b>
-                            <i class="fa fa-pie-chart"></i>
-                            <span>Reports</span>
-                        </a>
-                        <ul class="sub-menu">
-                            <li><a href="#!/Reports/PayrollRegister">Payroll Register</a></li>
-                            <li><a href="#!/Reports/PayrollSummary">Payroll Summary</a></li>
-                            <li><a href="#!/Reports/Deductions">Deductions</a></li>
-                            <li><a href="#!/Reports/WorkerCompensations">Worker Compensations</a></li>
-                            <li><a href="#!/Reports/IncomeStatement">Income Statement</a></li>
-                            <li><a href="#!/Reports/BalanceSheet">Balance Sheet</a></li>
-                            <li><a href="#!/Reports/DepositCoupons">Deposit Coupons</a></li>
-                            <li><a href="#!/Reports/GovtForms">Govt Forms</a></li>
-                            <li><a href="#!/Reports/EmployerForms">Employer Forms</a></li>
-                            <li><a href="#!/Reports/OtherForms">Other Forms</a></li>
-                            <li><a href="#!/Reports/BlankGovtForms">Blank Govt Forms</a></li>
-                            @if (CurrentUser.HasClaim(HrMaxxClaimTypes.ReportsCPAReport))
-                            {
-                                <li><a href="#!/Reports/CPAReport">CPA Report</a></li>
-                            }
 
-                        </ul>
-                    </li>
-                }
+                <li class="has-sub" ng-show="isMenuAvailable('Payrolls')">
+                    <a href="javascript:;">
+                        <b class="caret pull-right"></b>
+                        <i class="fa fa-paypal"></i>
+                        <span>Payrolls</span>
+                    </a>
+                    <ul class="sub-menu">
+                        @if (CurrentUser.HasClaim(HrMaxxClaimTypes.PayrollProcess))
+                        {
+                            <li><a onclick=" this.href = '#!/Client/Payrolls/' + (new Date().getTime())">Processing</a></li>
+                        }
+                        @if (CurrentUser.HasClaim(HrMaxxClaimTypes.PayrollSchedule))
+                        {
+                            <li><a onclick=" this.href = '#!/Client/SchedulePayrolls' ">Schedule Payrolls</a></li>
+                        }
+                        <li><a href="#!/Client/EmployeeTimesheet">Timesheets</a></li>
+                        <li><a href="#!/Reports/PayrollRegister">Payroll Register</a></li>
+                        <li><a href="#!/Reports/PayrollSummary">Payroll Summary</a></li>
+                        <li><a href="#!/Reports/Deductions">Deductions</a></li>
+                        <li><a href="#!/Reports/WorkerCompensations">Worker Compensations</a></li>
+
+                    </ul>
+                </li>
+                <li class="has-sub"  ng-show="isMenuAvailable('Taxation')">
+                    <a href="javascript:;">
+                        <b class="caret pull-right"></b>
+                        <i class="fa fa-calculator"></i>
+                        <span>Taxation</span>
+                    </a>
+                    <ul class="sub-menu">
+                        <li><a href="#!/Reports/GovtForms">Govt Forms</a></li>
+                        <li><a href="#!/Reports/EmployerForms">Employer Forms</a></li>
+                        <li><a href="#!/Reports/OtherForms">Other Forms</a></li>
+                        <li><a href="#!/Reports/BlankGovtForms">Blank Govt Forms</a></li>
+                        <li><a href="#!/Reports/DepositCoupons">Deposit Coupons</a></li>
+                        @if (CurrentUser.HasClaim(HrMaxxClaimTypes.ReportsCPAReport))
+                        {
+                            <li><a href="#!/Reports/CPAReport">CPA Report</a></li>
+                        }
+                    </ul>
+                </li>
+                <li class="has-sub"  ng-show="isMenuAvailable('Bookkeeping')">
+                    <a href="javascript:;">
+                        <b class="caret pull-right"></b>
+                        <i class="fa fa-money"></i>
+                        <span>Bookkeeping</span>
+                    </a>
+                    <ul class="sub-menu">
+                        @if (CurrentUser.HasClaim(HrMaxxClaimTypes.CheckbookManage))
+                        {
+                            <li><a href="#!/Client/Checkbook" data-toggle="tooltip" data-placement="right" title="Checkbook">Expenses</a></li>
+                            
+                        }
+                        @if (CurrentUser.HasClaim(HrMaxxClaimTypes.VendorsManage))
+                        {
+                            <li><a href="#!/Client/Vendors" data-toggle="tooltip" data-placement="right" title="Vendors">Vendors</a></li>
+                        }
+                        @if (CurrentUser.HasClaim(HrMaxxClaimTypes.COAManage))
+                        {
+                            <li><a href="#!/Client/Accounts" data-toggle="tooltip" data-placement="right" title="COA">COA</a></li>
+                        }
+                        <li><a href="#!/Reports/IncomeStatement">Income Statement</a></li>
+                        <li><a href="#!/Reports/BalanceSheet">Balance Sheet</a></li>
+                    </ul>
+                </li>
+                <li class="has-sub" ng-show="isMenuAvailable('Invoicing')">
+                    <a href="javascript:;">
+                        <b class="caret pull-right"></b>
+                        <i class="fa fa-dollar"></i>
+                        <span>Income</span>
+                    </a>
+                    <ul class="sub-menu">
+                        <li><a href="#!/Client/Receivables" data-toggle="tooltip" data-placement="right" title="Receivables">Invoices</a></li>
+                        <li><a href="#!/Client/Products" data-toggle="tooltip" data-placement="right" title="Product & Services">Product & Services</a></li>
+                        <li><a href="#!/Client/Customers" data-toggle="tooltip" data-placement="right" title="Customers">Customers</a></li>
+                        <li><a href="#!/Reports/SalesTaxReport">Sales Tax Report</a></li>
+
+
+
+
+
+                    </ul>
+                </li>
+               
+                <li><a onclick=" this.href = '#!/Client/Documents/' + (new Date().getTime())"><i class="fa fa-file-archive-o" data-toggle="tooltip" data-placement="right" title="Documents"></i><span>Documents</span></a></li>
+
+                
             }
             else
             {
@@ -154,13 +188,13 @@
                 <li><a href="#!/Client/PayChecks"><i class="fa fa-paypal" data-toggle="tooltip" data-placement="right" title="Payroll"></i><span>PayChecks</span></a></li>
                 <li><a onclick=" this.href = '#!/Client/Documents/' + (new Date().getTime())"><i class="fa fa-file-archive-o" data-toggle="tooltip" data-placement="right" title="Documents"></i><span>Documents</span></a></li>
             }
-            <li><a href="#!/Client/EmployeeTimesheet"><i class="fa fa-times-circle" data-toggle="tooltip" data-placement="right" title="Timesheets"></i><span>Timesheets</span></a></li>
+
             <!-- begin sidebar minify button -->
             <li><a href="javascript:;" class="sidebar-minify-btn" data-click="sidebar-minify"><i class="fa fa-angle-double-left"></i></a></li>
             <!-- end sidebar minify button -->
         </ul>
-		<!-- end sidebar nav -->
-	</div>
+                    <!-- end sidebar nav -->
+</div>
 	<!-- end sidebar scrollbar -->
 </div>
 <div class="sidebar-bg hidden-print"></div>

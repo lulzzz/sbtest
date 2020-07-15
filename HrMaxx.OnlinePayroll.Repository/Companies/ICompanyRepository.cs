@@ -10,7 +10,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 	public interface ICompanyRepository
 
 	{
-		List<VendorCustomer> GetVendorCustomers(Guid? companyId, bool isVendor);
+		List<VendorCustomer> GetVendorCustomers(Guid? companyId, bool? isVendor = null);
 		List<Account> GetCompanyAccounts(Guid companyId);
 		
 		VendorCustomer GetVendorCustomersById(Guid vcId);
@@ -61,5 +61,6 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 		List<TimesheetEntry> GetEmployeeTimesheet(Guid payrollId);
 		TimesheetEntry SaveTimesheetEntry(TimesheetEntry resource);
         TimesheetEntry DeleteTimesheetEntry(int id);
+        Product SaveProduct(Product product);
     }
 }

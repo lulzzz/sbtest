@@ -112,42 +112,40 @@ common.directive('accountList', ['zionAPI', '$timeout', '$window', 'version',
 
 					$scope.set = function (item) {
 						$scope.selected = null;
+						
 						$timeout(function () {
+							
+							if (item.openingDate)
+								item.openingDate = moment(item.openingDate).toDate();
+							if (item.id) {
+								dataSvc.selectedType = $filter('filter')(dataSvc.types, { key: item.type })[0];
+								dataSvc.selectedSubType = $filter('filter')(dataSvc.subTypes, { key: item.subType })[0];
+								
+							}
 							$scope.selected = angular.copy(item);
-							if ($scope.selected.openingDate)
-								$scope.selected.openingDate = moment($scope.selected.openingDate).toDate();
-							if ($scope.selected.id) {
-								dataSvc.selectedType = $filter('filter')(dataSvc.types, { key: $scope.selected.type })[0];
-								dataSvc.selectedSubType = $filter('filter')(dataSvc.subTypes, { key: $scope.selected.subType })[0];
-								$scope.typeSelected();
+							if (item.id) {
 								$scope.tableParamsRegister.reload();
 								$scope.fillTableDataRegister($scope.tableParamsRegister);
-							}
+                            }
+							
 							dataSvc.isBodyOpen = false;
 						}, 1);
 
 					}
 
-					$scope.save = function () {
-						if (false === $('form[name="account"]').parsley().validate())
-							return false;
-						companyRepository.saveCompanyAccount($scope.selected).then(function (result) {
-
-							var exists = $filter('filter')($scope.list, { id: result.id });
-							if (exists.length === 0) {
-								$scope.list.push(result);
-							} else {
-								$scope.list.splice($scope.list.indexOf(exists[0]), 1);
-								$scope.list.push(result);
-							}
-							$scope.tableParams.reload();
-							$scope.fillTableData($scope.tableParams);
-							$scope.selected = null;
-							dataSvc.isBodyOpen = true;
-							$scope.mainData.showMessage('successfully saved account', 'success');
-						}, function (error) {
-							$scope.mainData.showMessage('error saving account', 'danger');
-						});
+					$scope.save = function (result) {
+						var exists = $filter('filter')($scope.list, { id: result.id });
+						if (exists.length === 0) {
+							$scope.list.push(result);
+						} else {
+							$scope.list.splice($scope.list.indexOf(exists[0]), 1);
+							$scope.list.push(result);
+						}
+						$scope.tableParams.reload();
+						$scope.fillTableData($scope.tableParams);
+						$scope.selected = null;
+						dataSvc.isBodyOpen = true;
+						$scope.mainData.showMessage('successfully saved account', 'success');
 					}
 					$scope.filterByDateRange = function () {
 						dataSvc.filterStartDate = dataSvc.filter.startDate ? dataSvc.filter.startDate : null;
@@ -216,73 +214,7 @@ common.directive('accountList', ['zionAPI', '$timeout', '$window', 'version',
 
 						 }, true
 				 );
-					$scope.typeSelected = function() {
-						$scope.selected.type = dataSvc.selectedType.key;
-						dataSvc.selectableSubTypes = [];
-						var idStart = 0;
-						var idEnd = 0;
-						if ($scope.selected.type === 1) {
-							idStart = 1;
-							idEnd = 4;
-						}
-						else if ($scope.selected.type === 2) {
-							idStart = 5;
-							idEnd = 7;
-						}
-						else if ($scope.selected.type === 3) {
-							idStart = 8;
-							idEnd = 21;
-						}
-						else if ($scope.selected.type === 4) {
-							idStart = 22;
-							idEnd = 24;
-						}
-						else if ($scope.selected.type === 5) {
-							idStart = 25;
-							idEnd = 26;
-						}
-						$.each(dataSvc.subTypes, function (index, subtype) {
-							if (subtype.key >= idStart && subtype.key <= idEnd) {
-								dataSvc.selectableSubTypes.push(subtype);
-							}
-						});
-					}
-					$scope.validateRoutingNumber = function (rtn) {
-						if (!rtn) {
-							return true;
-						}
-						if (rtn === '000000000')
-							return false;
-						//Calculate Check Digit
-
-						var sum = (rtn.charAt(0)) * 3;
-						sum += (rtn.charAt(1)) * 7;
-						sum += (rtn.charAt(2)) * 1;
-						sum += (rtn.charAt(3)) * 3;
-						sum += (rtn.charAt(4)) * 7;
-						sum += (rtn.charAt(5)) * 1;
-						sum += (rtn.charAt(6)) * 3;
-						sum += (rtn.charAt(7)) * 7;
-
-						sum = sum % 10;
-
-						sum = 10 - sum;
-						if (sum == 10)
-							sum = 0;
-
-						if (sum == (rtn.charAt(8) - '0'))
-							return true;
-
-						return false;
-					}
-					$scope.subTypeSelected = function () {
-						$scope.selected.subType = dataSvc.selectedSubType.key;
-					}
-					$scope.isBank = function() {
-						if ($scope.selected.type === 1 && $scope.selected.subType === 2)
-							return true;
-						return false;
-					}
+					
 					var init = function () {
 						commonRepository.getAccountsMetaData().then(function (data) {
 							dataSvc.types = data.types;
@@ -338,3 +270,19 @@ common.directive('accountList', ['zionAPI', '$timeout', '$window', 'version',
 		}
 	}
 ]);
+common.controller('coaCtrl', function ($scope, $uibModalInstance, account, mainData) {
+	$scope.account = account;
+	$scope.mainData = mainData;
+	$scope.selectedType = account.type;
+	$scope.selectedSubType = account.subType;
+
+	$scope.cancel = function () {
+		$uibModalInstance.dismiss();
+	};
+
+	$scope.save = function (result) {
+		$uibModalInstance.close(result);
+	};
+
+
+});

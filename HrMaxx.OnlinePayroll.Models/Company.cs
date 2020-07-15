@@ -52,6 +52,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public DateTime? LastPayrollDate { get; set; }
 		public CompanyCheckPrintOrder CompanyCheckPrintOrder { get; set; }
 		public bool IsRestaurant { get; set; }
+		public decimal SalesTaxRate { get; set; }
 		public string InsuranceClientNo { get; set; }
 		public InsuranceGroupDto InsuranceGroup { get; set; }
 		public Contact Contact { get; set; }
@@ -133,6 +134,10 @@ namespace HrMaxx.OnlinePayroll.Models
 		public bool Timesheets { get; set; }
 		public bool CertifiedPayrolls { get; set; }
 		public bool RestaurantPayrolls { get; set; }
+		public bool Payrolls { get; set; }
+		public bool Bookkeeping { get; set; }
+		public bool Invoicing { get; set; }
+		public bool Taxation { get; set; }
 	}
 	
 	public class CreditCard

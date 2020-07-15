@@ -24,7 +24,7 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 		CompanyWorkerCompensation SaveWorkerCompensation(CompanyWorkerCompensation workerCompensation, string fullName, Guid guid);
 		AccumulatedPayType SaveAccumulatedPayType(AccumulatedPayType mappedResource, string fullName, Guid guid);
 		CompanyPayCode SavePayCode(CompanyPayCode mappedResource, string fullName, Guid guid);
-		List<VendorCustomer> GetVendorCustomers(Guid? companyId, bool isVendor);
+		List<VendorCustomer> GetVendorCustomers(Guid? companyId, bool? isVendor = null);
 		VendorCustomer SaveVendorCustomers(VendorCustomer mappedResource);
 		
 		Account SaveCompanyAccount(Account mappedResource);
@@ -55,5 +55,6 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
         TimesheetEntry SaveTimesheetEntry(TimesheetEntry resource);
         TimesheetEntry DeleteEmployeeTimesheet(int id);
 		List<TimesheetEntry> SaveTimesheetEntries(List<TimesheetEntry> resources);
+        Product SaveProduct(Product product);
     }
 }

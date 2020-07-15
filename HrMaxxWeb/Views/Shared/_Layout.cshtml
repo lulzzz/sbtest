@@ -316,6 +316,16 @@
 
                     </div>
                 </script>
+                <script type="text/ng-template" id="popover/vendorcustomer.html">
+                    <vendor-customer vendor="vendor" show-controls="true" is-vendor="vendor.isVendor" is-global="vendor.isGlobal" main-data="mainData" is-popup="true" />
+
+
+                </script>
+                <script type="text/ng-template" id="popover/coa.html">
+                    <account selected="account" main-data="mainData" selected-type="selectedType" selected-sub-type="selectedSubType" is-popup="true" />
+
+
+                </script>
                 <script type="text/ng-template" id="popover/company.html">
                     <company company="company" main-data="mainData" is-popup="true" show-controls="true" />
 
@@ -428,6 +438,70 @@
                             <div class="col-sm-12">
                                 <button type="button" class="btn btn-white  pull-right" ng-click="cancel()">close</button>
                                 <button type="button" class="btn btn-success   pull-right" ng-click="save()" ng-disabled="!isProjectValid()">save</button>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </script>
+                <script type="text/ng-template" id="popover/product.html">
+                    <div class="panel panel-inverse overflow-hidden">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">
+                                {{ product.id ? product.name : 'New Product'}} - {{company.name}}
+                            </h3>
+                        </div>
+                        <div class="panel-body">
+                            <form name="compform" data-parsley-validate="true">
+                                <div class="form-group row m-b-15">
+                                    <label class="col-md-4 col-sm-4 col-form-label" for="projectid">Serial No :</label>
+                                    <div class="col-md-8 col-sm-8">
+                                        <input class="form-control" type="text" id="serialno" name="serialno" placeholder="Serial No" data-parsley-required="true" ng-model="product.serialNo" />
+                                    </div>
+                                </div>
+                                <div class="form-group row m-b-15">
+                                    <label class="col-md-4 col-sm-4 col-form-label" for="name">Name * :</label>
+                                    <div class="col-md-8 col-sm-8">
+                                        <input class="form-control" type="text" id="name" name="name" placeholder="Product Name" data-parsley-required="true" ng-model="product.name" />
+                                    </div>
+                                </div>
+                                <div class="form-group row m-b-15">
+                                    <label class="col-md-4 col-sm-4 col-form-label" for="award">Type *:</label>
+                                    <div class="col-md-8 col-sm-8">
+                                        <select ng-model="product.type" name="ty" class="form-control" convert-to-number>
+                                            <option>Select Type</option>
+                                            <option value="1">Product</option>
+                                            <option value="2">Service</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group row m-b-15">
+                                    <label class="col-md-4 col-sm-4 col-form-label" for="reg">Cost Price * :</label>
+                                    <div class="col-md-8 col-sm-8">
+                                        <input class="form-control" type="number" id="cost" name="cost" data-parsley-required="true" placeholder="Cost Price" ng-model="product.costPrice"  />
+                                    </div>
+                                </div>
+                                <div class="form-group row m-b-15">
+                                    <label class="col-md-4 col-sm-4 col-form-label" for="reg">Sale Price * :</label>
+                                    <div class="col-md-8 col-sm-8">
+                                        <input class="form-control" type="number" id="sale" name="sale" data-parsley-required="true" placeholder="Sale Price" ng-model="product.salePrice"  />
+                                    </div>
+                                </div>
+                                <div class="form-group row m-b-15">
+                                    <label class="col-md-4 col-sm-4 col-form-label">Taxable?</label>
+                                    <div class="col-md-8 col-sm-8">
+                                        <label for="ishistory" class="switch">
+                                            <input id="ishistory" type="checkbox" ng-model="product.isTaxable" /><i></i>
+                                        </label>
+                                    </div>
+                                </div>
+
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <div class="col-sm-12">
+                                <button type="button" class="btn btn-white  pull-right" ng-click="cancel()">close</button>
+                                <button type="button" class="btn btn-success   pull-right" ng-click="save()" ng-disabled="!hasChanges() || !isProductValid()">save</button>
                             </div>
 
                         </div>
