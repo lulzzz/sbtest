@@ -25,7 +25,7 @@ namespace HrMaxx.Common.Models.Dtos
 
 		public bool Equals(Contact other)
 		{
-			if (!this.Address.Equals(other.Address) || !this.FirstName.Equals(other.FirstName) || !this.LastName.Equals(other.LastName) || this.Email!=other.Email)
+			if (this.Address!=other.Address || this.FirstName!=other.FirstName || this.LastName!=other.LastName || this.Email!=other.Email)
 				return false;
 			return true;
 		}

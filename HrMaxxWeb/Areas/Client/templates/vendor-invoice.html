@@ -20,14 +20,22 @@
 							<i class="fa fa-plus" />
 						</button>
 					</label>
-					<select id="customer" class="form-control" ng-model="data.selectedPayee" ng-blur="payeeSelected()" ng-disabled="item.id" ng-options="customer as customer.name for customer in data.payees track by customer.id" required></select>
+					<select id="customer" class="form-control" ng-model="data.selectedPayee" ng-change="payeeSelected()" ng-disabled="item.id" ng-options="customer as customer.name for customer in data.payees track by customer.id" required></select>
 					<!--<input type="text" placeholder="Customer Name" ng-blur="payeeSelected()" ng-disabled="item.id" typeahead-min-length="3" typeahead-show-hint="true" ng-model="data.selectedPayee" uib-typeahead="customer as customer.displayName for customer in data.payees | filter:$viewValue" class="form-control">-->
 				</div>
-				<div class="row form-group" ng-if="data.selectedPayee">
-					<label>Email :</label>
-					<input name="email" class="form-control" ng-model="data.selectedPayee.contact.email" ng-disabled="!data.selectedPayee" />
+				<div class="row form-group" ng-if="item.contact">
+					<div class="col-sm-6 m-0 p-0">
+						<label>Email :</label>
+						<input name="email" class="form-control" ng-model="item.contact.email" ng-disabled="!data.selectedPayee" />
+					</div>
+					<div class="col-sm-6 m-0 p-0">
+						<label for="phone">Phone</label>
+						<input type="text" id="phone" class="form-control" ng-model="item.contact.phone" ui-mask="(999) 999-9999" />
+					</div>
+					
 				</div>
-				<address-paxol ng-if="data.selectedPayee" type="0" data="data.selectedPayee.contact.address" source-type-id="dataSvc.selectedPayee.entityType" source-id="dataSvc.selectedPayee.id" show-content="true"></address-paxol>
+				
+				<address-paxol ng-if="item.contact" type="0" data="item.contact.address" source-type-id="dataSvc.selectedPayee.entityType" source-id="dataSvc.selectedPayee.id" show-content="true"></address-paxol>
 
 			</div>
 			<div class="invoice-date">
@@ -178,7 +186,7 @@
 
 					<tr ng-show="!selectedji  && !item.isVoid">
 						<td colspan="6">
-							<span ng-show="item.listItems.length===0">No items found</span>
+							<span ng-show="item.invoiceItems.length===0">No items found</span>
 						</td>
 
 					</tr>
@@ -263,7 +271,7 @@
 						<i class="fa fa-minus text-muted"></i>
 					</div>
 					<div class="sub-price">
-						<small>Discount ({{item.discountType===1? '$' : ''}}{{item.discountRate | currency:''}}{{item.discountType===2?'%':''}})</small>
+						<small>Discount ({{item.discountType===2? '$' : ''}}{{item.discountRate | currency:''}}{{item.discountType===1?'%':''}})</small>
 						<span class="@@if(context.theme != 'transparent'){text-inverse}@@if(context.theme == 'transparent'){text-white}">{{item.discount | currency:'$'}}</span>
 					</div>
 				</div>
@@ -306,6 +314,7 @@
 						<strong class="text-inverse">{{item.payeeName}}</strong><br />
 						{{item.contact.address.addressLine1}}<br />
 						{{item.contact.address.addressLine2}}<br />
+						{{getContactPhone(item.contact)}}
 					</address>
 				</div>
 

@@ -52,6 +52,7 @@ common.directive('addressPaxol', ['zionAPI','localStorageService','version',
 				}
 
 				var defaultCountryState = function () {
+					console.log('default country setup ' + $scope.data.countryId + '  ' + $scope.countries.length);
 					if (!$scope.data)
 						$scope.data = {};
 					if ($scope.data.countryId) {
@@ -66,6 +67,7 @@ common.directive('addressPaxol', ['zionAPI','localStorageService','version',
 						}
 
 					}
+					console.log('default country setup finished');
 					
 				}
 				if ($scope.type === 1) {

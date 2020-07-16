@@ -16,7 +16,7 @@
 				<div class="col-sm-12" ng-show="!newItem">
 					<div class="row text-center p-5">
 						<strong><em>Invoice List <span ng-show="data.reportFilter.filterStartDate || data.reportFilter.filterEndDate"> ({{data.reportFilter.filterEndDate ? '' : 'From'}} {{data.reportFilter.filterStartDate? (data.reportFilter.filterStartDate | date:'MM/dd/yyyy') : 'Till'}}{{data.reportFilter.filterEndDate? ' - ' + (data.reportFilter.filterEndDate | date:'MM/dd/yyyy') : ''}} )</span></em></strong>
-						<a class="btn btn-primary btn-icon btn-circle btn-lg" id="test" ng-click="add()"><i class="fa fa-plus"></i></a>
+						<a class="btn btn-primary btn-icon btn-circle btn-lg" id="test" ng-show="data.loaded" ng-click="add()"><i class="fa fa-plus"></i></a>
 					</div>
 					<div ng-show="list.length===0" class="table table-bordered">
 						No invoices found

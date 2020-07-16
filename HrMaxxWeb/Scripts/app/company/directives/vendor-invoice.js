@@ -132,18 +132,24 @@ common.directive('vendorInvoice', ['$uibModal', 'zionAPI', 'version', '$window',
 						});
 					}
 					$scope.payeeSelected = function () {
-						if (dataSvc.selectedPayee) {
-							//if (dataSvc.selectedPayee.id) {
-							$scope.item.payeeId = dataSvc.selectedPayee.id;
-							$scope.item.payeeName = dataSvc.selectedPayee.name;
-							$scope.item.entityType = dataSvc.selectedPayee.entityType;
-							$scope.item.contact = dataSvc.selectedPayee.contact;
-							//} else {
-							//	$scope.item.payeeId = '00000000-0000-0000-0000-000000000000';
-							//	$scope.item.payeeName = dataSvc.selectedPayee;
-							//	$scope.item.entityType = EntityTypes.Vendor;
-							//}
-						}
+						$scope.item.contact = null;
+						$timeout(function () {
+							if (dataSvc.selectedPayee) {
+								//if (dataSvc.selectedPayee.id) {
+								$scope.item.payeeId = dataSvc.selectedPayee.id;
+								$scope.item.payeeName = dataSvc.selectedPayee.name;
+								$scope.item.entityType = dataSvc.selectedPayee.entityType;
+								console.log('payee about to be set');
+								$scope.item.contact = dataSvc.selectedPayee.contact;
+								console.log('payee set');
+								//} else {
+								//	$scope.item.payeeId = '00000000-0000-0000-0000-000000000000';
+								//	$scope.item.payeeName = dataSvc.selectedPayee;
+								//	$scope.item.entityType = EntityTypes.Vendor;
+								//}
+							}
+						});
+						
 					}
 					$scope.changeProduct = function (ji) {
 						
@@ -169,7 +175,7 @@ common.directive('vendorInvoice', ['$uibModal', 'zionAPI', 'version', '$window',
 						};
 						var currentLength = $scope.item.invoiceItems.length;
 						$scope.item.invoiceItems.push(newJD);
-						$scope.setselectedji($scope.item.invoiceItems[currentLength]);
+						$scope.setselectedji($scope.item.invoiceItems[currentLength], currentLength);
 					}
 
 					$scope.saveJournalItem = function (ji) {
@@ -238,7 +244,7 @@ common.directive('vendorInvoice', ['$uibModal', 'zionAPI', 'version', '$window',
 
 					}
 					$scope.calculateDiscount = function () {
-						$scope.item.discount = ($scope.item.discountType === 1 ? $scope.item.discountRate : (am * $scope.item.discountRate / 100));
+						$scope.item.discount = ($scope.item.discountType === 2 ? $scope.item.discountRate : ($scope.item.amount * $scope.item.discountRate / 100));
 					}
 					$scope.calculateTotal = function () {
 						var am = $scope.item.amount;

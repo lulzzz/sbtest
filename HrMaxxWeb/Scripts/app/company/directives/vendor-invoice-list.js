@@ -17,6 +17,7 @@ common.directive('vendorInvoiceList', ['zionAPI', '$timeout', '$window','version
 						payees: [],
 						maxInvoiceNumber: 0,
 						print: false,
+						loaded: false,
 						reportFilter: {
 							filterStartDate: moment().add(-2, 'week').toDate(),
 							filterEndDate: null,
@@ -178,6 +179,7 @@ common.directive('vendorInvoiceList', ['zionAPI', '$timeout', '$window','version
 							dataSvc.maxInvoiceNumber = data.maxInvoiceNumber + 1;
 							dataSvc.payees = data.payees;
 							dataSvc.products = data.products;
+							dataSvc.loaded = true;
 						}, function (erorr) {
 								$scope.mainData.handleError('' , erorr, 'danger');
 						});

@@ -42,7 +42,10 @@ common.directive('vendorCustomer', ['zionAPI', '$timeout', '$window', 'version',
 
 					
 					$scope.cancel = function () {
-						$scope.$parent.$parent.cancel();
+						if (!$scope.isPopup)
+							$scope.$parent.$parent.cancel();
+						else
+							$scope.$parent.cancel();
 					}
 
 					$scope.set = function (item) {
@@ -57,15 +60,22 @@ common.directive('vendorCustomer', ['zionAPI', '$timeout', '$window', 'version',
 					$scope.save = function () {
 						if (false === $('form[name="vendorcustomer"]').parsley().validate())
 							return false;
-						companyRepository.saveVendorCustomer($scope.selected).then(function (result) {
-							if (!$scope.isPopup)
-								$scope.$parent.$parent.save(result);
-							else {
-								$scope.$parent.save(result);
-                            }
-						}, function (error) {
-							$scope.mainData.showMessage('error saving ' + ($scope.isVendor ? 'vendor' : 'customer'), 'danger');
-						});
+						//if ($scope.isPopup) {
+						//	$scope.selected.id = new Date().getTime();
+						//	$scope.$parent.save($scope.selected);
+						//}
+						//else {
+							companyRepository.saveVendorCustomer($scope.selected).then(function (result) {
+								if (!$scope.isPopup)
+									$scope.$parent.$parent.save(result);
+								else {
+									$scope.$parent.save(result);
+								}
+							}, function (error) {
+								$scope.mainData.showMessage('error saving ' + ($scope.isVendor ? 'vendor' : 'customer'), 'danger');
+							});
+                        //}
+						
 					}
 					
 					var init = function () {

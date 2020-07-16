@@ -37,7 +37,7 @@ namespace HrMaxx.Common.Models.Dtos
 
 		public bool Equals(Address other)
 		{
-			if (!this.AddressLine1.Equals(other.AddressLine1) || !this.City.Equals(other.City) || !this.StateId.Equals(other.StateId) || !this.Zip.Equals(other.Zip) || !this.ZipExtension.Equals(other.ZipExtension))
+			if (this.AddressLine1!=other.AddressLine1 || this.City!=other.City || this.StateId!=other.StateId || this.Zip!=other.Zip || this.ZipExtension!=other.ZipExtension)
 				return false;
 			return true;
 		}

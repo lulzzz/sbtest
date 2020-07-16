@@ -160,6 +160,8 @@ namespace HrMaxx.OnlinePayroll.ReadServices.Mappers
 					opt => opt.MapFrom(src => JsonConvert.DeserializeObject<List<PayrollDeduction>>(src.Deductions)))
 				.ForMember(dest => dest.InvoiceSetup,
 					opt => opt.MapFrom(src => JsonConvert.DeserializeObject<InvoiceSetup>(src.InvoiceSetup)))
+				.ForMember(dest => dest.Taxes,
+					opt => opt.MapFrom(src => JsonConvert.DeserializeObject<List<PayrollTax>>(src.Taxes)))
 				.ForMember(dest => dest.MiscCharges,
 					opt => opt.MapFrom(src => JsonConvert.DeserializeObject<List<MiscFee>>(src.MiscCharges)));
 
