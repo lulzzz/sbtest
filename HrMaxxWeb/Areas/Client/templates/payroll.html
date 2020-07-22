@@ -88,7 +88,7 @@
 							<div>
 								<label for="ishistory" class="switch">
 									Is History Payroll?
-									<input id="ishistory" type="checkbox" ng-model="item.isHistory" ng-disabled="company.fileUnderHost" /><i></i>
+									<input id="ishistory" type="checkbox" ng-model="item.isHistory" ng-disabled="company.fileUnderHost" ng-show="mainData.userRole==='SuperUser' || mainData.userRole==='Master'" /><i></i>
 								</label>
 							</div>
 

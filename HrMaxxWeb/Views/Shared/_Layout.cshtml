@@ -552,7 +552,7 @@
                                         <label class="col-md-4 col-sm-4 col-form-label">History</label>
                                         <div class="col-md-8 col-sm-8">
                                             <label for="ishistory" class="switch">
-                                                <input id="ishistory" type="checkbox" ng-model="item.isHistory" ng-disabled="company.fileUnderHost" /><i></i>
+                                                <input id="ishistory" type="checkbox" ng-model="item.isHistory" ng-disabled="company.fileUnderHost"  ng-show="mainData.userRole==='SuperUser' || mainData.userRole==='Master'" /><i></i>
                                             </label>
                                         </div>
                                     </div>
