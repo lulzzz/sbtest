@@ -2,16 +2,17 @@
 
 	
 		<ul class="nav nav-tabs  nav-tabs-inverse nav-justified nav-justified-mobile" id="dashboardtabs">
-			<li ng-class="{'active':data.tab===1}" ng-click="tabChanged(1)" ng-if="mainData.selectedCompany.allowTaxPayments"><a data-toggle="tab"><i class="fa fa-bitbucket-square"></i> <span class="hidden-xs">Tax Payments</span></a></li>
-			<li ng-class="{'active':data.tab===2}" ng-click="tabChanged(2)"><a data-toggle="tab"><i class="fa fa-paypal"></i> <span class="hidden-xs">Payroll</span></a></li>
-			<li ng-class="{'active':data.tab===3}" ng-click="tabChanged(3)"><a data-toggle="tab"><i class="fa fa-file-archive-o"></i> <span class="hidden-xs">Documents</span></a></li>
+			<li ng-class="{'active':data.tab===4}" ng-click="tabChanged(4)" ng-if="mainData.selectedCompany.contract.invoicing"><a data-toggle="tab"><i class="fa fa-money"></i> <span class="hidden-xs">Income & Expense</span></a></li>
+			<li ng-class="{'active':data.tab===1}" ng-click="tabChanged(1)" ng-if="mainData.selectedCompany.contract.taxation && mainData.selectedCompany.allowTaxPayments"><a data-toggle="tab"><i class="fa fa-bitbucket-square"></i> <span class="hidden-xs">Tax Payments</span></a></li>
+			<li ng-class="{'active':data.tab===2}" ng-click="tabChanged(2)" ng-if="mainData.selectedCompany.contract.payrolls"><a data-toggle="tab"><i class="fa fa-paypal"></i> <span class="hidden-xs">Payroll</span></a></li>
+			<li ng-class="{'active':data.tab===3}" ng-click="tabChanged(3)" ><a data-toggle="tab"><i class="fa fa-file-archive-o"></i> <span class="hidden-xs">Documents</span></a></li>
 
 		</ul>
 
 	
 	<div class="panel panel-inverse">
-		<div class="panel-body">
-			<div class="row" ng-show="data.tab===1">
+		<div class="panel-body" ng-show="data.loaded">
+			<div class="row" ng-show="data.tab===1 && mainData.selectedCompany.contract.taxation && mainData.selectedCompany.allowTaxPayments">
 				<!-- begin col-3 -->
 				<div class="col-md-3 col-sm-6">
 					<div class="widget widget-stats bg-green">
@@ -103,7 +104,7 @@
 
 			<!-- end row -->
 			<!-- begin row -->
-			<div class="row" ng-show="data.tab===1">
+			<div class="row" ng-show="data.tab===1  && mainData.selectedCompany.contract.taxation && mainData.selectedCompany.allowTaxPayments">
 				<!-- begin col-8 -->
 				<div class="col-md-8" ng-show="data.showChart">
 					<div class="widget-chart with-sidebar bg-dark">
@@ -176,10 +177,10 @@
 
 			</div>
 			<!-- end row -->
-			<div class="row" ng-show="data.tab===2 && data.loaded && !data.dashboard.ytdYear">
+			<div class="row" ng-show="data.tab===2 && data.loaded && !data.dashboard.ytdYear  && mainData.selectedCompany.contract.payrolls">
 				No payroll data found for current or previous year
 			</div>
-			<div class="row" ng-show="data.tab===2 && data.loaded && data.dashboard.ytdYear">
+			<div class="row" ng-show="data.tab===2 && data.loaded && data.dashboard.ytdYear && mainData.selectedCompany.contract.payrolls">
 				<!-- begin col-3 -->
 				<div class="col-md-2 col-sm-4">
 					<div class="widget widget-stats bg-primary">
@@ -290,7 +291,7 @@
 
 			</div>
 
-			<div class="row" ng-show="data.tab===2 && data.loaded && data.dashboard.ytdYear">
+			<div class="row" ng-show="data.tab===2 && data.loaded && data.dashboard.ytdYear  && mainData.selectedCompany.contract.payrolls">
 				<!-- begin col-8 -->
 				<div class="col-md-12">
 					<div class="widget-chart with-sidebar bg-dark">
@@ -516,6 +517,173 @@
 
 
 					</div>
+				</div>
+			</div>
+
+			<div class="row" ng-show="data.tab===4 && mainData.selectedCompany.contract.invoicing">
+				<!-- begin col-6 -->
+				<div class="col-sm-6 col-md-6">
+					<!-- begin card -->
+					<div class="card border-0 mb-3 overflow-hidden bg-dark text-white">
+						<!-- begin card-body -->
+						<div class="card-body">
+							<!-- begin row -->
+							<div class="widget-chart">
+								<div class="chart-title">
+									Invoices, Payments and Products
+								</div>
+							</div>
+							<div class="row">
+								<!-- begin col-7 -->
+								<div class="col-sm-8">
+									
+									<!-- end title -->
+									<!-- begin conversion-rate -->
+									<div class="row d-flex align-items-center mb-1">
+										<div class="col-sm-6 f-s-12 text-grey">Paid</div>
+										<div class="col-sm-6 f-s-12 text-grey">UnPaid</div>
+									</div>
+									<div class="row d-flex align-items-center mb-1">
+										<div class="col-sm-6"><h2 class="text-white mb-0">{{data.dashboard.paidInvoices | currency:'$'}}</h2></div>
+										<div class="col-sm-6"><h2 class="text-white mb-0">{{data.dashboard.unPaidInvoices | currency:'$'}}</h2></div>
+									</div>
+
+									<hr class="bg-white-transparent-2" />
+									<!-- begin row -->
+									<div class="row text-truncate">
+										<!-- begin col-6 -->
+										<div class="col-sm-12">
+											
+											<div class="row">
+												<div class="col-sm-6 f-s-12 text-grey">Payments - Overdue</div>
+												<div class="col-sm-6 f-s-12 text-grey">Payments - Not Due yet</div>
+											</div>
+											<div class="row">
+												<div class="col-sm-6"><h2 class="text-white mb-0">{{data.dashboard.invoiceOverDueAmount | currency:'$'}}</h2></div>
+												<div class="col-sm-6"><h2 class="text-white mb-0">{{data.dashboard.invoiceNotOverDueAmount | currency:'$'}}</h2></div>
+											</div>
+
+											<div class="progress progress-xs rounded-lg bg-dark-darker m-b-5" ng-if="data.tab===4">
+
+												<uib-progressbar class="progress-bar-striped rounded-right bg-black" value="getPaymentProgressBarValue()" type="info"></uib-progressbar>
+												<!--<uib-progressbar class="progress-bar progress-bar-striped rounded-right bg-teal" value="{{data.paymentDue}}" type="info"></uib-progressbar>-->
+											</div>
+										</div>
+
+									</div>
+								</div>
+								<!-- end col-7 -->
+								<!-- begin col-5 -->
+								<div class="col-sm-4 align-items-center d-flex justify-content-center">
+									<img ng-src="{{zionAPI.Web}}/Content/images/svg/img-1.svg" height="150px" class="d-none d-lg-block" />
+								</div>
+								<!-- end col-5 -->
+							</div>
+
+							<!-- end row -->
+						</div>
+						<div class="col-sm-12">
+							<div class="widget-chart col-sm-6">
+								<div class="chart-title">
+									Overdue Payments
+								</div>
+								<div id="invoice-customers-donut" style="height: 260px"></div>
+								
+							</div>
+							<div class="widget-chart col-sm-6">
+								<div class="chart-title">
+									Product Revenue Share
+								</div>
+								<div id="product-revenue-donut" style="height: 260px"></div>
+								
+							</div>
+						</div>
+						
+						<!-- end card-body -->
+					</div>
+					<!-- end card -->
+					
+				</div>
+				<!-- end col-6 -->
+				<!-- begin col-6 -->
+				<div class="col-sm-6 col-md-6">
+					<!-- begin card -->
+					<div class="card border-0 mb-3 overflow-hidden bg-dark text-white">
+						<!-- begin card-body -->
+						<div class="card-body">
+							<!-- begin row -->
+							<div class="widget-chart">
+								<div class="chart-title">
+									Expenses, Income and Vendors
+								</div>
+							</div>
+							<div class="row">
+								<!-- begin col-7 -->
+								<div class="col-sm-12">
+
+									<!-- end title -->
+									<!-- begin conversion-rate -->
+									<div class="row d-flex align-items-center mb-1">
+										<div class="col-sm-4 f-s-12 text-grey">General</div>
+										<div class="col-sm-4 f-s-12 text-grey">Taxes</div>
+										<div class="col-sm-4 f-s-12 text-grey">Deductions</div>
+									</div>
+									<div class="row d-flex align-items-center mb-1">
+										<div class="col-sm-4"><h2 class="text-white mb-0">{{data.dashboard.generalExpense | currency:'$'}}</h2></div>
+										<div class="col-sm-4"><h2 class="text-white mb-0">{{data.dashboard.taxExpense | currency:'$'}}</h2></div>
+										<div class="col-sm-4"><h2 class="text-white mb-0">{{data.dashboard.deductionExpense | currency:'$'}}</h2></div>
+									</div>
+
+									<hr class="bg-white-transparent-2" />
+									<div class="row text-truncate">
+										<!-- begin col-6 -->
+										<div class="col-sm-12">
+
+											<div class="row">
+												<div class="col-sm-6 f-s-12 text-grey">Deposits</div>
+												<div class="col-sm-6 f-s-12 text-grey">Invoice</div>
+											</div>
+											<div class="row">
+												<div class="col-sm-6"><h2 class="text-white mb-0">{{data.dashboard.depositIncome | currency:'$'}}</h2></div>
+												<div class="col-sm-6"><h2 class="text-white mb-0">{{data.dashboard.invoiceIncome + data.dashboard.paidInvoices | currency:'$'}}</h2></div>
+											</div>
+
+											<div class="progress progress-xs rounded-lg bg-dark-darker m-b-5" ng-if="data.tab===4">
+
+												<uib-progressbar class="progress-bar-striped rounded-right bg-black" value="100" type="info"></uib-progressbar>
+												
+											</div>
+										</div>
+
+									</div>
+									
+								</div>
+								
+							</div>
+
+							<!-- end row -->
+						</div>
+						<div class="col-sm-12">
+							<div class="widget-chart col-sm-6">
+								<div class="chart-title">
+									Expense By Vendors
+								</div>
+								<div id="expense-vendor-donut" style="height: 260px"></div>
+								
+							</div>
+							<div class="widget-chart col-sm-6">
+								<div class="chart-title">
+									Expense by Type
+								</div>
+								<div id="expense-type-donut" style="height: 260px"></div>
+								
+							</div>
+						</div>
+
+						<!-- end card-body -->
+					</div>
+					<!-- end card -->
+
 				</div>
 			</div>
 		</div>

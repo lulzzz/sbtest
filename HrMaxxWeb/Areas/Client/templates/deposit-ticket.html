@@ -99,11 +99,20 @@
 				</tr>
 			</thead>
 			<tbody>
-				<tr ng-repeat="jd in item.journalDetails | filter:{accountId:'!'+item.mainAccountId}" ng-class="{'success':((item.transactionType===7 && jd.deposited===true) || (item.transactionType!==7 && jd.isDebit===false)) && isJournalDetailValid(jd), 'danger':!isJournalDetailValid(jd)}">
+				<tr ng-repeat="jd in item.journalDetails | filter:{accountId:'!'+item.mainAccountId}  track by $index" ng-class="{'success':((item.transactionType===7 && jd.deposited===true) || (item.transactionType!==7 && jd.isDebit===false)) && isJournalDetailValid(jd), 'danger':!isJournalDetailValid(jd)}">
 					<td>
-						<span e-ng-change="jd.account=$data; jd.accountId = $data.id; jd.accountName = $data.accountName" editable-select="jd.account" e-name="account" e-form="rowform" e-ng-options="a.accountName for a in data.companyAccounts track by a.id">
-							{{ jd.accountId? jd.accountName : '' }}
+						<div class="col-sm-12 p-0" ng-show="selectedjdindex===$index">
+							<div class="col-sm-10 p-0">
+								<select id="account" class="form-control" ng-model="jd.account" ng-change="changeAccount(jd)" ng-options="a.accountName for a in data.companyAccounts | filter:{type: 4} track by a.id"></select>
+							</div>
+							<div class="col-sm-2 p-0 ">
+								<button class="btn-success btn btn-sm" ng-click="newAccount()" title="New Account"><i class="fa fa-plus" /></button>
+							</div>
+						</div>
+						<span ng-show="selectedjdindex!==$index">
+							{{ jd.account? jd.account.accountName : '' }}
 						</span>
+
 					</td>
 					<td>
 						<span e-ng-change="jd.depositMethod=$data; jd.checkNumber = 0" e-ng-disabled="item.id && !jd.isNew" editable-select="jd.depositMethod" e-name="dm" e-form="rowform" e-ng-options="a.value for a in data.depositMethods track by a.key">
@@ -137,7 +146,7 @@
 					<td style="white-space: nowrap" ng-show="showControls">
 						<!-- form -->
 						<form editable-form id="rowform" name="rowform" onbeforesave="saveJournalDetail(jd)" class="form-buttons form-inline" shown="selectedjd===jd">
-							<button title="edit" type="button" ng-show="!rowform.$visible" ng-disabled="selectedjd" class="btn btn-sm btn-primary" ng-click="rowform.$show();setselectedjd(jd)">
+							<button title="edit" type="button" ng-show="!rowform.$visible" ng-disabled="selectedjd" class="btn btn-sm btn-primary" ng-click="rowform.$show();setselectedjd(jd, $index)">
 								<i class="fa fa-pencil"></i>
 							</button>
 							<button title="deposit" type="button" ng-show="!rowform.$visible && item.transactionType===7 && !jd.deposited && jd.depositMethod.key===1" ng-disabled="selectedjd" class="btn btn-sm btn-success" ng-click="jd.deposited=true">

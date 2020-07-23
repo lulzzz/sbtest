@@ -7,6 +7,13 @@ using LinqToExcel.Attributes;
 
 namespace SiteInspectionStatus_Utility
 {
+	public class EmployeeListItem{
+		public string CompanyName { get; set; }
+		public string Employee { get; set; }
+		public string SSN { get; set; }
+		public DateTime HireDate { get; set; }
+		public DateTime DateCreated { get; set; }
+	}
 	public class Company
 	{
 		[ExcelColumn("CompanyName")]

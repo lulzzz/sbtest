@@ -78,25 +78,13 @@ namespace HrMaxx.OnlinePayroll.Services.EventHandlers
 					{
 						var j = _journalService.SaveJournalForPayroll(journal, event1.Payroll.Company);
 						journal.Id = j.Id;
-						//if (journal.CheckNumber != j.CheckNumber)
-						//{
-						//	journal.CheckNumber = j.CheckNumber;
-						//	event1.Payroll.PayChecks.First(pc => pc.Id == journal.PayrollPayCheckId).CheckNumber = journal.CheckNumber;
-						//	if (event1.Payroll.PEOASOCoCheck)
-						//	{
-						//		event1.PeoJournals.First(pc => pc.PayrollPayCheckId == journal.PayrollPayCheckId).CheckNumber = journal.CheckNumber;
-						//	}
-						//}
+						
 					}
 					foreach (var journal in event1.PeoJournals)
 					{
 						var j = _journalService.SaveJournalForPayroll(journal, event1.Payroll.Company);
 						journal.Id = j.Id;
-						//if (journal.CheckNumber != j.CheckNumber)
-						//{
-						//	journal.CheckNumber = j.CheckNumber;
-						//	event1.Payroll.PayChecks.First(pc => pc.Id == journal.PayrollPayCheckId).CheckNumber = journal.CheckNumber;
-						//}
+						
 					}
 					log.AppendLine(string.Format("saved journals for Payroll {0} - {1} - {2} ", event1.Payroll.Id, event1.Payroll.Company.Name, DateTime.Now.ToString("hh:mm:ss:fff")));
 					var payCheckJournals = _payrollRepository.EnsureCheckNumberIntegrity(event1.Payroll.Id, event1.Payroll.PEOASOCoCheck);
@@ -139,7 +127,9 @@ namespace HrMaxx.OnlinePayroll.Services.EventHandlers
 					{
 						_payrollRepository.UpdateLastPayrollDateCompany(event1.Payroll.Company.Id, event1.Payroll.PayDay);
 					}
-					
+					if(event1.Payroll.LoadFromTimesheets)
+						_payrollRepository.UpdateTimesheetsToPaid(event1.Payroll);
+
 					log.AppendLine(string.Format("finished transactions for payroll {0} - {1} - {2} ", event1.Payroll.Id, event1.Payroll.Company.Name, DateTime.Now.ToString("hh:mm:ss:fff")));
 					txn.Complete();
 				}

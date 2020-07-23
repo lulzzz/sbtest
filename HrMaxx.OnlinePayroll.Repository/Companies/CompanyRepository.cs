@@ -18,6 +18,7 @@ using HrMaxx.Infrastructure.Security;
 using HrMaxx.OnlinePayroll.Models;
 using HrMaxx.OnlinePayroll.Models.DataModel;
 using HrMaxx.OnlinePayroll.Models.Enum;
+using HrMaxx.OnlinePayroll.Models.JsonDataModel;
 using Newtonsoft.Json;
 using Company = HrMaxx.OnlinePayroll.Models.Company;
 using CompanyDeduction = HrMaxx.OnlinePayroll.Models.CompanyDeduction;
@@ -96,6 +97,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 				dbCompany.City = dbMappedCompany.City;
 				dbCompany.ControlId = dbMappedCompany.ControlId;
 				dbCompany.IsRestaurant = dbMappedCompany.IsRestaurant;
+				dbCompany.SalesTaxRate = dbMappedCompany.SalesTaxRate;
 			}
 			_dbContext.SaveChanges();
 			if (!ignoreEinCheck)
@@ -121,7 +123,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 			//	});
 			//}
 			
-			var mapped = _mapper.Map<ContractDetails, CompanyContract>(contract);
+			var mapped = _mapper.Map<ContractDetails, Models.DataModel.CompanyContract>(contract);
 			mapped.CompanyId = savedcompany.Id;
 			
 			var dbContract = _dbContext.CompanyContracts.FirstOrDefault(c => c.CompanyId == savedcompany.Id);
@@ -138,9 +140,18 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 				dbContract.Method = mapped.Method;
 				dbContract.Type = mapped.Type;
 				dbContract.InvoiceSetup = mapped.InvoiceSetup;
+				dbContract.DirectDeposit = mapped.DirectDeposit;
+				dbContract.ProfitStarsPayer = mapped.ProfitStarsPayer;
+				dbContract.Timesheets = mapped.Timesheets;
+				dbContract.CertifiedPayrolls = mapped.CertifiedPayrolls;
+				dbContract.RestaurantPayrolls = mapped.RestaurantPayrolls;
+				dbContract.Payrolls = mapped.Payrolls;
+				dbContract.Bookkeeping = mapped.Bookkeeping;
+				dbContract.Invoicing = mapped.Invoicing;
+				dbContract.Taxation = mapped.Taxation;
 			}
 			_dbContext.SaveChanges();
-			return _mapper.Map<CompanyContract, ContractDetails>(mapped);
+			return _mapper.Map<Models.DataModel.CompanyContract, ContractDetails>(mapped);
 		}
 
 		public List<CompanyTaxState> SaveTaxStates(Company savedcompany, List<CompanyTaxState> states)
@@ -337,10 +348,17 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 			return _mapper.Map<Models.DataModel.CompanyRenewal, Models.CompanyRenewal>(mappedpc);
 		}
 
-		public List<VendorCustomer> GetVendorCustomers(Guid? companyId, bool isVendor)
+		public List<VendorCustomer> GetVendorCustomers(Guid? companyId, bool? isVendor = null)
 		{
-			var list = _dbContext.VendorCustomers.Where(vc => ((companyId.HasValue && vc.CompanyId.HasValue && vc.CompanyId == companyId.Value) || (!companyId.HasValue && !vc.CompanyId.HasValue)) && vc.IsVendor == isVendor);
-			return _mapper.Map<List<Models.DataModel.VendorCustomer>, List<VendorCustomer>>(list.ToList());
+			var sql = "select *, dbo.GetCustomerOpenBalance(vc.Id) as OpenBalance from VendorCustomer vc " +
+				"where ((@CompanyId is not null and vc.CompanyId=@CompanyId) or (@CompanyId is null)) and ((@IsVendor is not null and vc.IsVendor=@IsVendor) or (@IsVendor is null))";
+			var list = Query<VendorCustomerJson>(sql, new { CompanyId = companyId, IsVendor = isVendor });
+			return _mapper.Map<List<VendorCustomerJson>, List<VendorCustomer>>(list);
+			//var list = _dbContext.VendorCustomers.Where(vc => (
+			//				(companyId.HasValue && vc.CompanyId.HasValue && vc.CompanyId == companyId.Value) || 
+			//				(!companyId.HasValue && !vc.CompanyId.HasValue)) 
+			//				&& ((isVendor.HasValue && vc.IsVendor == isVendor) || (!isVendor.HasValue)));
+			//return _mapper.Map<List<Models.DataModel.VendorCustomer>, List<VendorCustomer>>(list.ToList());
 		}
 
 		public VendorCustomer SaveVendorCustomer(VendorCustomer mappedResource)
@@ -521,7 +539,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 				dbEmployee.ClockId = me.ClockId;
 				dbEmployee.IsTipped = me.IsTipped;
 				dbEmployee.TerminationDate = me.TerminationDate;
-
+				dbEmployee.WorkClassification = me.WorkClassification;
 				var removeCounter = 0;
 				for (removeCounter = 0; removeCounter < dbEmployee.EmployeeBankAccounts.Count; removeCounter++)
 				{
@@ -687,9 +705,9 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 			}
 		}
 		
-		public void SaveTSImportMap(Guid id, ImportMap importMap)
+		public void SaveTSImportMap(Guid id, ImportMap importMap, int type)
 		{
-			var dbVal = _dbContext.CompanyTSImportMaps.FirstOrDefault(m => m.CompanyId == id);
+			var dbVal = _dbContext.CompanyTSImportMaps.FirstOrDefault(m => m.CompanyId == id && m.Type == type);
 			if (dbVal != null)
 				dbVal.TimeSheetImportMap = JsonConvert.SerializeObject(importMap);
 			else
@@ -697,7 +715,8 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 				_dbContext.CompanyTSImportMaps.Add(new CompanyTSImportMap
 				{
 					CompanyId = id,
-					TimeSheetImportMap = JsonConvert.SerializeObject(importMap)
+					TimeSheetImportMap = JsonConvert.SerializeObject(importMap),
+					Type = type
 				});
 			}
 			_dbContext.SaveChanges();
@@ -821,6 +840,95 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 			{
 				conn.Execute(sql, new { Id=renewalId, User=fullName});
 			}
+		}
+
+		public Models.CompanyProject SaveProject(Models.CompanyProject project)
+		{
+			var mapped = _mapper.Map<Models.CompanyProject, Models.DataModel.CompanyProject>(project);
+			if (mapped.Id == 0)
+			{
+				_dbContext.CompanyProjects.Add(mapped);
+				_dbContext.SaveChanges();
+				
+			}
+			else
+			{
+				var pr = _dbContext.CompanyProjects.FirstOrDefault(cd => cd.Id == mapped.Id);
+				if (pr != null)
+				{
+					pr.ProjectId = mapped.ProjectId;
+					pr.ProjectName = mapped.ProjectName;
+					pr.AwardingBody = mapped.AwardingBody;
+					pr.Classification = mapped.Classification;
+					pr.LastModified = mapped.LastModified;
+					pr.LastModifiedBy = mapped.LastModifiedBy;
+					pr.LicenseNo = mapped.LicenseNo;
+					pr.LicenseType = mapped.LicenseType;
+					pr.PolicyNo = mapped.PolicyNo;
+					pr.RegistrationNo = mapped.RegistrationNo;
+
+					_dbContext.SaveChanges();
+				}
+			}
+
+			return _mapper.Map<Models.DataModel.CompanyProject, Models.CompanyProject>(mapped);
+		}
+
+		public List<TimesheetEntry> GetEmployeeTimesheet(Guid company, Guid? employeeId, DateTime start, DateTime end)
+		{
+			var sql = "select *, case when ProjectId is not null then (select ProjectName from CompanyProject where Id=TimesheetEntry.ProjectId) else 'Misc' end ProjectName " +
+				"from TimesheetEntry where ((@EmployeeId is not null and EmployeeId=@EmployeeId) or (@EmployeeId is null and EmployeeId in (select Id from Employee where CompanyId=@CompanyId))) and EntryDate between @StartDate and @EndDate order by EntryDate";
+			return Query<TimesheetEntry>(sql, new { EmployeeId = employeeId, StartDate = start, EndDate = end, CompanyId=company });
+		}
+		public List<TimesheetEntry> GetEmployeeTimesheet(Guid payrollId)
+		{
+			var sql = "select *, case when ProjectId is not null then (select ProjectName from CompanyProject where Id=TimesheetEntry.ProjectId) else '' end ProjectName " +
+				"from TimesheetEntry where PayrollId=@PayrollId";
+			return Query<TimesheetEntry>(sql, new { PayrollId=payrollId });
+		}
+
+		public TimesheetEntry SaveTimesheetEntry(TimesheetEntry resource)
+		{
+			var newsql = "insert into TimesheetEntry([EmployeeId],[ProjectId],[EntryDate],[Description],[Hours],[Overtime],[LastModified],[LastModifiedBy],[IsApproved],[ApprovedBy],[ApprovedOn]) " +
+				"values(@EmployeeId,@ProjectId,@EntryDate,@Description,@Hours,@Overtime,@LastModified,@LastModifiedBy,@IsApproved,@ApprovedBy,@ApprovedOn);  " +
+				"select @Id=cast(scope_identity() as int);select *, case when ProjectId is not null then (select ProjectName from CompanyProject where Id=TimesheetEntry.ProjectId) else 'Misc' end ProjectName " +
+				"from TimesheetEntry where Id=@Id ";
+			var updatesql = "update TimesheetEntry set Hours=@Hours, Overtime=@Overtime, LastModified = @LastModified, LastModifiedBy=@LastModifiedBy, IsApproved=@IsApproved, ApprovedBy=@ApprovedBy" +
+				", ApprovedOn=@ApprovedOn, ProjectId=@ProjectId, Description=@Description, IsPaid=@IsPaid, PayrollId=@PayrollId, PayDay=@PayDay where Id=@Id; select *, case when ProjectId is not null then (select ProjectName from CompanyProject where Id=TimesheetEntry.ProjectId) else 'Misc' end ProjectName " +
+				"from TimesheetEntry where Id=@Id ";
+			var updatesql1 = "update TimesheetEntry set Hours=Hours+@Hours, Overtime=Overtime+@Overtime, LastModified = @LastModified, LastModifiedBy=@LastModifiedBy, IsApproved=@IsApproved, ApprovedBy=@ApprovedBy" +
+				", ApprovedOn=@ApprovedOn, Description=(Description + '; ' + @Description) where EmployeeId=@EmployeeId and EntryDate=@EntryDate and ((@ProjectId is not null and ProjectId=@ProjectId) or (@ProjectId is null)); select *, case when ProjectId is not null then (select ProjectName from CompanyProject where Id=TimesheetEntry.ProjectId) else 'Misc' end ProjectName " +
+				"from TimesheetEntry where EmployeeId=@EmployeeId and EntryDate=@EntryDate and ((@ProjectId is not null and ProjectId=@ProjectId) or (@ProjectId is null)) ";
+			var sql = $"if exists(select 'x' from TimesheetEntry where EmployeeId=@EmployeeId and EntryDate=@EntryDate and ((@ProjectId is not null and ProjectId=@ProjectId) or (@ProjectId is null))) begin {updatesql1} end else begin {newsql} end";
+			return QueryObject<TimesheetEntry>(sql, resource);
+			
+		}
+
+		public TimesheetEntry DeleteTimesheetEntry(int id)
+		{
+			var getsql = "select *, case when ProjectId is not null then (select ProjectName from CompanyProject where Id=TimesheetEntry.ProjectId) else 'Misc' end ProjectName " +
+				"from TimesheetEntry where Id=@Id";
+
+
+
+			var deletesql = "delete from TimesheetEntry where Id=@Id";
+			using (var conn = GetConnection())
+			{
+				var result = QueryObject<TimesheetEntry>(getsql, new { Id = id });
+				conn.Execute(deletesql, new { Id = id });
+				return result;
+			}
+		}
+
+		public Product SaveProduct(Product product)
+		{
+			const string save = "If @Id>0 begin update ProductService set Name=@Name, CostPrice=@CostPrice, SalePrice=@SalePrice, Type=@Type, SerialNo=@SerialNo, IsTaxable=@IsTaxable, LastModified=@LastModified, LastModifiedBy=@LastModifiedBy where Id=@Id; select @Id; end " +
+				"else begin insert into ProductService(CompanyId, Name, SerialNo, CostPrice, SalePrice, Type, IsTaxable, LastModified, LastModifiedBy) values(@CompanyId, @Name, @SerialNo, @CostPrice, @SalePrice, @Type, @IsTaxable, @LastModified, @LastModifiedBy); select cast(scope_identity() as int) end";
+			using(var conn = GetConnection())
+			{
+				product.Id = conn.Query<int>(save, product).Single();
+			}
+			return product;
 		}
 	}
 }

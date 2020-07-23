@@ -48,10 +48,10 @@
 			</div>
 			<div class="col-sm-6 p-5 text-right">
 				<label class="alert alert-danger" ng-if="data && mainData.selectedCompany && mainData.selectedCompany.contract.billingOption===3 && !mainData.selectedCompany.contract.invoiceSetup">This company is set up to be invoiced but there are no configurations available.</label>
-				<label class="label-danger" ng-if="data && mainData.selectedCompany && data.startingCheckNumber>0 && requiresCompanyPayrollAccount()">Please set a Payroll Account in COA secton</label>
-				<label class="label-danger" ng-if="data && mainData.selectedCompany && data.startingCheckNumber>0 && requiresHostPayrollAccount()">Please set a Payroll Account in COA secton for the Host. this is a PEO/ASO Co Check Client</label>
-				<label class="label-danger" ng-if="data && data.startingCheckNumber>0 && data.employees.length===0">No Employees have been set up for this company</label>
-				<label class="label-warning" ng-if="data && mainData.selectedCompany.contract.invoiceSetup.invoiceType!==3 && mainData.selectedCompany.workerCompensations.length===0">*No Workers Compensations set up for this company</label>
+				<span class="label label-danger" ng-if="data && mainData.selectedCompany && data.startingCheckNumber>0 && requiresCompanyPayrollAccount()">Please add a Payroll Account <button class="btn-success btn btn-sm" ng-click="newAccount()" title="New Payroll Account"><i class="fa fa-plus" /></button></span>
+				<span class="label label-danger" ng-if="data && data.startingCheckNumber>0 && mainData.selectedCompany  && requiresHostPayrollAccount()">Please set a Payroll Account in COA secton for the Host. this is a PEO/ASO Co Check Client</span>
+				<span class="label label-danger" ng-if="data && data.startingCheckNumber>0 && data.employees.length===0">No Employees have been set up for this company</span>
+				<span class="label label-warning" ng-if="data && mainData.selectedCompany.contract.invoiceSetup.invoiceType!==3 && mainData.selectedCompany.workerCompensations.length===0">*No Workers Compensations set up for this company</span>
 			</div>
 			<div class="row" ng-show="list.length>0">
 				<table ng-table="tableParams" class="table table-responsive" template-pagination="custom/pager">

@@ -27,7 +27,7 @@ namespace HrMaxx.OnlinePayroll.Repository
 		List<CaliforniaCompanyTax> SaveTaxRates(List<CaliforniaCompanyTax> rates);
 		List<SearchResult> FillSearchResults(List<SearchResult> searchResults);
 		void UpdateSearchTable(SearchResult searchResult);
-		ImportMap GetCompanyTsImportMap(Guid companyId);
+		ImportMap GetCompanyTsImportMap(Guid companyId, int type=1);
 		List<VendorCustomer> GetGarnishmentAgencies();
 		int GetMaxRegularCheckNumber(int companyId);
 		int GetMaxCheckNumberWithoutPayroll(int companyIntId, Guid id);
@@ -40,5 +40,6 @@ namespace HrMaxx.OnlinePayroll.Repository
         PayType SavePayType(PayType payType);
         List<PreTaxDeduction> GetDeductionTaxPrecendence();
 		void SaveDeductionPrecedence(List<PreTaxDeduction> precedence);
-	}
+        int GetMaxVendorInvoiceNumber(Guid companyIntId);
+    }
 }

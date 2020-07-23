@@ -1,4 +1,4 @@
-﻿<div class="col-sm-12">
+﻿<div class="col-sm-12 p-l-0 p-r-0">
 	<!-- begin panel -->
 	<div class="panel panel-inverse" data-sortable-id="form-stuff-4">
 		<div class="panel-heading">
@@ -6,8 +6,8 @@
 		</div>
 		<div class="panel-body">
 
-			<div ng-if="list.length===0">
-				{{ loaded ? 'No versions found' : 'Not loaded yet'}} <button class="btn btn-sm btn-primary" ng-click="loadMementos()" ng-show="!loaded"><i class="fa fa-refresh"></i></button>
+			<div>
+				{{ loaded ? (list.length===0 ? 'No versions found' : '') : 'Not loaded yet'}} <button class="btn btn-sm btn-primary" ng-click="loadMementos()"><i class="fa fa-refresh"></i></button>
 			</div>
 			<div class="row" ng-if="list.length>0">
 				<div class="detailBox">

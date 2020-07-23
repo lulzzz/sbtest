@@ -99,6 +99,8 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 					return GetWorkerCompensationReport(request);
 				else if (request.ReportName.Equals("IncomeStatement"))
 					return GetIncomeStatementReport(request);
+				else if (request.ReportName.Equals("SalesTaxReport"))
+					return GetSalesTaxReport(request);
 				else //if (request.ReportName.Equals("BalanceSheet"))
 					return GetBalanceSheet(request);
 			
@@ -178,6 +180,8 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 					return GetBlankForms(request);
 				else if (request.ReportName.Equals("CompanyLeaveExport"))
 					return GetCompanyLeaveExport(request);
+				else if (request.ReportName.Equals("TimesheetExport"))
+					return GetTimesheetExport(request);
 				else if (request.ReportName.Equals("TXSuta"))
 					return GetTexasStateUnEmployment(request);
                 else if (request.ReportName.Equals("StateHIPIT"))
@@ -446,6 +450,36 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 					Filename = request.Description + ".xls",
 					MimeType = "application/octet-stream"
 				};
+
+		}
+
+		private FileDto GetTimesheetExport(ReportRequest request)
+		{
+			var employees = _readerService.GetEmployees(company: request.CompanyId).Where(e => (request.EmployeeId == Guid.Empty || (request.EmployeeId != Guid.Empty && e.Id == request.EmployeeId)) && (e.StatusId == StatusOption.Active || e.StatusId == StatusOption.InActive)).ToList();
+			if (!employees.Any())
+				throw new Exception(NoData + ". No Employees found");
+			var result = new List<EmployeeTimesheet>();
+			employees.ForEach(e =>
+			{
+				var timesheets = _companyRepository.GetEmployeeTimesheet(request.CompanyId, e.Id, new DateTime(request.StartDate.Year, request.StartDate.Month, 1).Date, new DateTime(request.StartDate.Year, request.StartDate.Month, DateTime.DaysInMonth(request.StartDate.Year, request.StartDate.Month)).Date);
+				result.Add(new EmployeeTimesheet { Name=e.FullName, Timesheets = timesheets});
+			});
+			result = result.Where(e => e.Timesheets.Any()).OrderBy(e => e.Name).ToList();
+			if (!result.Any())
+				throw new Exception(NoData);
+			request.Description = $"Timesheet Export for " + request.StartDate.ToString("MM-yyyy");
+
+
+			var xml = GetXml(result);
+
+			var transformed = XmlTransform(xml, $"{_templatePath}{"transformers/extracts/TimesheetExport.xslt"}", new XsltArgumentList());
+			return new FileDto
+			{
+				Data = Encoding.UTF8.GetBytes(transformed),
+				DocumentExtension = ".xls",
+				Filename = request.Description + ".xls",
+				MimeType = "application/octet-stream"
+			};
 
 		}
 
@@ -2027,20 +2061,62 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 
 		public FileDto PrintPayrollSummary(Models.Payroll payroll, bool saveToDisk =false, string path = "")
 		{
-			var fileName = $"Payroll_{payroll.Id}_{payroll.PayDay.ToString("MMddyyyy")}.pdf";
+			var fileName = $"Payroll_{payroll.Id}_{payroll.PayDay.ToString("MMddyyyy")}.{(string.IsNullOrWhiteSpace(payroll.Warnings) || payroll.Warnings.Equals("1")  ? "pdf" : "xls")}";
 			var xml = GetXml<Models.Payroll>(payroll);
 		
 			var args = new XsltArgumentList();
-				
-			var transformed = TransformXml(xml,
-                $"{_templatePath}{"transformers/payroll/payrollsummary.xslt"}", args);
+			if (string.IsNullOrWhiteSpace(payroll.Warnings) || payroll.Warnings.Equals("1")  )
+			{
+				var transformed = TransformXml(xml,
+				$"{_templatePath}{"transformers/payroll/payrollsummary.xslt"}", args);
 
-			var transformedtimesheet = TransformXml(xml,
-                $"{_templatePath}{"transformers/payroll/payrolltimesheet.xslt"}", args);
+				var transformedtimesheet = TransformXml(xml,
+					$"{_templatePath}{"transformers/payroll/payrolltimesheet.xslt"}", args);
 
-			//return _pdfService.PrintHtml(transformed.Reports.First());
-			return _pdfService.PrintHtmls(new List<Report>(){transformed.Reports.First(), transformedtimesheet.Reports.First()}, saveToDisk, path);
-			//return _pdfService.AppendAllDocuments(payroll.Id, fileName, new List<Guid>(), summary.Data);
+				//return _pdfService.PrintHtml(transformed.Reports.First());
+				return _pdfService.PrintHtmls(new List<Report>() { transformed.Reports.First(), transformedtimesheet.Reports.First() }, saveToDisk, path);
+				//return _pdfService.AppendAllDocuments(payroll.Id, fileName, new List<Guid>(), summary.Data);
+			}
+			else
+			{
+				var transformed = XmlTransform(xml, $"{_templatePath}{"transformers/payroll/payrollsummaryexcel.xslt"}", new XsltArgumentList());
+				return new FileDto
+				{
+					Data = Encoding.UTF8.GetBytes(transformed),
+					DocumentExtension = ".xls",
+					Filename = fileName,
+					MimeType = "application/octet-stream"
+				};
+			}
+
+		}
+		public FileDto PrintCertifiedReport(Models.Payroll payroll, List<TimesheetEntry> timesheets, bool saveToDisk = false, string path = "", bool xmltype = false)
+		{
+			var fileName = $"Certified Payroll_{payroll.Id}_{payroll.PayDay.ToString("MMddyyyy")}.{(!xmltype ? "pdf" : "xml")}";
+			var xml = GetXml<Models.CertifiedPayroll>(new CertifiedPayroll{ Payroll = payroll, Timesheets = timesheets });
+			var args = new XsltArgumentList();
+
+			if (xmltype)
+			{
+				var transformed = XmlTransform(xml, $"{_templatePath}{"transformers/payroll/certifiedxmlreport.xslt"}", new XsltArgumentList());
+
+				return new FileDto
+				{
+					Data = Encoding.UTF8.GetBytes(transformed),
+					DocumentExtension = ".xml",
+					Filename = fileName,
+					MimeType = "application/octet-stream"
+				};
+			}
+			else
+			{
+				var transformed = TransformXml(xml, $"{_templatePath}{"transformers/payroll/certifiedreport.xslt"}", args);
+				return _pdfService.PrintReport(transformed, saveToDisk, path);
+			}
+			
+
+
+
 		}
 
 		public List<DashboardData> GetDashboardData(DashboardRequest dashboardRequest)
@@ -2295,7 +2371,15 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			return _pdfService.PrintHtml(transformed.Reports.First());
 		}
 
-		
+		private ReportResponse GetSalesTaxReport(ReportRequest request)
+		{
+			var response = new ReportResponse();
+			//response.PayChecks = _reportRepository.GetReportPayChecks(request, true);
+			response.CompanyInvoices = _readerService.GetVendorInvoices(request.CompanyId, startDate: request.StartDate,
+				endDate: request.EndDate).Where(i=>i.SalesTax>0).ToList();
+			
+			return response;
+		}
 
 
 		private ReportResponse GetIncomeStatementReport(ReportRequest request)

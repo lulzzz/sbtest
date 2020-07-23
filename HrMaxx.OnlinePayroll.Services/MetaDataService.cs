@@ -182,6 +182,21 @@ namespace HrMaxx.OnlinePayroll.Services
 				throw new HrMaxxApplicationException(message, e);
 			}
 		}
+		public object GetCompanyTimesheetMetaData(Guid company)
+		{
+			try
+			{
+				var importMap = _metaDataRepository.GetCompanyTsImportMap(company, 2);
+				
+				return new { ImportMap = importMap };
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, "Meta Data for Timesheet for company " + company);
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
 
 		public object GetJournalMetaData(Guid companyId, int companyIntId)
 		{
@@ -192,6 +207,25 @@ namespace HrMaxx.OnlinePayroll.Services
 				var maxCheckNumber = _metaDataRepository.GetMaxRegularCheckNumber(companyIntId);
 				var maxAdjustmentNumber = _metaDataRepository.GetMaxAdjustmenetNumber(companyIntId);
 				return new { Accounts = companyAccounts, Payees = payees, startingCheckNumber = maxCheckNumber, StartingAdjustmentNumber = maxAdjustmentNumber };
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, "Meta Data for Journal for company " + companyId);
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
+		public object GetVendorInvoiceMetaData(Guid companyId, int companyIntId)
+		{
+			try
+			{
+
+				//var payees = _readerService.GetJournalPayees(companyId).Where(jp=>jp.PayeeType==EntityTypeEnum.Vendor || jp.PayeeType==EntityTypeEnum.Customer).ToList();
+				var payees = _companyService.GetVendorCustomers(companyId);
+				var products = _readerService.GetProducts(companyId: companyId);
+				var maxInvoiceNumber = _metaDataRepository.GetMaxVendorInvoiceNumber(companyId);
+				
+				return new { Payees = payees, MaxInvoiceNumber = maxInvoiceNumber, Products = products };
 			}
 			catch (Exception e)
 			{

@@ -23,6 +23,7 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 		Payroll OldConfirmPayroll(Payroll mappedResource);
 		Payroll ReProcessReConfirmPayroll(Payroll payroll);
 		FileDto PrintPayrollReport(Payroll payroll);
+		FileDto PrintCertifiedReport(Payroll mapped, bool xml = false);
 		List<Payroll> FixPayrollData(Guid? companyId);
 		Payroll SaveProcessedPayroll(Payroll mappedResource);
 		Payroll DeleteDraftPayroll(Payroll mappedResource);
@@ -85,5 +86,7 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 		List<SchedulePayroll> SaveSchedulePayroll(SchedulePayroll payroll);
 		SchedulePayroll DeleteSchedulePayroll(SchedulePayroll mappedResource);
         void RemoveAllPreviousAccumulations(List<PayCheckPayTypeAccumulation> previousAccumulations, PayCheckPayTypeAccumulation currentAccumulaiton, Employee e);
+        Payroll GetTimesheetsForPayroll(Payroll mappedResource);
+        
     }
 }

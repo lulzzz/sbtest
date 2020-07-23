@@ -25,6 +25,7 @@ namespace HrMaxxAPI.Resources.Payroll
 		public DateTime TaxPayDay { get; set; }
 		[Required]
 		public List<PayCheckResource> PayChecks { get; set; }
+		public int PayrollNo { get; set; }
 		public int StartingCheckNumber { get; set; }
 		public string Notes { get; set; }
 		public string InvoiceSpecialRequest { get; set; }
@@ -64,7 +65,10 @@ namespace HrMaxxAPI.Resources.Payroll
 		public int QueuePosition { get; set; }
 		public DateTime? VoidedOn { get; set; }
 		public string VoidedBy { get; set; }
-
+		public bool IsCertified { get; set; }
+		public CompanyProject Project { get; set; }
+		public bool LoadFromTimesheets { get; set; }
+		public bool ApprovedOnly { get; set; }
 		public int MinCheckNumber
 		{
 			get

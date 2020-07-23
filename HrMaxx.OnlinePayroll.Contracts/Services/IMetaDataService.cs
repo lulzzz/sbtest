@@ -22,7 +22,7 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 		object GetJournalMetaData(Guid companyId, int companyIntId);
 		object GetInvoiceMetaData(Guid companyId);
 		object GetUsersMetaData(Guid? host, Guid? company, Guid? employee);
-
+		object GetCompanyTimesheetMetaData(Guid company);
 		object GetDeductionTypes();
 
 		List<TaxByYear> GetCompanyTaxesForYear(int year);
@@ -37,5 +37,6 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 		void SetEmployeeAccess(Guid employeeId, Guid documentId);
         IList<PayType> GetAllPayTypes();
         PayType SavePayType(PayType payType);
+        object GetVendorInvoiceMetaData(Guid companyId, int companyIntId);
     }
 }

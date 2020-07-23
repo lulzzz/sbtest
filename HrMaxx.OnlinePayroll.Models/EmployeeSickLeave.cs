@@ -6,6 +6,11 @@ using System.Threading.Tasks;
 
 namespace HrMaxx.OnlinePayroll.Models
 {
+	public class EmployeeTimesheet
+	{
+		public string Name { get; set; }
+		public List<TimesheetEntry> Timesheets { get; set; }
+	}
 	public class EmployeeSickLeave
 	{
 		public int? CompanyEmployeeNo { get; set; }

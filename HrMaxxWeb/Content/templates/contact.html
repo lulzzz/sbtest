@@ -1,38 +1,40 @@
-﻿<div class="row">
-	<div class="col-sm-6">
-		<div class="row">
-			<div class="form-group col-sm-5">
-				<label for="firstname">First Name</label>
-				<input type="text" id="firstname" name="firstname" class="form-control" placeholder="First Name" ng-model="data.firstName" required data-parsley-group="{{valGroup}}" />
+﻿<div class="col-sm-12">
+	<div class="col-sm-4">
+		<div class="form-group">
+			<label for="firstname">First Name</label>
+			<input type="text" id="firstname" name="firstname" class="form-control" placeholder="First Name" ng-model="data.firstName" required data-parsley-group="{{valGroup}}" />
 
-			</div>
-			<div class="form-group col-sm-2">
-				<label for="middleinitial">M.I</label>
-				<input type="text" id="middleinitial" class="form-control" placeholder="Middle Initial" ng-model="data.middleInitial" data-parsley-lenght="[0,1]" />
-
-			</div>
-			<div class="form-group col-sm-5">
-				<label for="lastname">Last Name</label>
-				<input type="text" id="lastname" name="lastname" class="form-control" placeholder="Last Name" ng-model="data.lastName" required data-parsley-group="{{valGroup}}" />
-
-			</div>
 		</div>
-		<div class="row">
-			<div class="col-sm-6">
-				<div class="form-group">
-					<label for="email">Email</label>
-					<input type="email" id="email" name="email" class="form-control" placeholder="Email Address" ng-model="data.email" required data-parsley-group="{{valGroup}}" data-parsley-type="email" />
-				</div>
-				<div class="form-group" ng-if="showPrimary">
-					<label for="isprimary" class="switch">
-						IsPrimary
-						<input id="isprimary" type="checkbox" ng-model="data.isPrimary" /><i></i>
-					</label>
-				</div>
+		<div class="form-group">
+			<label for="middleinitial">M.I</label>
+			<input type="text" id="middleinitial" class="form-control" placeholder="Middle Initial" ng-model="data.middleInitial" data-parsley-lenght="[0,1]" />
 
-			</div>
-			<div class="col-sm-4 col-sm-offset-1">
-				<div class="form-group">
+		</div>
+		<div class="form-group">
+			<label for="lastname">Last Name</label>
+			<input type="text" id="lastname" name="lastname" class="form-control" placeholder="Last Name" ng-model="data.lastName" required data-parsley-group="{{valGroup}}" />
+
+		</div>
+		<div class="form-group">
+			<label for="isprimary" class="switch">
+				IsPrimary
+				<input id="isprimary" type="checkbox" ng-model="data.isPrimary" /><i></i>
+			</label>
+		</div>
+	</div>
+	<div class="col-sm-4">
+		<address-paxol data="data.address" type="0" source-type-id="sourceTypeId" source-id="data.id" val-group="valGroup" show-content="true"></address-paxol>
+	</div>
+	<div class="col-sm-4">
+		
+			<fieldset>
+				<legend class="width-full"><i class="fa fa-lg" style="background-color:white; color:gray" ng-class="{'fa-plus-circle': !dataSvc.showPhones, 'fa-minus-circle': dataSvc.showPhones}" ng-click="dataSvc.showPhones=!dataSvc.showPhones"></i> Contact Info</legend>
+				<div class="form-group" ng-show="dataSvc.showPhones">
+
+					<div>
+						<label for="email">Email</label>
+						<input type="email" id="email" name="email" class="form-control" placeholder="Email Address" ng-model="data.email" required data-parsley-group="{{valGroup}}" data-parsley-type="email" />
+					</div>
 					<div>
 						<label for="phone">Phone</label>
 						<input type="text" id="phone" class="form-control" ng-model="data.phone" ui-mask="(999) 999-9999" />
@@ -47,17 +49,9 @@
 					</div>
 
 				</div>
+			</fieldset>
 
-
-			</div>
-
-		</div>
-	</div>
-	<div class="col-sm-6" ng-if="data.address">
-		<address-paxol data="data.address" type="0" source-type-id="sourceTypeId" source-id="data.id" val-group="valGroup"></address-paxol>
-	</div>
 		
-	
-	
-
+	</div>	
+		
 </div>

@@ -17,6 +17,7 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 		FileDto GetReportDocument(ReportRequest request);
 		Extract GetExtractDocument(ReportRequest request);
 		FileDto PrintPayrollSummary(Payroll payroll, bool saveToDisk = false, string path = "");
+		FileDto PrintCertifiedReport(Payroll payroll, List<TimesheetEntry> timesheets, bool saveToDisk = false, string path = "", bool xml = false);
 		List<DashboardData> GetDashboardData(DashboardRequest dashboardRequest);
 		List<MasterExtract> GetExtractList(string report);
 		List<SearchResult> GetSearchResults(string criteria, string role, Guid host, Guid company);
@@ -43,6 +44,6 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 		CompanyDashboard GetExtractDashboard();
 
 		StaffDashboard GetStaffDashboard(Guid? hostId, Guid guid);
-		EmployeeDocumentMetaData GetStaffDashboardDocuments(Guid? hostId);
-	}
+		EmployeeDocumentMetaData GetStaffDashboardDocuments(Guid? hostId);        
+    }
 }

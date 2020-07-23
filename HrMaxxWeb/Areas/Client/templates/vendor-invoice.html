@@ -1,0 +1,421 @@
+﻿<div class="col-sm-12 p-l-0 p-r-0">
+	<div class="invoice hidden-print">
+		<div class="invoice-header">
+			<div class="invoice-from">
+				<small>from</small>
+				<address class="m-t-5 m-b-5">
+					<strong class="@@if(context.theme != 'transparent'){text-inverse}@@if(context.theme == 'transparent'){text-white}">{{company.name}}</strong><br />
+					{{company.companyAddress.addressLine1}}<br />
+					{{company.companyAddress.city}}, CA {{company.companyAddress.zip}}{{company.companyAddress.zipExtension? ' - ' + company.companyAddress.zipExtension : ''}}<br />
+					Phone: {{getContactPhone(company.contact)}}<br />
+					Fax: {{getContactFax(company.contact)}}
+				</address>
+
+			</div>
+			<div class="invoice-to">
+				<small>to</small>
+				<div class="row form-group">
+					<label>
+						Invoice to the Order of <button type="button" ng-click="newpayee()" ng-show="!item.id" class="btn btn-primary btn-circle btn-icon">
+							<i class="fa fa-plus" />
+						</button>
+					</label>
+					<select id="customer" class="form-control" ng-model="data.selectedPayee" ng-change="payeeSelected()" ng-disabled="item.id" ng-options="customer as customer.name for customer in data.payees track by customer.id" required></select>
+					<!--<input type="text" placeholder="Customer Name" ng-blur="payeeSelected()" ng-disabled="item.id" typeahead-min-length="3" typeahead-show-hint="true" ng-model="data.selectedPayee" uib-typeahead="customer as customer.displayName for customer in data.payees | filter:$viewValue" class="form-control">-->
+				</div>
+				<div class="row form-group" ng-if="item.contact">
+					<div class="col-sm-6 m-0 p-0">
+						<label>Email :</label>
+						<input name="email" class="form-control" ng-model="item.contact.email" ng-disabled="!data.selectedPayee" />
+					</div>
+					<div class="col-sm-6 m-0 p-0">
+						<label for="phone">Phone</label>
+						<input type="text" id="phone" class="form-control" ng-model="item.contact.phone" ui-mask="(999) 999-9999" />
+					</div>
+					
+				</div>
+				
+				<address-paxol ng-if="item.contact" type="0" data="item.contact.address" source-type-id="dataSvc.selectedPayee.entityType" source-id="dataSvc.selectedPayee.id" show-content="true"></address-paxol>
+
+			</div>
+			<div class="invoice-date">
+
+				<div class="form-group">
+					<div class="col-sm-6"><label class="control-label">Invoice No.<span class="text-danger">*</span></label></div>
+					<div class="col-sm-6"><input type="number" ng-model="item.invoiceNumber" ng-disabled="item.id" class="form-control" required data-parsley-pattern="/^[1-9][0-9]{2,5}$/" data-parsley-type="number" step="1" /></div>
+
+				</div>
+				<div class="form-group">
+					<div class="col-sm-6"><label class="control-label">Invoice Date:<span class="text-danger">*</span></label></div>
+					<div class="col-sm-6">
+						<date-ctrl name="startdate" required="true" model="item.invoiceDate" disabled="item.id" />
+					</div>
+				</div>
+				<div>
+					<div class="col-sm-6"><label class="control-label">Due Date:<span class="text-danger">*</span></label></div>
+					<div class="col-sm-6">
+						<date-ctrl name="duedate" required="true" model="item.dueDate" min="item.invoiceDate" />
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="col-sm-6"><label class="control-label">Sales Tax Rate: <span class="text-danger">*</span></label></div>
+					<div class="col-sm-6"><input type="number" name="strate" class="form-control" ng-model="item.salesTaxRate" min="0" max="100" ng-change="updateItemAmount()" /></div>
+				</div>
+				<div class="form-group">
+					<div class="col-sm-6"><label class="control-label">Discount: </label></div>
+					<div class="col-sm-4 p-r-0">
+						<select ng-model="item.discountType" name="discount" class="form-control" convert-to-number ng-change="calculateDiscount()">
+							<option value="2">Amount</option>
+							<option value="1">Percentage</option>
+						</select>
+					</div>
+					<div class="col-sm-2 p-l-0">
+						<input type="number" class="form-control" ng-model="item.discountRate" name="discount" min="0" ng-change="calculateDiscount()" />
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="col-sm-6"><label class="control-label">Memo: </label></div>
+					<div class="col-sm-6"><input type="text" name="memo" class="form-control" ng-model="item.memo" /></div>
+				</div>
+				<div class="form-group">
+					<div class="col-sm-6"><label class="control-label">Quote?: </label></div>
+					<div class="col-sm-6 text-left"><input type="checkbox" name="quote" ng-model="item.isQuote" /></div>
+				</div>
+
+			</div>
+
+		</div>
+		<div class="col-sm-12 p-0" ng-show="showControls">
+			<button class="btn btn-sm btn-default pull-right m-5" ng-click="cancel()"><i class="fa fa-undo m-r-5"></i> Cancel</button>
+			<button class="btn btn-sm btn-primary pull-right m-5" ng-click="save()" ng-disabled="isCheckInValid()" ng-show="!item.isVoid"><i class="fa fa-check m-r-5"></i> Save</button>
+			<button class="btn btn-sm btn-success pull-right m-5" ng-click="print()" ng-show="item.id && !item.isVoid && !hasChanged()"><i class="fa fa-print m-r-5"></i>print</button>
+			<button class="btn btn-sm btn-warning pull-right m-5" ng-click="void()" ng-show="item.id && !item.isVoid">void</button>
+		</div>
+		<div class="row invoice-content">
+			<div class="col-sm-12">
+				<ul class="nav nav-tabs" id="dashboardtabs">
+					<li ng-class="{'active':data.openedRack===1}" ng-click="data.openedRack=1"><a data-toggle="tab"><i class="fa fa-list-ul"></i> <span class="hidden-xs">Products & Services <span class="badge badge-secondary badge-primary">{{item.invoiceItems.length}}</span></span></a></li>
+					<li ng-class="{'active':data.openedRack===2}" ng-click="data.openedRack=2" ng-show="item.id && !item.isQuote"><a data-toggle="tab"><i class="fa fa-dollar"></i> <span class="hidden-xs">Payments <span class="badge badge-primary">{{item.invoicePayments.length}}</span></span></a></li>
+
+
+
+				</ul>			
+			</div>
+			
+			<table class="table table-invoice" ng-show="data.openedRack===1">
+				<thead>
+					<tr>
+						<th class="col-sm-3">Product</th>
+						<th class="col-sm-3">Description</th>
+						<th class="col-sm-1">Rate</th>
+						<th class="col-sm-1">Quantity</th>
+						<th class="col-sm-1">Tax?</th>
+						<th class="col-sm-2">Line Total</th>
+
+						<th class="col-sm-1" ng-show="showControls">
+							<button type="button" ng-click="addJournalItem()" ng-show="!item.isVoid && !selectedji" class="btn btn-primary btn-circle btn-icon">
+								<i class="fa fa-plus" />
+							</button>
+						</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr ng-repeat="ji in item.invoiceItems track by $index">
+						<td >
+							<div class="col-sm-12 p-0" ng-show="selectedjiindex===$index">
+								
+								<div class="col-sm-10 p-0">
+									<select id="product" class="form-control" ng-model="ji.product" ng-change="changeProduct(ji)" ng-options="a.name for a in data.products track by a.id"></select>
+								</div>
+								<div class="col-sm-2 p-0 ">
+									<button class="btn-success btn btn-sm" ng-click="addProduct()" title="New Product"><i class="fa fa-plus" /></button>
+								</div>
+							</div>
+							
+							<span ng-show="selectedjiindex!==$index">
+								{{ ji.product? ji.product.name : '' }}
+							</span>
+
+						</td>
+						<td>
+							<input name="desc" type="text" class="form-control" ng-model="ji.description" ng-show="selectedjiindex===$index" />
+							<span ng-show="selectedjiindex!==$index">
+								{{ ji.description }}
+							</span>
+
+						</td>
+						<td>
+							<input name="desc" type="number" class="form-control" ng-model="ji.rate" ng-show="selectedjiindex===$index" ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" step="0.01"/>
+							<span ng-show="selectedjiindex!==$index">
+								{{ ji.rate | currency:'$' }}
+							</span>
+							
+						</td>
+						<td>
+							<input name="quan" type="number" class="form-control" ng-model="ji.quantity" ng-show="selectedjiindex===$index" ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" step="0.01" />
+							<span ng-show="selectedjiindex!==$index">								
+								{{ ji.quantity | currency:'' }}
+							</span>
+						</td>
+						<td>
+							<input name="taxable{{ji.id}}" ng-disabled="selectedjiindex!==$index" type="checkbox" class="custom-control-input" ng-model="ji.isTaxable">
+						</td>
+						<td>
+							{{ ji.rate && ji.quantity ? ((ji.rate * ji.quantity) | currency:'$') : '' }}
+
+						</td>
+
+						<td style="white-space: nowrap" ng-show="showControls">
+							<button type="button" ng-show="selectedjiindex!==$index" class="btn btn-sm btn-primary" ng-click="setselectedji(ji, $index)">
+								<i class="fa fa-pencil" />
+							</button>
+							<button type="submit" ng-disabled="!isJournalItemValid(ji)" ng-show="selectedjiindex===$index" ng-click="saveJournalItem(ji)" class="btn btn-sm btn-success">
+								<i class="fa fa-check" />
+							</button>
+							<button type="button" ng-show="selectedjiindex===$index" ng-click="cancelji($index)" class="btn btn-sm btn-default">
+								<i class="fa fa-undo" />
+							</button>
+						</td>
+
+					</tr>
+					<tr ng-show="item.listItems.length>0">
+						<td colspan="5" class="text-right"><b><i>Sub Total:</i></b></td>
+
+						<td> <b><i>{{item.amount | currency:'$'}}</i></b></td>
+					</tr>
+
+					<tr ng-show="!selectedji  && !item.isVoid">
+						<td colspan="6">
+							<span ng-show="item.invoiceItems.length===0">No items found</span>
+						</td>
+
+					</tr>
+
+				</tbody>
+			</table>
+			<table class="table table-invoice"  ng-show="data.openedRack===2">
+				<thead>
+					<tr>
+						<th class="col-sm-2">Deposit Date</th>
+						<th class="col-sm-1">Type</th>
+						<th class="col-sm-2">Check Number</th>
+						<th class="col-sm-2">Amount</th>
+
+						<th class="col-sm-2">
+							<button type="button" ng-click="addPayment()" ng-show="paymentRemaining()" class="btn btn-primary btn-circle btn-icon">
+								<i class="fa fa-plus" />
+							</button>
+
+						</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr ng-repeat="payment in item.invoicePayments track by $index">
+						<td ng-show="isPaymentEditable($index)">
+							<date-ctrl name="paydate" required="true" model="payment.paymentDate" />
+						</td>
+						<td ng-show="!isPaymentEditable($index)">
+							{{payment.paymentDate | date:'MM/dd/yyyy'}}
+						</td>
+						<td>
+							<select class="form-control" ng-model="payment.method" convert-to-number ng-show="isPaymentEditable($index)" required>
+								<option value="1">Check</option>
+								<option value="2">Cash</option>
+								<option value="3">Cert Fund</option>
+								<option value="4">Corp Check</option>
+								<option value="5">ACH</option>
+							</select>
+							<span ng-show="!isPaymentEditable($index)">{{payment.method===1? 'Check' : payment.method===2 ? 'Cash' : ''}}</span>
+						</td>
+						<td>
+							<input type="number" class="form-control" ng-model="payment.checkNumber" ng-show="(payment.method===1 || payment.method===4) && isPaymentEditable($index)" ng-required="payment.method===1" />
+							<span ng-show="(payment.method===1 || payment.method===4) && !isPaymentEditable($index)">{{payment.checkNumber}}</span>
+						</td>
+						<td>
+							<input class="form-control" name="amount{{$index}}" ng-model="selectedPayment.amount" convert-to-decimal data-parsley-type="number" required data-parsley-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" data-parsley-trigger="blur" step="0.01" ng-show="isPaymentEditable($index)" ng-max="paymentRemaining()" />
+							<span ng-show="!isPaymentEditable($index)">{{payment.amount | currency:'$'}}</span>
+						</td>
+
+						<td>
+							<button type="button" ng-show="!selectedPayment" class="btn btn-sm btn-primary" ng-click="setselectedpayment($index)">
+								<i class="fa fa-pencil" />
+							</button>
+							
+							<button type="submit" ng-show="selectedPayment" ng-click="savePayment($index)" class="btn btn-sm btn-success">
+								<i class="fa fa-check" />
+							</button>
+							<button type="button" ng-show="selectedPayment" ng-click="cancelpayment($index)" class="btn btn-sm btn-default">
+								<i class="fa fa-undo" />
+							</button>
+						</td>
+					</tr>
+
+				</tbody>
+			</table>
+		</div>
+		<div class="invoice-price">
+			<div class="invoice-price-left">
+				<div class="invoice-price-row">
+					<div class="sub-price">
+						<small>SUBTOTAL</small>
+						<span class="@@if(context.theme != 'transparent'){text-inverse}@@if(context.theme == 'transparent'){text-white}">{{item.amount | currency:'$'}}</span>
+					</div>
+					<div class="sub-price">
+						<i class="fa fa-plus text-muted"></i>
+					</div>
+					<div class="sub-price">
+						<small>Sales Tax ({{item.salesTaxRate | currency:''}}%)</small>
+						<span class="@@if(context.theme != 'transparent'){text-inverse}@@if(context.theme == 'transparent'){text-white}">{{item.salesTax | currency:'$'}}</span>
+					</div>
+					<div class="sub-price">
+						<i class="fa fa-minus text-muted"></i>
+					</div>
+					<div class="sub-price">
+						<small>Discount ({{item.discountType===2? '$' : ''}}{{item.discountRate | currency:''}}{{item.discountType===1?'%':''}})</small>
+						<span class="@@if(context.theme != 'transparent'){text-inverse}@@if(context.theme == 'transparent'){text-white}">{{item.discount | currency:'$'}}</span>
+					</div>
+				</div>
+			</div>
+			<div class="invoice-price-right">
+				<small>TOTAL</small> <span class="f-w-600">{{calculateTotal() | currency:'$'}}</span>
+			</div>
+			<div class="invoice-price-right">
+				<div class="sub-price">
+					<small>Balance</small>
+					<span class="@@if(context.theme != 'transparent'){text-inverse}@@if(context.theme == 'transparent'){text-white}">{{calculateBalance() | currency:'$'}}</span>
+				</div>
+				
+			</div>
+		</div>
+		<!--<div class="col-sm-12 hidden-print" ng-if="item.id">
+		<entity-documents main-data="mainData" source-type-id="item.entityType1" heading="'Documents'" source-id="item.sourceId" />
+	</div>-->
+	
+	</div>
+	<div class="col-sm-12 col-md-12 visible-print">
+		<div class="invoice" id="print">
+			<!-- begin invoice-company -->
+			<div class="invoice-company">
+				{{mainData.selectedCompany.name}}
+			</div>
+			<!-- end invoice-company -->
+			<!-- begin invoice-header -->
+			<div class="invoice-header">
+				<div class="invoice-fromci ">
+					<small>from</small>
+					<address class="m-t-5 m-b-5">
+						<strong>{{mainData.selectedCompany.name}}</strong><br />
+						{{mainData.selectedCompany.companyAddress.addressLine1}}<br />
+						{{mainData.selectedCompany.companyAddress.city}}, CA, {{mainData.selectedCompany.companyAddress.zip}}{{mainData.selectedCompany.companyAddress.zipExtension? ' - ' +mainData.selectedCompany.companyAddress.zipExtension : ''}}<br />
+
+					</address>
+					<small class="m-t-20">to</small>
+					<address class="m-t-5 m-b-5">
+						<strong class="text-inverse">{{item.payeeName}}</strong><br />
+						{{item.contact.address.addressLine1}}<br />
+						{{item.contact.address.addressLine2}}<br />
+						{{getContactPhone(item.contact)}}
+					</address>
+				</div>
+
+				<div class="invoice-dateci ">
+					<small>Invoice</small>
+					<div class="invoice-detail">
+						#{{item.invoiceNumber}}
+					</div>
+					<div class="date text-inverse m-t-5">{{item.invoiceDate | date: 'MMMM dd, yyyy'}}</div>
+					<div class="date text-inverse m-t-5">Due: {{item.dueDate | date: 'MMMM dd, yyyy'}}</div>
+					<div class="invoice-detail">
+						Memo: {{item.memo}}
+					</div>
+					<div class="invoice-detail">
+						Quotation?: <input type="checkbox" ng-model="item.isQuote" ng-disabled="true" />
+					</div>
+				</div>
+			</div>
+			<!-- end invoice-header -->
+			<!-- begin invoice-content -->
+			<div class="invoice-content p-t-20">
+				<!-- begin table-responsive -->
+				<div class="table-responsive">
+					<table class="table table-invoice">
+						<thead>
+							<tr>
+								<th>PRODUCT</th>
+								<th>DESCRIPTION</th>
+								<th class="text-center" width="10%">RATE</th>
+								<th class="text-center" width="10%">Quantity</th>
+								<th class="text-right" width="20%">LINE TOTAL</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr ng-repeat="j2 in item.invoiceItems track by $index">
+								<td>
+									<span class="text-inverse">{{j2.product.name}}</span><br />
+
+								</td>
+								<td>{{j2.description}}</td>
+								<td class="text-center">{{j2.rate | currency:'$'}}</td>
+								<td class="text-center">{{j2.quantity | currency}}</td>
+								<td class="text-right">{{j2.amount | currency:'$'}}</td>
+							</tr>
+
+						</tbody>
+					</table>
+				</div>
+				<!-- end table-responsive -->
+				<!-- begin invoice-price -->
+				<div class="invoice-price">
+					<div class="invoice-price-left">
+						<div class="invoice-price-row">
+							<div class="sub-price">
+								<small>SUBTOTAL</small>
+								<span class="@@if(context.theme != 'transparent'){text-inverse}@@if(context.theme == 'transparent'){text-white}">{{item.amount | currency:'$'}}</span>
+							</div>
+							<div class="sub-price">
+								<i class="fa fa-plus text-muted"></i>
+							</div>
+							<div class="sub-price">
+								<small>Sales Tax ({{item.salesTaxRate | currency:''}}%)</small>
+								<span class="@@if(context.theme != 'transparent'){text-inverse}@@if(context.theme == 'transparent'){text-white}">{{item.salesTax | currency:'$'}}</span>
+							</div>
+							<div class="sub-price">
+								<i class="fa fa-minus text-muted"></i>
+							</div>
+							<div class="sub-price">
+								<small>Discount ({{item.discountType===1? '$' : ''}}{{item.discountRate | currency:''}}{{item.discountType===2?'%':''}})</small>
+								<span class="@@if(context.theme != 'transparent'){text-inverse}@@if(context.theme == 'transparent'){text-white}">{{item.discount | currency:'$'}}</span>
+							</div>
+						</div>
+					</div>
+					<div class="invoice-price-right">
+						<small>TOTAL</small> <span class="f-w-600">{{calculateTotal() | currency:'$'}}</span>
+					</div>
+				</div>
+				<!-- end invoice-price -->
+			</div>
+			<!-- end invoice-content -->
+			<!-- begin invoice-note -->
+			<div class="invoice-note">
+				* Make all cheques payable to {{mainData.selectedCompany.taxFilingName}}<br />
+				* Payment is due immediately unless stated otherwise above.<br />
+				* If you have any questions concerning this invoice, please see contact information below
+			</div>
+			<!-- end invoice-note -->
+			<!-- begin invoice-footer -->
+			<div class="invoice-footer">
+				<p class="text-center m-b-5 f-w-600">
+					THANK YOU FOR YOUR BUSINESS
+				</p>
+				<p class="text-center">
+					{{ mainData.selectedCompany.contact.firstName + ' ' + mainData.selectedCompany.contact.lastName}}
+					<span class="m-r-10"><i class="fa fa-fw fa-lg fa-phone"></i> Tel: {{getContactPhone(mainData.selectedCompany.contact)}}</span>
+					<span class="m-r-10"><i class="fa fa-fw fa-lg fa-fax"></i> Fax: {{getContactFax(mainData.selectedCompany.contact)}}</span>
+					<span class="m-r-10"><i class="fa fa-fw fa-lg fa-envelope"></i> {{ mainData.selectedCompany.contact.email }}</span>
+				</p>
+			</div>
+			<!-- end invoice-footer -->
+		</div>
+	</div>
+</div>
+

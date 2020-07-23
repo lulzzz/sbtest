@@ -12,12 +12,15 @@ common.directive('addressPaxol', ['zionAPI','localStorageService','version',
 				type: "=type",
 				showDisabled: "=?showDisabled",
 				valGroup: "=?valGroup",
-				showTaxable: "=?showTaxable"
+				showTaxable: "=?showTaxable",
+				showContent: "=?showContent",
+				legend: "=?legend"
 			},
 			templateUrl: zionAPI.Web + 'Content/templates/address.html?v=' + version,
 
 			controller: ['$scope', '$element', '$location', '$filter', 'commonRepository', 'EntityTypes', function ($scope, $element, $location, $filter, commonRepository, EntityTypes) {
 				$scope.targetTypeId = EntityTypes.Address;
+				$scope.legend = $scope.legend ? $scope.legend : 'Address';
 				$scope.countries = localStorageService.get('countries');
 				$scope.availableStates = [];
 				if (!$scope.valGroup)
@@ -49,6 +52,7 @@ common.directive('addressPaxol', ['zionAPI','localStorageService','version',
 				}
 
 				var defaultCountryState = function () {
+					console.log('default country setup ' + $scope.data.countryId + '  ' + $scope.countries.length);
 					if (!$scope.data)
 						$scope.data = {};
 					if ($scope.data.countryId) {
@@ -63,6 +67,7 @@ common.directive('addressPaxol', ['zionAPI','localStorageService','version',
 						}
 
 					}
+					console.log('default country setup finished');
 					
 				}
 				if ($scope.type === 1) {

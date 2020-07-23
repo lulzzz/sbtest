@@ -57,6 +57,7 @@ namespace HrMaxx.OnlinePayroll.ReadServices.Mappers
 				.ForMember(dest => dest.PrePaidSubscriptionOption, opt => opt.MapFrom(src => src.PrePaidSubscriptionType.HasValue ? (PrePaidSubscriptionOption)src.PrePaidSubscriptionType.Value : PrePaidSubscriptionOption.NA))
 				.ForMember(dest => dest.BankDetails,
 				opt => opt.MapFrom(src => !string.IsNullOrWhiteSpace(src.BankDetails) ? JsonConvert.DeserializeObject<BankAccount>(src.BankDetails) : null))
+				
 				.ForMember(dest => dest.InvoiceSetup,
 				opt => opt.MapFrom(src => !string.IsNullOrWhiteSpace(src.InvoiceSetup) ? JsonConvert.DeserializeObject<InvoiceSetup>(src.InvoiceSetup) : null));
 
@@ -118,6 +119,7 @@ namespace HrMaxx.OnlinePayroll.ReadServices.Mappers
 
 			CreateMap<Models.JsonDataModel.CompanyPayCode, CompanyPayCode>();
 			CreateMap<Models.JsonDataModel.CompanyRenewal, Models.CompanyRenewal>();
+			CreateMap<Models.JsonDataModel.CompanyProject, Models.CompanyProject>();
 
 			CreateMap<Models.JsonDataModel.PayrollInvoiceJson, Models.PayrollInvoice>()
 				.ForMember(dest => dest.EmployerTaxes, opt => opt.MapFrom(src => JsonConvert.DeserializeObject<List<PayrollTax>>(src.EmployerTaxes)))
@@ -158,6 +160,8 @@ namespace HrMaxx.OnlinePayroll.ReadServices.Mappers
 					opt => opt.MapFrom(src => JsonConvert.DeserializeObject<List<PayrollDeduction>>(src.Deductions)))
 				.ForMember(dest => dest.InvoiceSetup,
 					opt => opt.MapFrom(src => JsonConvert.DeserializeObject<InvoiceSetup>(src.InvoiceSetup)))
+				.ForMember(dest => dest.Taxes,
+					opt => opt.MapFrom(src => JsonConvert.DeserializeObject<List<PayrollTax>>(src.Taxes)))
 				.ForMember(dest => dest.MiscCharges,
 					opt => opt.MapFrom(src => JsonConvert.DeserializeObject<List<MiscFee>>(src.MiscCharges)));
 
@@ -169,6 +173,7 @@ namespace HrMaxx.OnlinePayroll.ReadServices.Mappers
 				.ForMember(dest => dest.Notes, opt => opt.MapFrom(src => src.Notes))
 				.ForMember(dest => dest.StartingCheckNumber, opt => opt.MapFrom(src => src.StartingCheckNumber))
 				.ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status))
+				.ForMember(dest => dest.Project, opt => opt.MapFrom(src => src.CompanyProject))
 				.ForMember(dest => dest.Warnings, opt => opt.Ignore())
 				.ForMember(dest => dest.QueuePosition, opt => opt.Ignore())
 				.ForMember(dest => dest.UserId, opt => opt.Ignore());
@@ -209,6 +214,7 @@ namespace HrMaxx.OnlinePayroll.ReadServices.Mappers
 				.ForMember(dest => dest.Deductions, opt => opt.MapFrom(src => src.CompanyDeductions))
 				.ForMember(dest => dest.PayCodes, opt => opt.MapFrom(src => src.CompanyPayCodes))
 				.ForMember(dest => dest.CompanyRenewals, opt => opt.MapFrom(src => src.CompanyRenewals))
+				.ForMember(dest => dest.CompanyProjects, opt => opt.MapFrom(src => src.CompanyProjects))
 				.ForMember(dest => dest.WorkerCompensations, opt => opt.MapFrom(src => src.CompanyWorkerCompensations))
 				.ForMember(dest => dest.UserId, opt => opt.Ignore())
 				.ForMember(dest => dest.InsuranceClientNo, opt => opt.MapFrom(src => src.ClientNo))
@@ -224,6 +230,7 @@ namespace HrMaxx.OnlinePayroll.ReadServices.Mappers
 				.ForMember(dest => dest.PayTypeAccruals, opt => opt.MapFrom(src =>string.IsNullOrWhiteSpace(src.PayTypeAccruals) ? new List<int>() : JsonConvert.DeserializeObject<List<int>>(src.PayTypeAccruals)))
 				.ForMember(dest => dest.State, opt => opt.MapFrom(src => JsonConvert.DeserializeObject<EmployeeState>(src.State)))
 				.ForMember(dest => dest.UserId, opt => opt.Ignore())
+				.ForMember(dest => dest.FullName, opt => opt.Ignore())
 				.ForMember(dest => dest.SickLeaveHireDate, opt => opt.MapFrom(src=> src.SickLeaveHireDate.HasValue? src.SickLeaveHireDate.Value : src.HireDate))
 				.ForMember(dest => dest.WorkerCompensation, opt => opt.MapFrom(src => src.CompanyWorkerCompensation))
 				.ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.LastModifiedBy))
@@ -265,7 +272,15 @@ namespace HrMaxx.OnlinePayroll.ReadServices.Mappers
 
 			CreateMap<Models.JsonDataModel.JournalJson, Models.Journal>()
 				.ForMember(dest => dest.JournalDetails, opt => opt.MapFrom(src => JsonConvert.DeserializeObject<List<Models.JournalDetail>>(src.JournalDetails)))
+				.ForMember(dest => dest.Contact, opt => opt.MapFrom(src => !string.IsNullOrWhiteSpace(src.Contact) ? JsonConvert.DeserializeObject<Contact>(src.Contact) : null))
 				.ForMember(dest => dest.ListItems, opt => opt.MapFrom(src =>!string.IsNullOrWhiteSpace(src.ListItems) ? JsonConvert.DeserializeObject<List<Models.JournalItem>>(src.ListItems) : new List<JournalItem>()));
+
+			CreateMap<Models.JsonDataModel.CompanyInvoiceJson, Models.CompanyInvoice>()
+				.ForMember(dest => dest.Contact, opt => opt.MapFrom(src => !string.IsNullOrWhiteSpace(src.Contact) ? JsonConvert.DeserializeObject<Contact>(src.Contact) : null))
+				.ForMember(dest => dest.ListItems, opt => opt.MapFrom(src => !string.IsNullOrWhiteSpace(src.ListItems) ? JsonConvert.DeserializeObject<List<Models.JournalItem>>(src.ListItems) : new List<JournalItem>()));
+
+			
+
 
 			CreateMap<Models.JsonDataModel.ExtractInvoicePaymentJson, Models.ExtractInvoicePayment>();
 			CreateMap<Models.JsonDataModel.PayrollInvoiceMiscCharges, Models.PayrollInvoiceMiscCharges>()
@@ -319,6 +334,15 @@ namespace HrMaxx.OnlinePayroll.ReadServices.Mappers
 
 			CreateMap<Models.JsonDataModel.EmployeeACA, Models.EmployeeACA>();
 			CreateMap<Models.EmployeeACA, Models.JsonDataModel.EmployeeACA>();
+
+			CreateMap<Models.JsonDataModel.VendorCustomerJson, VendorCustomer>()
+				.ForMember(dest => dest.IndividualSSN, opt => opt.MapFrom(src => !string.IsNullOrWhiteSpace(src.IndividualSSN) ? Crypto.Decrypt(src.IndividualSSN) : src.IndividualSSN))
+				.ForMember(dest => dest.BusinessFIN, opt => opt.MapFrom(src => !string.IsNullOrWhiteSpace(src.BusinessFIN) ? Crypto.Decrypt(src.BusinessFIN) : src.BusinessFIN))
+				.ForMember(dest => dest.UserId, opt => opt.Ignore())
+				.ForMember(dest => dest.Contact, opt => opt.MapFrom(src => JsonConvert.DeserializeObject<Contact>(src.Contact)))
+				.ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.LastModifiedBy));
+
+			
 
 		}
 	}

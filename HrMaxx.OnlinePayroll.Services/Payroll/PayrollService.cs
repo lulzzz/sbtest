@@ -1011,6 +1011,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 
 					
 					savedPayroll = _payrollRepository.SavePayroll(payroll);
+					savedPayroll.Project = payroll.Project;
 					payroll.PayChecks.Where(pc=>pc.UpdateEmployeeRate).ToList().ForEach(pc=>savedPayroll.PayChecks.First(pc1=>pc1.Employee.Id==pc.Employee.Id).UpdateEmployeeRate = true);
 					
 					var ptaccums = new List<PayCheckPayTypeAccumulation>();
@@ -1748,19 +1749,10 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 						employeeFutureCheck.AddToYTD(paycheck);
 						_payrollRepository.UpdatePayCheckYTD(employeeFutureCheck);
 					}
-
+					_payrollRepository.UpdateTimesheetsToPaid(payroll);
 					txn.Complete();
 
-					//Bus.Publish<PayCheckVoidedEvent>(new PayCheckVoidedEvent
-					//{
-					//	SavedObject = savedPaycheck,
-					//	HostId = payroll.Company.HostId,
-					//	UserId = new Guid(user),
-					//	TimeStamp = DateTime.Now,
-					//	EventType = NotificationTypeEnum.Updated,
-					//	AffectedChecks = employeeFutureChecks,
-					//	UserName = name
-					//});
+					
 				}
 				return _readerService.GetPayroll(payrollId);
 
@@ -1867,25 +1859,12 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 					Log.Info("Checks Un Voided" + DateTime.Now.ToString("hh:mm:ss:fff"));
 
 
-					_payrollRepository.UnVoidPayroll(payroll.Id, userName);
+					_payrollRepository.UnVoidPayroll(payroll, userName);
 					txn.Complete();
 
 				}
 				payroll = _readerService.GetPayroll(payroll.Id);
-				//foreach (var payCheck in payroll.PayChecks)
-				//{
-				//	Bus.Publish<PayCheckVoidedEvent>(new PayCheckVoidedEvent
-				//	{
-				//		SavedObject = payCheck,
-				//		HostId = payroll.Company.HostId,
-				//		UserId = new Guid(userId),
-				//		TimeStamp = DateTime.Now,
-				//		EventType = NotificationTypeEnum.Updated,
-				//		AffectedChecks = affectedChecks.Where(pc => pc.Employee.Id == payCheck.Employee.Id).ToList(),
-				//		UserName = userName,
-				//		IsUnVoid=true
-				//	});
-				//}
+				
 				Log.Info("Void Payroll Finished" + DateTime.Now.ToString("hh:mm:ss:fff"));
 				_fileRepository.DeleteDestinationFile(payroll.Id + ".pdf");
 				return payroll;
@@ -1967,6 +1946,22 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				var returnFile = _reportService.PrintPayrollSummary(payroll);
 				return returnFile;
 				
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, " Print Payrolls for id=" + payroll.Id);
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
+		public FileDto PrintCertifiedReport(Models.Payroll payroll, bool xml  =false)
+		{
+			try
+			{
+				var timesheets = _companyRepository.GetEmployeeTimesheet(payroll.Id);
+				var returnFile = _reportService.PrintCertifiedReport(payroll, timesheets, xml: xml);
+				return returnFile;
+
 			}
 			catch (Exception e)
 			{
@@ -2083,6 +2078,11 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				dir = _documentService.CreateDirectory(dir);
 				_pdfService.PrintPayrollPack(dir, models);
 				_reportService.PrintPayrollSummary(payroll, true, $"{dir}//PayrollSummary.pdf");
+				if (payroll.IsCertified)
+				{
+					var timesheets = _companyRepository.GetEmployeeTimesheet(payroll.Id);
+					_reportService.PrintCertifiedReport(payroll, timesheets, true, $"{dir}//CertifiedReport.pdf");
+				}
 				var returnFile = _documentService.ZipDirectory(dir,
                     $"{payroll.Company.Name}_Payroll_{payroll.PayDay.ToString("MMddyyyy")}.zip");
 				_documentService.DeleteDirectory(dir);
@@ -2119,6 +2119,11 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 					dir = _documentService.CreateDirectory(dir);
 					_pdfService.PrintPayrollPack(dir, models);
 					_reportService.PrintPayrollSummary(payroll, true, $"{dir}//PayrollSummary.pdf");
+					if (payroll.IsCertified)
+					{
+						var timesheets = _companyRepository.GetEmployeeTimesheet(payroll.Id);
+						_reportService.PrintCertifiedReport(payroll, timesheets, true, $"{dir}//CertifiedReport.pdf");
+					}
 					var returnFile = _documentService.ZipDirectory(dir,
                         $"{payroll.Company.Name}_Payroll_{payroll.PayDay.ToString("MMddyyyy")}.zip", false);
 					payChecks.Where(pc => pc.PaymentMethod == EmployeePaymentMethod.DirectDebit).ToList().ForEach(async pc =>
@@ -4789,10 +4794,44 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 
 
 
+
 			}
 			catch (Exception e)
 			{
 				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, e.Message);
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
+
+		public Models.Payroll GetTimesheetsForPayroll(Models.Payroll payroll)
+		{
+			try
+			{
+				var timesheets = _companyRepository.GetEmployeeTimesheet(payroll.Company.Id, null, payroll.StartDate.Date, payroll.EndDate.Date).Where(ts => !ts.IsPaid).ToList() ;
+				if (payroll.ApprovedOnly)
+					timesheets = timesheets.Where(ts => ts.IsApproved).ToList();
+
+				timesheets = timesheets.Where(ts => ((payroll.IsCertified && ts.ProjectId.HasValue && ts.ProjectId.Value == payroll.Project.Id) || (!payroll.IsCertified && !ts.ProjectId.HasValue))).ToList();
+
+				var groups = timesheets.GroupBy(ts => ts.EmployeeId).Select(ts => new KeyValuePair<Guid, KeyValuePair<decimal, decimal>>(ts.Key, new KeyValuePair<decimal, decimal>(ts.Sum(t => t.Hours), ts.Sum(t => t.Overtime)))).ToList();
+				groups.ForEach(g => {
+					var pc = payroll.PayChecks.FirstOrDefault(p => p.EmployeeId == g.Key);
+					if (pc != null)
+					{
+						pc.PayCodes.First(ppc => ppc.PayCode.Id == 0).Hours = g.Value.Key;
+						pc.PayCodes.First(ppc => ppc.PayCode.Id == 0).OvertimeHours = g.Value.Value;
+						pc.PayCodes.First(ppc => ppc.PayCode.Id == 0).ScreenHours = pc.PayCodes.First(ppc => ppc.PayCode.Id == 0).Hours.ToString();
+						pc.PayCodes.First(ppc => ppc.PayCode.Id == 0).ScreenOvertime = pc.PayCodes.First(ppc => ppc.PayCode.Id == 0).OvertimeHours.ToString();
+						pc.Included = true;
+					}
+				});
+				payroll.PayChecks = payroll.PayChecks.Where(pc => pc.Included).ToList();
+				return payroll;
+			}			
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, e.Message);
 				Log.Error(message, e);
 				throw new HrMaxxApplicationException(message, e);
 			}

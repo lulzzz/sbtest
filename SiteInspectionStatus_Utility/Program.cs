@@ -174,12 +174,83 @@ namespace SiteInspectionStatus_Utility
                 case 38:
                     ClearPriorYearAccumulations(container);
                     break;
+                case 39:
+                    GetEmployeeList(container);
+                    break;
+                case 40:
+                    DeserializeCompanyInvoiceItems(container);
+                    break;
+
                 default:
 					break;
 			}
 
 			Console.WriteLine("Utility run finished for ");
 		}
+        private static void DeserializeCompanyInvoiceItems(IContainer container)
+        {
+            var productList = new List<Product>();
+            using (var scope = container.BeginLifetimeScope())
+            {
+                var readerservice = scope.Resolve<IReaderService>();
+                var journalrepository = scope.Resolve<IJournalRepository>();
+                var companyservice = scope.Resolve<ICompanyService>();
+
+                var invoices = readerservice.GetVendorInvoices();
+                var products = readerservice.GetProducts();
+                invoices.ForEach(inv =>
+                {
+                    inv.ListItems.ForEach(p =>
+                    {
+                        var invitem = new CompanyInvoiceItem { Amount = p.Amount, Quantity = p.Quantity, Rate = p.Rate, Description = p.Item, IsTaxable = false };
+                        
+                        if (products.Any(p1=>p1.CompanyId==inv.CompanyId && p1.Name.Equals(p.Item)))
+                        {
+                            invitem.Product = products.First(p1 => p1.CompanyId == inv.CompanyId && p1.Name.Equals(p.Item));
+                        }
+                        else
+                        {
+                            var product = new Product { CompanyId = inv.CompanyId, IsTaxable = false, CostPrice = p.Rate, SalePrice = p.Rate, Name = p.Item, Type = 1, LastModified = DateTime.Now, LastModifiedBy = "System" };
+                            product = companyservice.SaveProduct(product);
+                            invitem.Product = product;
+                        }
+
+                        inv.InvoiceItems.Add(invitem);
+                        
+                        
+                    });
+                    journalrepository.SaveVendorInvoice(inv, Guid.Empty);
+                });
+            }
+        }
+        private static void GetEmployeeList(IContainer container)
+        {
+            
+            var hostIdstr = Console.ReadLine();
+            var month = Convert.ToInt32(Console.ReadLine());
+            var year = Convert.ToInt32(Console.ReadLine());
+
+            var str = new StringBuilder();
+            using (var scope = container.BeginLifetimeScope())
+            {
+                var readerservice = scope.Resolve<IReadRepository>();
+                var employees = readerservice.GetQueryData<EmployeeListItem>($"select c.CompanyName, e.SSN, e.FirstName + ' ' + e.LastName Employee, e.HireDate, " +
+                    $"m.DateCreated from employee e, company c, Common.Memento m " +
+                    $"where e.CompanyId = c.Id " +
+                    $"and c.HostId = '{hostIdstr}' and e.Id=m.MementoId and m.SourcetypeId=3 and m.Version=1");
+                str.AppendLine("Company, Employee, SSN, Hire Date, Created");
+                employees.Where(e=>e.DateCreated<(new DateTime(year, month, 1)).Date).OrderBy(e=>e.CompanyName).ThenBy(e=>e.Employee).ThenBy(e=>e.HireDate).ToList().ForEach(e =>
+                {
+                    var ssn = Crypto.Decrypt(e.SSN);
+                    str.AppendLine($"{e.CompanyName.Replace(",",string.Empty)}, {e.Employee}, {ssn.Substring(0,3)}-{ssn.Substring(3,2)}-{ssn.Substring(5,4)}, {e.HireDate.ToString("MM/dd/yyyy")}, {e.DateCreated.ToString("MM/dd/yyyy")}");
+                });
+                using (System.IO.StreamWriter file = new System.IO.StreamWriter(@"\Employees.csv"))
+                {
+                    file.WriteLine(str.ToString()); // "sb" is the StringBuilder
+                }
+            }
+        }
+
         private static void ClearPriorYearAccumulations(IContainer container)
         {
             using (var scope = container.BeginLifetimeScope())

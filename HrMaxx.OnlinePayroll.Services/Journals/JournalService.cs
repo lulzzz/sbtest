@@ -141,6 +141,54 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 				throw new HrMaxxApplicationException(message, e);
 			}
 		}
+		public CompanyInvoice SaveVendorInvoice(CompanyInvoice invoice, Guid userId)
+		{
+			try
+			{
+				using(var txn = TransactionScopeHelper.Transaction())
+				{
+					invoice = _journalRepository.SaveVendorInvoice(invoice, userId);
+					var vendor = _companyService.GetVendorCustomersById(invoice.PayeeId);
+					if (!vendor.Contact.Equals(invoice.Contact))
+					{
+						vendor.Contact = invoice.Contact;
+						vendor.UserName = invoice.LastModifiedBy;
+						vendor.LastModified = invoice.LastModified;
+						_companyService.SaveVendorCustomers(vendor);
+					}
+					txn.Complete();					
+				}
+				
+				var memento = Memento<CompanyInvoice>.Create(invoice, EntityTypeEnum.CompanyInvoice, invoice.LastModifiedBy, string.Format("Vendor invoice created"), userId);
+				_mementoDataService.AddMementoData(memento);
+
+				return invoice;
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, " Save Journal");
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
+
+		public CompanyInvoice VoidVendorInvoice(CompanyInvoice invoice, string name, Guid userId)
+		{
+			try
+			{
+				var j = _journalRepository.VoidVendorInvoice(invoice, name);
+				var memento = Memento<CompanyInvoice>.Create(j, EntityTypeEnum.CompanyInvoice, name, string.Format("Vendor invoice voided"), userId);
+				_mementoDataService.AddMementoData(memento);
+				
+				return j;
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, " Void Journal with id=" + invoice.Id);
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
 
 		public JournalList GetJournalListByCompanyAccount(Guid companyId, int accountId, DateTime? startDate, DateTime? endDate, bool includePayrolls)
 		{
@@ -608,12 +656,13 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 				"Please ensure you have sufficient funds in your bank account.<br/><br/>" +
 				"If you have any questions, please contact your CPA or Paxol Support Team.<br/><br/>";
 				var emailSubject = $"Paxol: Notice of Your Impending {report.Description} Payment";
+				
 				journals.ForEach(j =>
 				{
 					var journal = _readerService.GetJournals(id: j, includePayrolls: false, includeDetails: false).First();
 					var company = _readerService.GetCompany(journal.CompanyId);
-					
-					var contact = _commonService.GetAllTargets<Contact>(EntityTypeEnum.Contact).FirstOrDefault();
+
+					var contact = _commonService.GetRelatedEntities<Contact>(EntityTypeEnum.Company, EntityTypeEnum.Contact, company.Id).FirstOrDefault();
 					if (contact != null && !string.IsNullOrWhiteSpace(contact.Email) && contact.Email.ToLower()!="na@na.com")
 					{
 						var emailBody = string.Format(emailBodyTemplate, contact.FullName, journal.PayeeName, journal.Amount.ToString("c"), report.DepositDate.Value.ToString("MM/dd/yyyy")
@@ -837,11 +886,10 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 		{
 			try
 			{
-				journal.IsCleared = true;
-				journal.ClearedBy = fullName;
-				journal.ClearedOn = DateTime.Now;
+				journal.ClearedBy = journal.IsCleared ? fullName : null;
+				journal.ClearedOn = journal.IsCleared ? DateTime.Now : default(DateTime?);
 				_journalRepository.ClearJournal(journal);
-				var memento = Memento<Journal>.Create(journal, (EntityTypeEnum)journal.EntityType1, journal.ClearedBy, string.Format("Check Cleared {0}", journal.CheckNumber), userId);
+				var memento = Memento<Journal>.Create(journal, (EntityTypeEnum)journal.EntityType1, fullName, string.Format("Check Cleared {0}", journal.CheckNumber), userId);
 				_mementoDataService.AddMementoData(memento);
 					
 				return journal;
@@ -1120,5 +1168,7 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 			}
 			return string.Empty;
 		}
+
+		
 	}
 }

@@ -32,5 +32,7 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 		void FixMasterExtract<T>(T extract);
 		Journal ClearJournal(Journal journal, Guid guid, string fullName);
 		List<KeyValuePair<string, string>> EmailExtractClients(List<int> journals, ReportRequest report);
+        CompanyInvoice SaveVendorInvoice(CompanyInvoice mapped, Guid guid);
+		CompanyInvoice VoidVendorInvoice(CompanyInvoice mapped, string name, Guid guid);
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Data.Common;
 using System.Linq;
 using Dapper;
@@ -9,6 +10,7 @@ using HrMaxx.Infrastructure.Repository;
 using HrMaxx.OnlinePayroll.Models;
 using HrMaxx.OnlinePayroll.Models.DataModel;
 using HrMaxx.OnlinePayroll.Models.Enum;
+using HrMaxx.OnlinePayroll.Models.JsonDataModel;
 using Newtonsoft.Json;
 using Journal = HrMaxx.OnlinePayroll.Models.DataModel.Journal;
 using MasterExtract = HrMaxx.OnlinePayroll.Models.MasterExtract;
@@ -129,6 +131,55 @@ namespace HrMaxx.OnlinePayroll.Repository.Journals
 				}
 			}
 			
+			return journal;
+		}
+		public CompanyInvoice SaveVendorInvoice(Models.CompanyInvoice journal, Guid userId)
+		{
+			const string insertinvoice = "insert into CompanyInvoice(CompanyId, InvoiceNumber, PayeeId, PayeeName, Amount, Memo, IsVoid, InvoiceDate, LastModified, LastModifiedBy, Total, Balance, SalesTaxRate, SalesTax, DiscountType, DiscountRate, Discount, DueDate, IsQuote) values(@CompanyId, @InvoiceNumber, @PayeeId, @PayeeName, @Amount, @Memo, @IsVoid, @InvoiceDate, @LastModified, @LastModifiedBy, @Total, @Balance, @SalesTaxRate, @SalesTax, @DiscountType, @DiscountRate, @Discount, @DueDate, @IsQuote); select cast(scope_identity() as int)";
+			const string items = "if @Id>0 begin update CompanyInvoiceItem set ProductId=@ProductId, Description=@Description, Quantity=@Quantity, Rate=@Rate, Amount=@Amount, IsTaxable=@IsTaxable where Id=@Id; select @Id;  end " +
+				"else begin insert into CompanyInvoiceItem(CompanyInvoiceId, ProductId, Description, Quantity, Rate, Amount, IsTaxable) values(@CompanyInvoiceId, @ProductId, @Description, @Quantity, @Rate, @Amount, @IsTaxable); select cast(scope_identity() as int) end";
+			const string payments = "If @Id>0 begin update CompanyInvoicePayment set PaymentDate=@PaymentDate, Method=@Method, CheckNumber=@CheckNumber, Amount=@Amount, LastModified=getdate(), LastModifiedBy=@LastModifiedBy where Id=@Id; select @Id; end " +
+				"else begin insert into CompanyInvoicePayment(CompanyInvoiceId, PaymentDate, Method, CheckNumber, LastModified, LastModifiedBy, Amount) " +
+				"values(@CompanyInvoiceId, @PaymentDate, @Method, @CheckNumber, getdate(), @LastModifiedBy, @Amount); select cast(scope_identity() as int) end";
+			using (var conn = GetConnection())
+			{
+				if (journal.Id == 0)
+				{
+					journal.Id = conn.Query<int>(insertinvoice, journal).Single();
+				}
+				else
+				{
+					const string updatejournal =
+							"update CompanyInvoice set Amount=@Amount, Memo=@Memo, InvoiceDate=@InvoiceDate, DueDate=@DueDate, PayeeId=@PayeeId, PayeeName=@PayeeName, Total=@Total, Balance=@Balance, LastModified=@LastModified, LastModifiedBy=@LastModifiedBy, SalesTaxRate=@SalesTaxRate, SalesTax=@SalesTax, DiscountType=@DiscountType, Discount=@Discount, DiscountRate=@DiscountRate, IsQuote=@IsQuote Where Id=@Id";
+					var rowsUpdated = conn.Execute(updatejournal, journal);
+					if (rowsUpdated == 0)
+					{
+						journal.Id = conn.Query<int>(insertinvoice, journal).Single();
+					}
+				}
+				journal.InvoiceItems.ForEach(ip =>
+				{
+					ip.Id = conn.Query<int>(items, new { Id=ip.Id, CompanyInvoiceId = journal.Id, ProductId=ip.Product.Id, Description=ip.Description, Quantity=ip.Quantity, Rate=ip.Rate, Amount=ip.Amount, IsTaxable=ip.IsTaxable }).Single();
+				});
+				journal.InvoicePayments.ForEach(ip =>
+				{
+					ip.Id = conn.Query<int>(payments, new { Id= ip .Id, CompanyInvoiceId = journal.Id, PaymentDate = ip.PaymentDate, Method = (int)ip.Method, CheckNumber = ip.CheckNumber, LastModifiedBy = journal.LastModifiedBy, Amount=ip.Amount }).Single();
+				});
+			}
+			return journal;
+		}
+		public CompanyInvoice VoidVendorInvoice(CompanyInvoice journal, string name)
+		{
+			journal.IsVoid = true;
+			journal.LastModified = DateTime.Now;
+			journal.LastModifiedBy = name;
+			using (var conn = GetConnection())
+			{
+				const string voidinvoice = @"update CompanyInvoice set IsVoid=1, LastModifiedBy=@LastModifiedBy, LastModified=getdate() Where Id=@Id";
+				conn.Execute(voidinvoice, new { Id = journal.Id, LastModifiedBy = name });
+				
+			}
+
 			return journal;
 		}
 

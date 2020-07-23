@@ -20,15 +20,18 @@
 						<td data-title=" 'Account No' " filter="{ 'accountNo': 'text' }" sortable=" 'accountNo' " class="col-sm-2">
 							{{item.accountNo}}
 						</td>
-						<td data-title=" 'Status' " class="col-sm-1">
+						<td data-title=" 'Status' " class="col-sm-1" sortable="statusText">
 							{{item.statusText}}
 						</td>
 						<td data-title=" 'Type' " class="col-sm-2" sortable=" 'vendorTypeText' ">
 							{{item.vendorTypeText}}
 						</td>
+						<td data-title=" 'Open Balance' " sortable="'openBalance'" class="col-sm-2" ng-if="!isVendor">
+							{{item.openBalance | currency:'$'}}
+						</td>
 						<td>
 							<a class="btn btn-primary btn-icon btn-circle btn-lg" ng-click="set(item)"><i class="fa fa-eye"></i></a>
-							
+
 						</td>
 					</tr>
 

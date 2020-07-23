@@ -137,6 +137,11 @@
 					quarter: 0
 				}
 			},
+			urls: {
+				payroll: "#!/Client/Payrolls/",
+				company: "#!/Client/Company/",
+				employee: "#!/Client/Employees/"
+            },
 			refreshedOn: null,
 			includeAllCompanies: false,
 			searchCompany: null,
@@ -453,19 +458,25 @@
 			});
 		}
 		$scope.companySelected = function (url, useUrl) {
-			if (useUrl) {
-				if (!url) {
-					url = $window.location.href;
-				}
-				$window.location.href = "#!/temp";
-			}
+			//if (useUrl) {
+			//	if (!url) {
+			//		url = $window.location.href;
+			//	}
+			//	$window.location.href = (dataSvc.urls.company + +(new Date().getTime()));
+			//}
 			
 			if (dataSvc.selectedCompany1 && dataSvc.selectedCompany1.id) {
 				dataSvc.selectedCompany = angular.copy(dataSvc.selectedCompany1);
 				companyRepository.getCompany(dataSvc.selectedCompany.id).then(function (comp) {
 					dataSvc.selectedCompany = angular.copy(comp);
-					if (url)
-						$window.location.href = url;
+					if (url) {
+						if (url === dataSvc.urls.payroll && !dataSvc.selectedCompany.contract.payrolls)
+							$window.location.href = dataSvc.urls.company + + (new Date().getTime());
+						else
+							$window.location.href = url + +(new Date().getTime());
+						
+                    }
+						
 				}, function (error) {
 					dataSvc.showMessage('error getting company details', 'danger');
 				});
@@ -521,9 +532,9 @@
 			if (result.sourceTypeId === 2) {
 				dataSvc.fromSearch = true;
 				if(dataSvc.hasClaim(ClaimTypes.PayrollProcess,1))
-					$scope.setHostandCompany(result.hostId, result.companyId, "#!/Client/Payrolls/" + +(new Date().getTime()));
+					$scope.setHostandCompany(result.hostId, result.companyId, dataSvc.urls.payroll);
 				else {
-					$scope.setHostandCompany(result.hostId, result.companyId, "#!/Client/Company/" + +(new Date().getTime()));
+					$scope.setHostandCompany(result.hostId, result.companyId, dataSvc.urls.company);
 				}
 			}
 			else if (result.sourceTypeId === 3) {
@@ -531,7 +542,7 @@
                 dataSvc.showemployee = result.sourceId;
                 dataSvc.terminatedSearch = result.searchText.indexOf('Terminated') > 0 || result.searchText.indexOf('InActive');
 				var currentLocation = $window.location.href;
-				$scope.setHostandCompany(result.hostId, result.companyId, (currentLocation.indexOf( "#!/Client/Employees/")===-1 ?"#!/Client/Employees/" + +(new Date().getTime()) : null));
+				$scope.setHostandCompany(result.hostId, result.companyId, (currentLocation.indexOf( "#!/Client/Employees/")===-1 ? dataSvc.urls.employee : null));
 			}
 			
 		});
@@ -563,6 +574,11 @@
 			updateInList(dataSvc.selectedCompany.accumulatedPayTypes, pt);
 
 		});
+		$scope.$on('companyProjectUpdated', function (event, args) {
+			var pt = args.pt;
+			updateInList(dataSvc.selectedCompany.companyProjects, pt);
+
+		});
 		var updateInList = function(list, match) {
 			var exists = $filter('filter')(list, { id: match.id });
 			if (exists.length === 0) {
@@ -585,6 +601,24 @@
 				e.preventDefault();
 			}
 		});
+		$scope.isMenuAvailable = function(menu) {
+			if (dataSvc.selectedCompany && dataSvc.selectedCompany.contract) {
+				if (menu === 'Payrolls' && dataSvc.selectedCompany.contract.payrolls)
+					return true;
+				else if (menu === 'Bookkeeping' && dataSvc.selectedCompany.contract.bookkeeping)
+					return true;
+				else if (menu === 'Invoicing' && dataSvc.selectedCompany.contract.invoicing)
+					return true;
+				else if (menu === 'Taxation' && dataSvc.selectedCompany.contract.taxation)
+					return true;
+				else
+					return false;
+
+			}
+			else {
+				return false;
+            }
+        }
 	}
 ]);
 

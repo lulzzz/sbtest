@@ -73,6 +73,7 @@ common.directive('company', ['$uibModal', 'zionAPI', '$timeout', '$window', 'ver
 							state: {},
 							stateEin: '',
 							statePin: '',
+							depositSchedule: $scope.selectedCompany.depositSchedule,
 							isNew: true
 						};
 						var available = $scope.availableStates();
@@ -212,7 +213,7 @@ common.directive('company', ['$uibModal', 'zionAPI', '$timeout', '$window', 'ver
 						var returnVal = true;
 						if (!c.isAddressSame && (!c.businessAddress.addressLine1 || !c.businessAddress.countryId || !c.businessAddress.stateId || !c.businessAddress.zip))
 							returnVal = false;
-						else if (!c.federalEIN || !c.federalPin) {
+						else if (!c.federalEIN || (c.allowTaxPayments && !c.federalPin)) {
 							returnVal = false;
 						}
 						else {
@@ -221,7 +222,7 @@ common.directive('company', ['$uibModal', 'zionAPI', '$timeout', '$window', 'ver
 								return false;
 							}
 							$.each(c.states, function (index, state1) {
-								if (!state1.state.stateId || !state1.stateEIN || !state1.statePin) {
+								if (!state1.state.stateId || !state1.stateEIN || (c.allowTaxPayments && !state1.statePin)) {
 									returnVal = false;
 									return false;
 								}
@@ -289,7 +290,8 @@ common.directive('company', ['$uibModal', 'zionAPI', '$timeout', '$window', 'ver
 									applyStatuaryLimits: !$scope.mainData.selectedHost.isPeoHost,
 									applyEnvironmentalFee: $scope.mainData.selectedHost.isPeoHost,
 									printClientName: false,
-									recurringCharges: []
+									recurringCharges: [],
+									salesRep: []
 								}
 							}
 						}
@@ -358,7 +360,8 @@ common.directive('company', ['$uibModal', 'zionAPI', '$timeout', '$window', 'ver
 						}
 					}
 					$scope.addRecurringCharge = function () {
-
+						if (!$scope.selectedCompany.recurringCharges)
+							$scope.selectedCompany.recurringCharges = [];
 						$scope.selectedCompany.recurringCharges.push({
 							id: 0,
 							year: new Date().getFullYear(),
@@ -444,9 +447,9 @@ common.directive('company', ['$uibModal', 'zionAPI', '$timeout', '$window', 'ver
 					}
 					
 					var ready = function () {
-						////$scope.selectedCompany.insuranceGroup = dataSvc.companyMetaData.insuranceGroups.length > 0 ? dataSvc.companyMetaData.insuranceGroups[0] : null;
-						////$scope.selectedCompany.insuranceGroupNo = dataSvc.companyMetaData.insuranceGroups.length > 0 ? dataSvc.companyMetaData.insuranceGroups[0].id : null;
-						////$scope.selectedCompany.insuranceClientNo = '0';
+						//$scope.selectedCompany.insuranceGroup = $scope.selectedCompany.insuranceGroup ? $scope.selectedCompany.insuranceGroup : (dataSvc.companyMetaData.insuranceGroups.length > 0 ? dataSvc.companyMetaData.insuranceGroups[0] : null);
+						//$scope.selectedCompany.insuranceGroupNo = $scope.selectedCompany.insuranceGroupNo ? $scope.selectedCompany.insuranceGroupNo : (dataSvc.companyMetaData.insuranceGroups.length > 0 ? dataSvc.companyMetaData.insuranceGroups[0].id : null);
+						//$scope.selectedCompany.insuranceClientNo = $scope.selectedCompany.insuranceClientNo ? $scope.selectedCompany.insuranceClientNo : '0';
 						if ($scope.selectedCompany.contract.billingOption === 3 && !$scope.selectedCompany.contract.invoiceSetup) {
 							$scope.selectedCompany.contract.invoiceSetup = {
 								invoiceType: 1,

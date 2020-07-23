@@ -25,6 +25,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public List<CompanyVendor> VendorList { get; set; } 
 		public List<PayCheck> PayChecks;
 		public List<CoaTypeBalanceDetail> AccountDetails { get; set; } 
+		public List<CompanyInvoice> CompanyInvoices { get; set; }
 	}
 
 	public class EmployeeAccumulation

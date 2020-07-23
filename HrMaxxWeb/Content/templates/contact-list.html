@@ -16,7 +16,7 @@
 				<div ng-show="list.length===0 && !selectedContact">
 					No records found
 				</div>
-				<div class="row" ng-show="list.length>0">
+				<div class="col-sm-6" ng-show="list.length>0">
 					<table ng-table="tableParams" id="grdContacts" class="table" show-filter="true" template-pagination="custom/pager">
 						<tr ng-repeat="item in tableData track by $index" class="mouse-over-pointer" ng-class="{'success':selectedContact.id===item.id}">
 							<td data-title="' No'" class="col-sm-1">
@@ -32,8 +32,8 @@
 								{{item.phone}}
 							</td>
 							<td>
-								<button type="button" class="btn btn-sm btn-primary" ng-click="setSelectedContact(item)"><i class="fa fa-eye"</button>
-								<button type="button" class="btn btn-sm btn-danger" ng-click="delete(item)"><i class="fa fa-trash"></button>
+								<button type="button" class="btn btn-sm btn-primary" ng-click="setSelectedContact(item)"><i class="fa fa-eye"></i></button>
+								<button type="button" class="btn btn-sm btn-danger" ng-click="delete(item)"><i class="fa fa-trash"/></button>
 							</td>
 						</tr>
 
@@ -57,11 +57,8 @@
 						</ul>
 					</script>
 				</div>
-				<div class="row" ng-show="!selectedContact">
-					<a class="btn btn-primary btn-icon btn-circle btn-lg" ng-click="addNewContact()"><i class="fa fa-plus"></i></a>
-					
-				</div>
-				<div class="row" ng-if="selectedContact">
+				
+				<div class="col-sm-6" ng-if="selectedContact">
 					<form name="contactForm" data-parsley-validate="true">
 						<contact data="selectedContact" sourcetypeid="sourceTypeId" sourceid="sourceId" type="0" val-group="newcontact" show-primary="true"/>
 						<div class="row pull-right">
@@ -70,7 +67,10 @@
 						</div>
 					</form>
 				</div>
-				
+				<div class="row" ng-show="!selectedContact">
+					<a class="btn btn-primary btn-icon btn-circle btn-lg" ng-click="addNewContact()"><i class="fa fa-plus"></i></a>
+
+				</div>
 				
 			</div>
 		</div>

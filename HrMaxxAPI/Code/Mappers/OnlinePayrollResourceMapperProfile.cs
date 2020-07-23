@@ -161,7 +161,8 @@ namespace HrMaxxAPI.Code.Mappers
 				.ForMember(dest => dest.MiddleInitial, opt => opt.MapFrom(src => !string.IsNullOrWhiteSpace(src.Contact.MiddleInitial) ? src.Contact.MiddleInitial.Substring(0,1) : string.Empty))
 				.ForMember(dest => dest.LastName, opt => opt.MapFrom(src => src.Contact.LastName))
 				.ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id.HasValue ? src.Id.Value : CombGuid.Generate()))
-				.ForMember(dest => dest.LastModified, opt => opt.MapFrom(src => DateTime.Now));
+				.ForMember(dest => dest.LastModified, opt => opt.MapFrom(src => DateTime.Now))
+				.ForMember(dest => dest.FullName, opt => opt.Ignore());
 
 
 			CreateMap<Employee, EmployeeResource>()

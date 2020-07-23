@@ -10,7 +10,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 	public interface ICompanyRepository
 
 	{
-		List<VendorCustomer> GetVendorCustomers(Guid? companyId, bool isVendor);
+		List<VendorCustomer> GetVendorCustomers(Guid? companyId, bool? isVendor = null);
 		List<Account> GetCompanyAccounts(Guid companyId);
 		
 		VendorCustomer GetVendorCustomersById(Guid vcId);
@@ -40,7 +40,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 		
 		Company CopyCompany(Guid oldCompanyId, Guid companyId, Guid oldHostId, Guid newHostId, bool copyEmployees, bool copyPayrolls, DateTime? startDate, DateTime? endDate, string user);
 		
-		void SaveTSImportMap(Guid id, ImportMap importMap);
+		void SaveTSImportMap(Guid id, ImportMap importMap, int type);
 		List<Company> GetLocations(Guid parentId);
 		
 		void CopyEmployees(Guid sourceCompanyId, Guid targetCompanyId, List<Guid> employeeIds, string fullName, bool keepEmployeeNumbers);
@@ -56,5 +56,11 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 		void UpdateEmployeePayCodes(List<Employee> employees);
         CompanyRenewal SaveRenewal(CompanyRenewal renewal);
         void SaveRenewalDate(Guid companyId, int renewalId, string fullName);
+		Models.CompanyProject SaveProject(CompanyProject project);
+		List<TimesheetEntry> GetEmployeeTimesheet(Guid company, Guid? employeeId, DateTime start, DateTime end);
+		List<TimesheetEntry> GetEmployeeTimesheet(Guid payrollId);
+		TimesheetEntry SaveTimesheetEntry(TimesheetEntry resource);
+        TimesheetEntry DeleteTimesheetEntry(int id);
+        Product SaveProduct(Product product);
     }
 }

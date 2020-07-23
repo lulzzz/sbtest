@@ -171,6 +171,26 @@ namespace HrMaxxAPI.Controllers.Payrolls
 			return Printed(printed);
 		}
 		[HttpPost]
+		[Route(PayrollRoutes.PrintCertifiedReport)]
+		[DeflateCompression]
+		public HttpResponseMessage PrintCertifiedReport(PayrollResource payroll)
+		{
+			var mapped = Mapper.Map<PayrollResource, Payroll>(payroll);
+			var printed = MakeServiceCall(() => _payrollService.PrintCertifiedReport(mapped),
+				$"print certified report {mapped.Id} - {mapped.Company.Name}", true);
+			return Printed(printed);
+		}
+		[HttpPost]
+		[Route(PayrollRoutes.PrintCertifiedXmlReport)]
+		[DeflateCompression]
+		public HttpResponseMessage PrintCertifiedXmlReport(PayrollResource payroll)
+		{
+			var mapped = Mapper.Map<PayrollResource, Payroll>(payroll);
+			var printed = MakeServiceCall(() => _payrollService.PrintCertifiedReport(mapped, true),
+				$"print certified report {mapped.Id} - {mapped.Company.Name}", true);
+			return Printed(printed);
+		}
+		[HttpPost]
 		[Route(PayrollRoutes.EmailPayrollReport)]
 		[DeflateCompression]
 		public List<string> EmailPayrollReport(PayrollResource payroll)
@@ -504,6 +524,23 @@ namespace HrMaxxAPI.Controllers.Payrolls
 			
 			var processed = MakeServiceCall(() => _payrollService.ProcessPayroll(mappedResource),
                 $"process payrolls for company={resource.Company.Name}");
+			return Mapper.Map<Payroll, PayrollResource>(processed);
+		}
+		[HttpPost]
+		[Route(PayrollRoutes.PayrollTimesheets)]
+		[DeflateCompression]
+		public PayrollResource PayrollTimesheets(PayrollResource resource)
+		{
+			resource.PayChecks.ForEach(p =>
+			{
+				p.StartDate = resource.StartDate;
+				p.EndDate = resource.EndDate;
+				p.PayDay = resource.PayDay;
+			});
+			var mappedResource = Mapper.Map<PayrollResource, Payroll>(resource);
+
+			var processed = MakeServiceCall(() => _payrollService.GetTimesheetsForPayroll(mappedResource),
+				$"timehsheets for payroll for company={resource.Company.Name}");
 			return Mapper.Map<Payroll, PayrollResource>(processed);
 		}
 

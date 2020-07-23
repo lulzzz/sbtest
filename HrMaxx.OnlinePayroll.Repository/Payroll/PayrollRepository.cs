@@ -46,10 +46,10 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 			var dbPayroll = _dbContext.Payrolls.FirstOrDefault(p => p.Id == mapped.Id);
 			if (dbPayroll == null)
 			{
-				_dbContext.Payrolls.Add(mapped);
+				dbPayroll = _dbContext.Payrolls.Add(mapped);
 				_dbContext.SaveChanges();
 			}
-			return _mapper.Map<Models.DataModel.Payroll, Models.Payroll>(mapped);
+			return _mapper.Map<Models.DataModel.Payroll, Models.Payroll>(dbPayroll);
 
 		}
 
@@ -777,19 +777,24 @@ LastModified=@LastModified, LastModifiedBy=@LastModifiedBy where Id=@Id;";
 		{
 			const string query = @"update Journal set IsVoid=1, LastModifiedBy=@User, LastModified=getdate() Where PayrollId=@Id;update PayrollPayCheck set IsVoid=1, Status=7, VoidedOn=getdate(), LastModifiedBy=@User, LastModified=getdate(), VoidedBy=@User Where PayrollId=@Id;update Payroll set IsVoid=1, VoidedOn=getDate(), VoidedBy=@User, LastModified=getdate() where Id=@Id;";
 			const string logquery = @"insert into PayrollVoidLog(PayrollId, CompanyId, CompanyName, StartDate, EndDate, PayDay, Action, [User], TS) values (@PayrollId, @CompanyId, @CompanyName, @StartDate, @EndDate, @PayDay, 1, @User, getdate())";
+			const string timesheetquery = "update timesheetentry set IsPaid=0, PayrollId=null, PayDay=null where PayrollId=@Id";
 			using (var conn = GetConnection())
 			{
 				conn.Execute(query, new {Id = payroll.Id, User = userName});
 				conn.Execute(logquery, new { PayrollId=payroll.Id, CompanyId = payroll.Company.Id, CompanyName = payroll.Company.Name, StartDate = payroll.StartDate, EndDate = payroll.EndDate, PayDay = payroll.PayDay, User = userName });
+				if (payroll.LoadFromTimesheets)
+					conn.Execute(timesheetquery, new { Id = payroll.Id });
 			}
 		}
-		public void UnVoidPayroll(Guid id, string userName)
+		public void UnVoidPayroll(Models.Payroll payroll, string userName)
 		{
 			const string query = @"update Journal set IsVoid=0, LastModifiedBy=@User, LastModified=getdate() Where PayrollId=@Id;update PayrollPayCheck set IsVoid=0, Status=3, VoidedOn=null, LastModifiedBy=@User, LastModified=getdate(), VoidedBy=null Where PayrollId=@Id;update Payroll set IsVoid=0, VoidedOn=null, VoidedBy=null, LastModified=getdate() where Id=@Id;";
 			using (var conn = GetConnection())
 			{
-				conn.Execute(query, new { Id = id, User = userName });
+				conn.Execute(query, new { Id = payroll.Id, User = userName });
 			}
+			if (payroll.LoadFromTimesheets)
+				UpdateTimesheetsToPaid(payroll);
 		}
 
 		public void UpdateCompanyAndEmployeeLastPayrollDate()
@@ -808,12 +813,15 @@ LastModified=@LastModified, LastModifiedBy=@LastModifiedBy where Id=@Id;";
 				pc.LastModifiedBy = userName;
 				pc.Status=PaycheckStatus.Void;
 			});
+			const string updatepayroll = @"update PayrollPayCheck set IsVoid=1, Status=@Status, VoidedOn=getdate(), LastModifiedBy=@LastModifiedBy, LastModified=getdate(), VoidedBy=@LastModifiedBy Where Id=@Id";
+			const string updatejournal = @"update Journal set IsVoid=1, LastModifiedBy=@LastModifiedBy, LastModified=getdate() Where PayrollPayCheckId=@Id";
+			const string updatetimesheet = "update TimesheetEntry set IsPaid=0, PayrollId=null, PayDay=null where PayrollId=@PayrollId and EmployeeId=@EmployeeId";
 			using (var conn = GetConnection())
 			{
-				const string updatepayroll = @"update PayrollPayCheck set IsVoid=1, Status=@Status, VoidedOn=getdate(), LastModifiedBy=@LastModifiedBy, LastModified=getdate(), VoidedBy=@LastModifiedBy Where Id=@Id";
-				const string updatejournal = @"update Journal set IsVoid=1, LastModifiedBy=@LastModifiedBy, LastModified=getdate() Where PayrollPayCheckId=@Id";
+				
 				conn.Execute(updatejournal, payChecks);
 				conn.Execute(updatepayroll, payChecks);
+				conn.Execute(updatetimesheet, payChecks);
 			}
 		}
 		public PayCheck UnVoidPayCheck(PayCheck payCheck, string name)
@@ -822,6 +830,7 @@ LastModified=@LastModified, LastModifiedBy=@LastModifiedBy where Id=@Id;";
 			{
 				const string updatepayroll = @"update PayrollPayCheck set IsVoid=@IsVoid, Status=@Status, VoidedOn=@VoidedOn, VoidedBy=@VoidedBy, LastModifiedBy=@LastModifiedBy, LastModified=getdate() Where Id=@Id";
 				const string updatejournal = @"update Journal set IsVoid=0, LastModifiedBy=@LastModifiedBy, LastModified=getdate() Where PayrollPayCheckId=@Id";
+				
 				conn.Execute(updatejournal, payCheck);
 				conn.Execute(updatepayroll, payCheck);
 			}
@@ -970,6 +979,19 @@ LastModified=@LastModified, LastModifiedBy=@LastModifiedBy where Id=@Id;";
 			using (var conn = GetConnection())
 			{
 				conn.Execute(sql, payroll);
+			}
+		}
+
+		public void UpdateTimesheetsToPaid(Models.Payroll payroll)
+		{
+			const string sql =
+				"update TimesheetEntry set IsPaid=1, PayrollId=@Id, PayDay=@PayDay where EntryDate between @StartDate and @EndDate " +
+				"and ((@ProjectId is not null and ProjectId=@ProjectId) or (ProjectId is null)) and EmployeeId in (select EmployeeId from PayrollPayCheck where PayrollId=@Id)";
+
+			using (var conn = GetConnection())
+			{
+				int? projectId = payroll.Project != null ? payroll.Project.Id : default(int?);
+				conn.Execute(sql, new { ProjectId = projectId, Id=payroll.Id, PayDay = payroll.PayDay, StartDate = payroll.StartDate, EndDate = payroll.EndDate});
 			}
 		}
 	}

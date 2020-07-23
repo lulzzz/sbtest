@@ -19,7 +19,7 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
         public int BankAccountId { get; set; }
         public decimal Percentage { get; set; }
     
-        public virtual BankAccount BankAccount { get; set; }
         public virtual Employee Employee { get; set; }
+        public virtual BankAccount BankAccount { get; set; }
     }
 }

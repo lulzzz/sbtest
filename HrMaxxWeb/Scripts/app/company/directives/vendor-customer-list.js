@@ -147,7 +147,7 @@ common.directive('vendorCustomerList', ['zionAPI', '$timeout', '$window', 'versi
 							$scope.selected = null;
 							dataSvc.isBodyOpen = true;
 						}, function (erorr) {
-							$scope.showMessage('error getting ' + ($scope.isVendor ? 'vendor' : 'customer') + ' list', 'danger');
+							$scope.mainData.showMessage('error getting ' + ($scope.isVendor ? 'vendor' : 'customer') + ' list', 'danger');
 						});
 					}
 

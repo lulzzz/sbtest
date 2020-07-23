@@ -34,6 +34,7 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
             this.CheckbookJournals = new HashSet<CheckbookJournal>();
             this.CompanyRecurringCharges = new HashSet<CompanyRecurringCharge>();
             this.CompanyRenewals = new HashSet<CompanyRenewal>();
+            this.CompanyProjects = new HashSet<CompanyProject>();
         }
     
         public System.Guid Id { get; set; }
@@ -78,6 +79,7 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
         public bool ProfitStarsPayer { get; set; }
         public string ControlId { get; set; }
         public bool IsRestaurant { get; set; }
+        public decimal SalesTaxRate { get; set; }
     
         public virtual Host Host { get; set; }
         public virtual Status Status { get; set; }
@@ -117,5 +119,7 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
         public virtual ICollection<CompanyRecurringCharge> CompanyRecurringCharges { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<CompanyRenewal> CompanyRenewals { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<CompanyProject> CompanyProjects { get; set; }
     }
 }

@@ -22,6 +22,16 @@ common.factory('companyRepository', [
 
 				return deferred.promise;
 			},
+			getTimesheetMetaData: function (company) {
+				var deferred = $q.defer();
+				companyServer.one('TimesheetMetaData').one(company).get().then(function (data) {
+					deferred.resolve(data);
+				}, function (error) {
+					deferred.reject(error);
+				});
+
+				return deferred.promise;
+			},
 			getEmployeeMetaData: function () {
 				var deferred = $q.defer();
 				companyServer.one('EmployeeMetaData').get().then(function (data) {
@@ -77,6 +87,23 @@ common.factory('companyRepository', [
 				var deferred = $q.defer();
 				companyServer.one('Companies').get().then(function (data) {
 					deferred.resolve(data);
+				}, function (error) {
+					deferred.reject(error);
+				});
+
+				return deferred.promise;
+			},
+			getEmployeeTimesheet: function (companyId, employeeId, month, year) {
+				var deferred = $q.defer();
+				var data = {
+					companyId: companyId,
+					month: month,
+					year: year
+				};
+				if (employeeId)
+					data.employeeId = employeeId;
+				companyServer.all('GetEmployeeTimesheet').post(data).then(function (data) {
+					deferred.resolve(data.plain());
 				}, function (error) {
 					deferred.reject(error);
 				});
@@ -142,6 +169,7 @@ common.factory('companyRepository', [
 				});
 
 				return deferred.promise;
+
 			},
 			saveWorkerCompensation: function (input) {
 				var deferred = $q.defer();
@@ -186,6 +214,36 @@ common.factory('companyRepository', [
 			saveRenewalDate: function (input) {
 				var deferred = $q.defer();
 				companyServer.all('Renewal').post(input).then(function (data) {
+					deferred.resolve(data);
+				}, function (error) {
+					deferred.reject(error);
+				});
+
+				return deferred.promise;
+			},
+			saveProject: function (input) {
+				var deferred = $q.defer();
+				companyServer.all('Projects').post(input).then(function (data) {
+					deferred.resolve(data);
+				}, function (error) {
+					deferred.reject(error);
+				});
+
+				return deferred.promise;
+			},
+			getProducts: function (companyId) {
+				var deferred = $q.defer();
+				companyServer.one('Products').one(companyId).getList().then(function (data) {
+					deferred.resolve(data);
+				}, function (error) {
+					deferred.reject(error);
+				});
+
+				return deferred.promise;
+			},
+			saveProduct: function (input) {
+				var deferred = $q.defer();
+				companyServer.all('Products').post(input).then(function (data) {
 					deferred.resolve(data);
 				}, function (error) {
 					deferred.reject(error);
@@ -272,6 +330,36 @@ common.factory('companyRepository', [
 
 				return deferred.promise;
 			},
+			saveEmployeeTimesheet: function (timesheet) {
+				var deferred = $q.defer();
+				companyServer.all('EmployeeTimesheet').post(timesheet).then(function (data) {
+					deferred.resolve(data.plain());
+				}, function (error) {
+					deferred.reject(error);
+				});
+
+				return deferred.promise;
+			},
+			saveTimesheets: function (timesheets) {
+				var deferred = $q.defer();
+				companyServer.all('EmployeeTimesheets').post(timesheets).then(function (data) {
+					deferred.resolve(data.plain());
+				}, function (error) {
+					deferred.reject(error);
+				});
+
+				return deferred.promise;
+			},
+			deleteEmployeeTimesheet: function (id) {
+				var deferred = $q.defer();
+				companyServer.one('DeleteEmployeeTimesheet/' + id).get().then(function (data) {
+					deferred.resolve(data.plain());
+				}, function (error) {
+					deferred.reject(error);
+				});
+
+				return deferred.promise;
+			},
 			saveEmployeeACA: function (deduction) {
 				var deferred = $q.defer();
 				companyServer.all('EmployeeACA').post(deduction).then(function (data) {
@@ -349,6 +437,42 @@ common.factory('companyRepository', [
 
 				return deferred.promise;
 			},
+			importTimesheetsWithMap: function (attachment) {
+				var url = zionAPI.URL + 'Company/ImportTimesheetsWithMap';
+				var deferred = $q.defer();
+				upload.upload({
+					url: url,
+					method: 'POST',
+					data: {
+						inspection: attachment.data
+					},
+					file: attachment.doc.file,
+				}).success(function (data, status, headers, config) {
+					attachment.doc.uploaded = true;
+					attachment.completed = true;
+					deferred.resolve(data);
+
+				})
+					.error(function (data) {
+						if (data) {
+							if (data.data) {
+								var arr = new Uint8Array(data.data);
+								var str = String.fromCharCode.apply(String, arr);
+								deferred.reject(str);
+							}
+							else {
+								deferred.reject(data);
+							}
+						}
+						else {
+							deferred.reject('');
+						}
+
+
+					});
+				return deferred.promise;
+			},
+
 			importEmployees: function (attachment) {
 				var url = zionAPI.URL + 'Company/ImportEmployees';
 				var deferred = $q.defer();

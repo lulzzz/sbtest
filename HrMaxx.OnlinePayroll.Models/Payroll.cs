@@ -13,8 +13,14 @@ using Newtonsoft.Json;
 
 namespace HrMaxx.OnlinePayroll.Models
 {
+	public class CertifiedPayroll
+	{
+		public Payroll Payroll { get; set; }
+		public List<TimesheetEntry> Timesheets { get; set; }
+	}
 	public class Payroll : BaseEntityDto, IOriginator<Payroll>
 	{
+		public int PayrollNo { get; set; }
 		public Guid? HostCompanyId { get; set; }
 		public Company Company { get; set; }
 		public int CompanyIntId { get; set; }
@@ -53,7 +59,10 @@ namespace HrMaxx.OnlinePayroll.Models
 		public DateTime? ConfirmedTime { get; set; }
 		public bool IsConfirmFailed { get; set; }
 		public int QueuePosition { get; set; }
-
+		public bool IsCertified { get; set; }
+		public CompanyProject Project { get; set; }
+		public bool LoadFromTimesheets { get; set; }
+		public bool ApprovedOnly { get; set; }
 		public decimal TotalGrossWage
 		{
 			get { return Math.Round(PayChecks.Where(pc => !pc.IsVoid).Sum(pc => pc.GrossWage), 2, MidpointRounding.AwayFromZero); }

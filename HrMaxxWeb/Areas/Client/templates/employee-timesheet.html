@@ -1,0 +1,122 @@
+﻿<div class="row">
+    <!-- end breadcrumb -->
+    <!-- begin page-header -->
+    <h1 class="page-header">Timesheets </h1>
+    <div class="col-sm-12" >
+        <div class="col-sm-3">
+            <select id="host" class="form-control" ng-change="loadEmployeeTimesheet()" ng-disabled="mode" ng-model="data.selectedEmployee" ng-options="e.name for e in data.employees | orderBy:'firstName' track by e.employeeIntId">
+                <option value="">Select Employee</option>
+            </select>
+        </div>
+        <div class="col-sm-3" ng-show="mode===0">
+
+            <a class="btn btn-success btn-icon btn-circle btn-lg" ng-click="importTimesheet()" title="Import"><i class="fa fa-upload"></i></a>
+            <a class="btn btn-info btn-icon btn-circle btn-lg" ng-click="exportTimesheets()" title="{{data.selectedEmployee ? ('Export ' + data.selectedEmployee.name) : 'Export All'}}"><i class="fa fa-download"></i></a>
+        </div>
+
+    </div>
+    <!-- end page-header -->
+
+
+    <div class="row">
+        <!-- end page-header -->
+        <hr />
+
+        <div class="vertical-box">
+            <div class="vertical-box-column p-30 d-none d-lg-table-cell" style="width: 215px">
+                <div id="external-events" class="fc-event-list">
+                    <h5 class="m-t-0 m-b-15">Timesheet Entry Legend</h5>
+                    <div class="fc-event" data-color="#348fe2">
+                        <div class="fc-event-icon"><i class="fa fa-circle fa-fw f-s-9 text-warning"></i></div>
+                        Saved
+                    </div>
+                    <div class="fc-event" data-color="#00acac">
+                        <div class="fc-event-icon"><i class="fa fa-circle fa-fw f-s-9 text-blue"></i></div>
+                        Approved
+                    </div>
+
+                    <div class="fc-event" data-color="#f59c1a">
+                        <div class="fc-event-icon"><i class="fa fa-circle fa-fw f-s-9 text-success"></i></div>
+                        Paid
+                    </div>
+
+                </div>
+            </div>
+            <div class="vertical-box-column p-30 d-none d-lg-table-cell width-full">
+                <div class="col-sm-12 p-b-10" >
+                    <div class="fc fc-unthemed fc-ltr width-full">
+                        <div class="fc-toolbar fc-header-toolbar">
+                            <div class="fc-left"></div>
+                            <div class="fc-right">
+                            <div class="fc-button-group">
+                                <button type="button" class="fc-prev-button fc-button fc-state-default fc-corner-left" aria-label="prev" ng-click="prev()">
+                                <span class="fc-icon fc-icon-left-single-arrow"></span></button>
+                                <button type="button" class="fc-month-button fc-button fc-state-default fc-state-active">month</button>
+                                <button type="button" class="fc-next-button fc-button fc-state-default fc-corner-right" aria-label="next" ng-click="next()"><span class="fc-icon fc-icon-right-single-arrow"></span></button>
+                            </div>
+                            </div>
+                            <div class="fc-center" ng-show="data.openedRack===2"><h2>{{data.currentDate | date:'MMM yyyy'}}</h2></div>
+                        </div>
+                    </div>
+                    
+                    <ul class="nav nav-tabs  nav-tabs-inverse nav-justified nav-justified-mobile" id="dashboardtabs">
+                        <li ng-class="{'active':data.openedRack===1}" ng-click="changeView(1)"><a data-toggle="tab"><i class="fa fa-calendar"></i> <span class="hidden-xs">Calendar View</span></a></li>
+                        <li ng-class="{'active':data.openedRack===2}" ng-click="changeView(2)"><a data-toggle="tab"><i class="fa fa-list-ul"></i> <span class="hidden-xs">List View</span></a></li>
+
+
+
+                    </ul>
+                </div>
+                <div class="row" ng-show="data.openedRack===1">
+                    <div id="calendar" class="vertical-box-column calendar"></div>
+                </div>
+                <div class="row" ng-show="data.openedRack===2">
+                    <div class="col-sm-12">
+                        <button ng-show="selectedCount()>0" class="btn btn-sm btn-primary  btn-lg " id="uploade" ng-click="approveTimesheetEntries()">
+                            Approve <span class="badge badge-white">{{selectedCount()}}</span>
+                        </button>
+                    </div>
+                    <div class="col-sm-12">
+                        <h5><i>* click on saved items to select/deselect</i></h5>
+                    </div>
+                    <table ng-table="tableParams" class="table table-condensed table-responsive" show-filter="true" template-pagination="custom/nopager" ng-show="data.events.length > 0">
+                        <tr ng-repeat="listitem in tableData track by $index" class="mouse-over-pointer" ng-click="setselected(listitem)" ng-class="{'info':listitem.selected}">
+
+                            <td data-title=" 'Employee' " filter="{ 'name': 'text' }" sortable=" 'name' " class="col-sm-2">
+                                {{listitem.name}}
+                            </td>
+                            <td data-title=" 'entryDate' " sortable=" 'entryDate' " class="col-sm-1">
+                                {{listitem.entryDateStr | date:'MM/dd/yyyy'}}
+                            </td>
+                            <td data-title=" 'Project' " filter="{ 'projectName': 'text' }" sortable=" 'projectName' " class="col-sm-2">
+                                {{listitem.projectName}}
+                            </td>
+                            <td data-title=" 'Hours' " sortable=" 'hours' " class="col-sm-1">
+                                {{listitem.hours | currency:''}}
+                            </td>
+                            <td data-title=" 'Overtime' " sortable=" 'overtime' " class="col-sm-1">
+                                {{listitem.overtime | currency:''}}
+                            </td>
+                            <td data-title=" 'Description' " sortable=" 'description' " class="col-sm-4">
+                                {{listitem.description}}
+                            </td>
+                            <td data-title=" 'Pay Day' " sortable=" 'payDay' " class="col-sm-1">
+                                {{listitem.payDay | date:'MM/dd/yyyy'}}
+                            </td>
+                            <td class="col-sm-1" data-title=" 'Status' " filter="{status:'select'}" sortable=" 'status' " filter-data="data.statuses">
+                                <button class="btn btn-xs btn-circle btn-success" ng-show="listitem.isPaid"><i class="fa fa-check" style="color:white"></i></button>
+                                <button class="btn btn-xs btn-circle btn-primary" ng-show="!listitem.isPaid && listitem.isApproved"><i class="fa fa-check" style="color:white"></i></button>
+                                <button class="btn btn-xs btn-circle btn-warning" ng-show="!listitem.isPaid && !listitem.isApproved"><i class="fa fa-check" style="color:white"></i></button>
+                            </td>
+                        </tr>
+
+                    </table>
+                    <div class="col-sm-12" ng-show="data.events.length===0"><h3>No results found</h3></div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+
+</div>

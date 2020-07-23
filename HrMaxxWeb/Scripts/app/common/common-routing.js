@@ -75,6 +75,9 @@ common.config(['$httpProvider', '$routeProvider', '$locationProvider', 'zionAPI'
 	$routeProvider.when('/Client/Vendors', {
 		templateUrl: zionAPI.Web + 'Areas/Client/templates/vendors.html'
 	});
+	$routeProvider.when('/Client/Products', {
+		templateUrl: zionAPI.Web + 'Areas/Client/templates/products.html'
+	});
 	$routeProvider.when('/Client/Customers', {
 		templateUrl: zionAPI.Web + 'Areas/Client/templates/customers.html'
 	});
@@ -102,16 +105,25 @@ common.config(['$httpProvider', '$routeProvider', '$locationProvider', 'zionAPI'
 	$routeProvider.when('/Client/Checkbook', {
 		templateUrl: zionAPI.Web + 'Areas/Client/templates/checkbook.html'
 	});
+	$routeProvider.when('/Client/Receivables', {
+		templateUrl: zionAPI.Web + 'Areas/Client/templates/vendorinvoices.html'
+	});
 	$routeProvider.when('/Client/Documents/:time', {
 		templateUrl: zionAPI.Web + 'Areas/Client/templates/documents.html'
 	});
 	$routeProvider.when('/Client/Invoices', {
 		templateUrl: zionAPI.Web + 'Areas/Client/templates/invoices.html'
 	});
+	$routeProvider.when('/Client/EmployeeTimesheet', {
+		templateUrl: zionAPI.Web + 'Areas/Client/templates/timesheets.html'
+	});
 	$routeProvider.when('/Reports/:reportName', {
 		templateUrl: zionAPI.Web + 'Areas/Reports/templates/reports.html'
 	});
 	$routeProvider.when('/Admin/Dashboard', {
+		templateUrl: zionAPI.Web + 'Areas/Reports/templates/Dashboard.html'
+	});
+	$routeProvider.when('/Admin/Dashboard/:time', {
 		templateUrl: zionAPI.Web + 'Areas/Reports/templates/Dashboard.html'
 	});
 	$routeProvider.when('/Admin/Extracts', {

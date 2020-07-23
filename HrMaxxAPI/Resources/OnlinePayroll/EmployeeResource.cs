@@ -92,6 +92,7 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 
 		public bool IsTerminate { get { return false; } }
 		public bool IsTipped { get; set; }
+		public string WorkClassification { get; set; }
 		public string WcCode
 		{
 			get { return WorkerCompensation != null ? WorkerCompensation.Code.ToString() : string.Empty; }

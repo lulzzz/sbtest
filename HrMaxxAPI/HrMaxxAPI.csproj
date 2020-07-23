@@ -317,7 +317,9 @@
     <Compile Include="Resources\Payroll\PayrollFilterResource.cs" />
     <Compile Include="Resources\Payroll\PayrollResource.cs" />
     <Compile Include="Resources\Payroll\SchedulePayrollResource.cs" />
+    <Compile Include="Resources\Payroll\TimesheetEntryResource.cs" />
     <Compile Include="Resources\Payroll\TimesheetImportResource.cs" />
+    <Compile Include="Resources\Payroll\TimesheetRequestResource.cs" />
     <Compile Include="Resources\Payroll\TimesheetResource.cs" />
     <Compile Include="Resources\ProfitStarsRequest.cs" />
     <Compile Include="Resources\Reports\DashboardRequestResource.cs" />
@@ -347,6 +349,7 @@
     </Content>
     <Content Include="templates\transformers\extracts\C1095PDF-2019.xslt" />
     <Content Include="templates\transformers\extracts\C1095PDF-2018.xslt" />
+    <Content Include="templates\transformers\extracts\TimesheetExport.xslt" />
     <Content Include="templates\transformers\extracts\F1099-2019.xslt" />
     <Content Include="templates\transformers\extracts\HIUIEFTPS.xslt">
       <SubType>Designer</SubType>
@@ -398,12 +401,19 @@
     <Content Include="templates\transformers\other\quarterannualtaxsummary.xslt">
       <SubType>Designer</SubType>
     </Content>
+    <Content Include="templates\transformers\payroll\certifiedxmlreport.xslt">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="templates\transformers\payroll\certifiedreport.xslt">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="templates\transformers\payroll\payrolltimesheet.xslt">
       <SubType>Designer</SubType>
     </Content>
     <Content Include="templates\transformers\payroll\payrollsummary.xslt">
       <SubType>Designer</SubType>
     </Content>
+    <Content Include="templates\transformers\payroll\payrollsummaryexcel.xslt" />
     <Content Include="templates\transformers\ProfitStars\PaymentRequest.xslt">
       <SubType>Designer</SubType>
     </Content>
@@ -467,7 +477,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="templates\Payroll\" />
     <Folder Include="Views\Company\" />
   </ItemGroup>
   <ItemGroup>
@@ -602,6 +611,8 @@
     <Content Include="templates\GovtForms\941\f941-2020-part1.pdf" />
     <Content Include="templates\GovtForms\941\f941-2020-part2.pdf" />
     <Content Include="templates\GovtForms\941\f941sb-2020.pdf" />
+    <Content Include="templates\Payroll\CertifiedReport.pdf" />
+    <Content Include="templates\Payroll\CertifiedReportPage2.pdf" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\HrMaxx.OnlinePayroll.Contracts\HrMaxx.OnlinePayroll.Contracts.csproj">

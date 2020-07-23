@@ -1,0 +1,107 @@
+﻿<div class="row">
+	<!-- begin panel -->
+	<div class="panel panel-inverse hidden-print" data-sortable-id="form-stuff-4" ng-if="mainData.selectedCompany">
+		<div class="panel-heading" ng-click="data.isBodyOpen=!data.isBodyOpen">
+			<h4 class="panel-title">Invoices <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': data.isBodyOpen, 'glyphicon-chevron-right': !data.isBodyOpen}"></i>
+				
+
+		</div>
+		<div class="panel-body" ng-show="data.isBodyOpen">
+			
+			<div class="row">
+				<div class="row hidden-print">
+					<report-filter filter="data.reportFilter" callback="getVendorInvoiceList()" show-dates="true" show-periods="true" defaults-provided="true" />
+				</div>
+								
+				<div class="col-sm-12" ng-show="!newItem">
+					<div class="row text-center p-5">
+						<strong><em>Invoice List <span ng-show="data.reportFilter.filterStartDate || data.reportFilter.filterEndDate"> ({{data.reportFilter.filterEndDate ? '' : 'From'}} {{data.reportFilter.filterStartDate? (data.reportFilter.filterStartDate | date:'MM/dd/yyyy') : 'Till'}}{{data.reportFilter.filterEndDate? ' - ' + (data.reportFilter.filterEndDate | date:'MM/dd/yyyy') : ''}} )</span></em></strong>
+						<a class="btn btn-primary btn-icon btn-circle btn-lg" id="test" ng-show="data.loaded" ng-click="add()"><i class="fa fa-plus"></i></a>
+					</div>
+					<div ng-show="list.length===0" class="table table-bordered">
+						No invoices found
+					</div>
+
+					<div class="row" ng-show="list.length>0">
+						<table ng-table="tableParams" class="table" show-filter="true" template-pagination="custom/pager">
+							<tr ng-repeat="item in tableData track by $index" class="mouse-over-pointer" ng-class="{'success':selected.id===item.id, 'danger' : !selected && item.isVoid}">
+								<td data-title=" 'Number' " filter="{ 'invoiceNumber': 'text' }" sortable="'invoiceNumber'" class="col-sm-1 text-center">
+									{{item.invoiceNumber}}
+								</td>
+								<td data-title=" 'Date' " sortable=" 'invoiceDate' " class="col-sm-1 text-center">
+									{{item.invoiceDate | date:'MM/dd/yyyy'}}
+								</td>
+								<td data-title=" 'Due Date' " sortable=" 'dueDate' " class="col-sm-1 text-center">
+									{{item.dueDate | date:'MM/dd/yyyy'}}
+								</td>
+								<td data-title=" 'Overdue' " sortable=" 'daysOverDue' " class="col-sm-1 text-center">
+									{{item.daysOverdue}}
+								</td>
+								<td data-title=" 'Payee' " filter="{ 'payeeName': 'text' }" sortable=" 'payeeName' " class="col-sm-3 text-center">
+									{{item.payeeName}}
+								</td>
+								<td data-title=" 'Total' " class="col-sm-1 text-center show-red">
+									{{item.total | currency:'$'}}
+								</td>
+								<td data-title=" 'Balance' " class="col-sm-1 text-center show-red">
+									{{item.balance | currency:'$'}}
+								</td>
+								<td data-title=" 'Memo' " class="col-sm-1 text-center">
+									{{item.memo}}
+								</td>
+								<td data-title=" 'Is Quotation' " class="col-sm-1 text-center">
+									<input type="checkbox" ng-model="item.isQuote" ng-disabled="item.id!==selected.id">
+								</td>
+								<td>
+									<button class="btn btn-primary" ng-click="set(item)"><i class="fa fa-eye"></i></button>
+									<button class="btn btn-primary" ng-click="print(item)"><i class="fa fa-print"></i></button>
+								</td>
+
+							</tr>
+
+						</table>
+						<script type="text/ng-template" id="custom/pager">
+							<ul class="pager ng-cloak">
+								<li ng-repeat="page in pages"
+									ng-class="{'disabled': !page.active, 'previous': page.type == 'prev', 'next': page.type == 'next'}"
+									ng-show="page.type == 'prev' || page.type == 'next'" ng-switch="page.type">
+									<a ng-switch-when="prev" ng-click="params.page(page.number)" href="" class="marginned">&laquo; Previous</a>
+									<a ng-switch-when="next" ng-click="params.page(page.number)" href="" class="marginned">Next &raquo;</a>
+								</li>
+								<li>
+									<div class="btn-group">
+										<button type="button" ng-class="{'active':params.count() == 10}" ng-click="params.count(10)" class="btn btn-default btn-sm">10</button>
+										<button type="button" ng-class="{'active':params.count() == 25}" ng-click="params.count(25)" class="btn btn-default btn-sm">25</button>
+										<button type="button" ng-class="{'active':params.count() == 50}" ng-click="params.count(50)" class="btn btn-default btn-sm">50</button>
+										<button type="button" ng-class="{'active':params.count() == 100}" ng-click="params.count(100)" class="btn btn-default btn-sm">100</button>
+									</div>
+								</li>
+							</ul>
+						</script>
+					</div>
+				</div>
+			</div>
+			<!-- end panel -->
+		</div>
+	</div>
+	<div class="row" ng-if="selected">
+		<div class="col-sm-10">
+			<vendor-invoice item="selected" datasvc="data" company="mainData.selectedCompany" show-controls="true" main-data="mainData" print="data.print" />
+		</div>
+		
+		
+		<div class="col-sm-2 hidden-print p-0" ng-if="selected.id" >
+			<memento-list main-data="mainData" source-type-id="23" memento-id="selected.mementoId" heading="'Invoice Versions'" data="data" ng-show="mainData.userRole==='SuperUser' || mainData.userRole==='Master'"/>
+			<entity-documents main-data="mainData" source-type-id="23" heading="'Documents'" source-id="selected.id" />
+		</div>
+
+	</div>
+	
+	
+
+
+
+	
+</div>
+
+

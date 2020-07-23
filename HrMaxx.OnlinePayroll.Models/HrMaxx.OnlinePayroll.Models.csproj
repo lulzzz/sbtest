@@ -110,6 +110,9 @@
     <Compile Include="DataModel\CompanyPayCode.cs">
       <DependentUpon>OnlinePayrollModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="DataModel\CompanyProject.cs">
+      <DependentUpon>OnlinePayrollModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="DataModel\CompanyRecurringCharge.cs">
       <DependentUpon>OnlinePayrollModel.tt</DependentUpon>
     </Compile>
@@ -287,6 +290,7 @@
     <Compile Include="HostHomePageDocument.cs" />
     <Compile Include="InvoiceRecurringCharge.cs" />
     <Compile Include="InvoiceStatusList.cs" />
+    <Compile Include="CompanyInvoice.cs" />
     <Compile Include="JournalPayee.cs" />
     <Compile Include="JsonDataModel\Company.cs" />
     <Compile Include="JsonDataModel\CompanyDashboard.cs" />
@@ -294,6 +298,7 @@
     <Compile Include="JsonDataModel\EmployeeJson.cs" />
     <Compile Include="JsonDataModel\ExtractInvoicePaymentJson.cs" />
     <Compile Include="JsonDataModel\Host.cs" />
+    <Compile Include="JsonDataModel\CompanyInvoice.cs" />
     <Compile Include="JsonDataModel\Journal.cs" />
     <Compile Include="JsonDataModel\JournalPayeeJson.cs" />
     <Compile Include="JsonDataModel\KeyValueResult.cs" />
@@ -306,6 +311,7 @@
     <Compile Include="JsonDataModel\ProfitStarsFundJson.cs" />
     <Compile Include="JsonDataModel\ScheduledPayrollJson.cs" />
     <Compile Include="JsonDataModel\StaffDashboardJson.cs" />
+    <Compile Include="JsonDataModel\VendorCustomerJson.cs" />
     <Compile Include="JsonDataModel\VoidedPayCheckInvoiceCredit.cs" />
     <Compile Include="MetaDataModels\PreTaxDeduction.cs" />
     <Compile Include="MinWageEligibileCompany.cs" />
@@ -314,6 +320,7 @@
     <Compile Include="ProfitStars.cs" />
     <Compile Include="SchedulePayroll.cs" />
     <Compile Include="StaffDashboard.cs" />
+    <Compile Include="TimesheetEntry.cs" />
     <Compile Include="USTaxModels\MTSITTaxTableRow.cs" />
     <Compile Include="USTaxModels\FITW4TaxTableRow.cs" />
     <Compile Include="USTaxModels\FITAlienAdjustmentTableRow.cs" />

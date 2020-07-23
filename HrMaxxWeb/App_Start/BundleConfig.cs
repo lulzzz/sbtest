@@ -55,7 +55,8 @@ namespace HrMaxxWeb
 				"~/Scripts/jquery.countdown.js",
 				"~/Scripts/coming-soon.demo.js",
 				"~/Scripts/bootstrap/sweetalert.min.js",
-				"~/Scripts/daterangepicker.js"
+				"~/Scripts/daterangepicker.js",
+				"~/Scripts/fullcalendar/fullcalendar.js"
 
 
 				);
@@ -169,6 +170,8 @@ namespace HrMaxxWeb
 				"~/Scripts/app/company/directives/accumulated-pay-type-list.js",
 				"~/Scripts/app/company/directives/pay-code-list.js",
 				"~/Scripts/app/company/directives/renewal-date-list.js",
+				"~/Scripts/app/company/directives/project-list.js",
+				"~/Scripts/app/company/directives/product-list.js",
 				"~/Scripts/app/company/directives/company-locations.js",
 				"~/Scripts/app/company/directives/company-list.js",
 				"~/Scripts/app/company/directives/company.js",
@@ -176,9 +179,11 @@ namespace HrMaxxWeb
 				"~/Scripts/app/company/directives/vendor-customer-list.js",
 				"~/Scripts/app/company/directives/vendor-customer.js",
 				"~/Scripts/app/company/directives/account-list.js",
+				"~/Scripts/app/company/directives/account.js",
 				"~/Scripts/app/company/directives/employee-list.js",
 				"~/Scripts/app/company/directives/employee.js",
 				"~/Scripts/app/company/directives/employee-deduction-list.js",
+				"~/Scripts/app/company/directives/employee-timesheet.js",
 
 				"~/Scripts/app/payroll/directives/payroll-list.js", 
 				"~/Scripts/app/payroll/directives/payroll.js",
@@ -188,7 +193,8 @@ namespace HrMaxxWeb
 				"~/Scripts/app/payroll/directives/paycheck.js",
 				"~/Scripts/app/journal/directives/regular-check.js",
 				"~/Scripts/app/journal/directives/deposit-ticket.js",
-				"~/Scripts/app/journal/directives/customer-invoice.js",
+				"~/Scripts/app/company/directives/vendor-invoice-list.js",
+				"~/Scripts/app/company/directives/vendor-invoice.js",
 				"~/Scripts/app/journal/directives/account-adjustment.js",
 				"~/Scripts/app/journal/directives/tax-payment.js",
 				"~/Scripts/app/journal/directives/journal-list.js",
@@ -197,6 +203,7 @@ namespace HrMaxxWeb
 				"~/Scripts/app/reports/report-app.js",
 				"~/Scripts/app/reports/report-repository.js",
 				"~/Scripts/app/reports/directives/payroll-register.js",
+				"~/Scripts/app/reports/directives/sales-tax-report.js",
 				"~/Scripts/app/reports/directives/payroll-summary.js",
 				"~/Scripts/app/reports/directives/deduction-report.js",
 				"~/Scripts/app/reports/directives/worker-compensation-report.js",

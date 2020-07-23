@@ -70,10 +70,11 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 		void SaveInvoiceRecurringCharge(List<InvoiceRecurringCharge> list);
 		List<InvoiceRecurringCharge> GetRecurringChargeToUpdate();
 		void FixInvoiceVoidedCredit(PayrollInvoice payrollInvoice);
-		void UnVoidPayroll(Guid id, string userName);
+		void UnVoidPayroll(Models.Payroll payroll, string userName);
 		void UpdateCompanyAndEmployeeLastPayrollDate();
         void SaveScheduledPayroll(SchedulePayroll payroll);
 		void FixPayCheckPayCodes(List<PayCheck> payChecks);
         void DeleteSchedulePayroll(SchedulePayroll payroll);
+        void UpdateTimesheetsToPaid(Models.Payroll payroll);
     }
 }

@@ -998,7 +998,7 @@ common.directive('userDashboard', ['$uibModal','zionAPI', '$timeout', '$window',
 								packages: ['corechart', 'controls'],
 								callback: $scope.drawCharts
 							};
-
+						google.charts.load("current", { packages: ['corechart'] });
 							//google.load('visualization', '1.0', options);
 							
 							commonRepository.getUserNews().then(function (data) {

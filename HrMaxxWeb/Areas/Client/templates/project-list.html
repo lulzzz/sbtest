@@ -1,0 +1,77 @@
+﻿<div class="table-responsive col-sm-12">
+	<div class="row">
+		<alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</alert>
+	</div>
+	<table class="table table-header table-bordered form-controls input-sm">
+		<thead>
+			<tr>
+				<td class="col-sm-1">Id</td>
+				<td class="col-sm-2">Name</td>
+				<td class="col-sm-2">Awarding Body</td>
+				<td class="col-sm-1">Registration No</td>
+				<td class="col-sm-1">License No</td>
+				<td class="col-sm-1">License Type</td>
+				<td class="col-sm-1">WC Policy</td>
+				<td class="col-sm-1">Classification</td>
+				<td class="col-sm-1" ng-show="showControls"></td>
+			</tr>
+		</thead>
+		<tbody>
+			<tr ng-repeat="item in list track by $index">
+
+				<td>
+					{{ item.projectId }}
+
+				</td>
+				<td>
+					{{ item.projectName }}
+
+				</td>
+				<td>
+					{{ item.awardingBody }}
+
+				</td>
+				<td>
+					{{ item.registrationNo }}
+
+				</td>
+				<td>
+					{{ item.licenseNo }}
+
+				</td>
+				<td>
+					{{ item.licenseType }}
+
+				</td>
+				<td>
+					{{ item.policyNo }}
+
+				</td>
+				<td>
+					{{ item.classification }}
+
+				</td>
+
+
+
+				<td style="white-space: nowrap" ng-show="showControls">
+					<!-- form -->
+					<button type="button" ng-show="!selected" class="btn btn-lg btn-primary btn-icon btn-circle" ng-click="rowform.$show();setSelected($index)">
+						<i class="fa fa-pencil"></i>
+					</button>
+				</td>
+
+			</tr>
+			<tr ng-show="!selected">
+				<td colspan="9">
+					<span ng-show="list.length===0">No items found</span>
+					<button type="button" ng-click="add()" class="btn btn-lg btn-primary  btn-icon btn-circle" ng-show="showControls">
+						<i class="fa fa-plus"></i>
+					</button>
+				</td>
+
+			</tr>
+			
+		</tbody>
+	</table>
+</div>

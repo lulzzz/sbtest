@@ -238,7 +238,7 @@ common.directive('employee', ['zionAPI', '$timeout', '$window', 'version', '$uib
 					}
 					$scope.showAccruals = function() {
 						var exists = $filter('filter')($scope.mainData.selectedCompany.accumulatedPayTypes, { isEmployeeSpecific: true });
-						return exists.length > 0;
+						return exists && exists.length > 0;
 					}
 					$scope.payCodeEvents = {
 						onItemSelect: function (item) {
@@ -345,8 +345,8 @@ common.directive('employee', ['zionAPI', '$timeout', '$window', 'version', '$uib
 							$scope.selected.bankAccounts = [];
 						}
 						if (!moment($scope.selected.sickLeaveHireDate).isSame(moment( $scope.original.sickLeaveHireDate))) {
-							$scope.mainData.confirmDialog('Changing sick leave hire date would require you to update the Sick Leave accumulations for existing Pay Checks manually.\n' +
-								'do you want to proceed?', 'danger', function () {
+							$scope.mainData.confirmDialog('Changing sick leave hire date would require you to update the Sick Leave accumulations for existing Pay Checks manually.\n\n' +
+								'Do you want to proceed?', 'danger', function () {
 									saveEmpployee();
 								}
 							);

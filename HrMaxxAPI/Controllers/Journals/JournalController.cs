@@ -26,12 +26,13 @@ namespace HrMaxxAPI.Controllers.Journals
 		public readonly IJournalService _journalService;
 		public readonly IMetaDataService _metaDataService;
 		public readonly IDocumentService _documentService;
-
-		public JournalController(IJournalService journalService, IMetaDataService metaDataService, IDocumentService documentService)
+		public readonly IReaderService _readerService;
+		public JournalController(IJournalService journalService, IMetaDataService metaDataService, IDocumentService documentService, IReaderService readerService)
 		{
 			_journalService = journalService;
 			_metaDataService = metaDataService;
 			_documentService = documentService;
+			_readerService = readerService;
 		}
 		[HttpPost]
 		[Route(JournalRoutes.Print)]
@@ -60,6 +61,14 @@ namespace HrMaxxAPI.Controllers.Journals
 			var journal = MakeServiceCall(() => _journalService.GetJournalListByCompanyAccount(filter.CompanyId, filter.AccountId, filter.StartDate, filter.EndDate, filter.IncludePayrolls), string.Format("get list of journals for company={0}", filter.CompanyId));
 			return Mapper.Map<JournalList, JournalListResource>(journal);
 		}
+		[HttpPost]
+		[Route(JournalRoutes.VendorInvoiceList)]
+		public List<CompanyInvoice> GetVendorInvoiceList(JournalFilterResource filter)
+		{
+			return MakeServiceCall(() => _readerService.GetVendorInvoices(filter.CompanyId, filter.StartDate, filter.EndDate), string.Format("get list of vendor invoices for company={0}", filter.CompanyId));
+			
+		}
+
 
 		[HttpPost]
 		[Route(JournalRoutes.AccountWithJournalList)]
@@ -74,6 +83,12 @@ namespace HrMaxxAPI.Controllers.Journals
 		public object GetJournalMetaData(Guid companyId, int companyIntId)
 		{
 			return MakeServiceCall(() => _metaDataService.GetJournalMetaData(companyId, companyIntId), "Get journal meta data", true);
+		}
+		[HttpGet]
+		[Route(JournalRoutes.GetVendorInvoiceMetaData)]
+		public object GetVendorInvoiceMetaData(Guid companyId, int companyIntId)
+		{
+			return MakeServiceCall(() => _metaDataService.GetVendorInvoiceMetaData(companyId, companyIntId), "Get vendor invoice meta data", true);
 		}
 
 		[HttpPost]
@@ -106,6 +121,30 @@ namespace HrMaxxAPI.Controllers.Journals
 			});
 			var journal = MakeServiceCall(() => _journalService.VoidCheckbookEntry(mapped, new Guid(CurrentUser.UserId)), string.Format("void journal entry for company={0}", mapped.CompanyId));
 			return Mapper.Map<Journal, JournalResource>(journal);
+		}
+		[HttpPost]
+
+		[Route(JournalRoutes.SaveVendorInvoice)]
+		public CompanyInvoice SaveVendorInvoice(CompanyInvoice mapped)
+		{
+			
+			mapped.LastModified = DateTime.Now;
+			mapped.LastModifiedBy = CurrentUser.FullName;
+			
+			var journal = MakeServiceCall(() => _journalService.SaveVendorInvoice(mapped, new Guid(CurrentUser.UserId)), string.Format("save vendor invoice for company={0}", mapped.CompanyId));
+			return journal;
+		}
+
+		[HttpPost]
+		[Route(JournalRoutes.VoidVendorInvoice)]
+		public CompanyInvoice VoidVendorInvoice(CompanyInvoice mapped)
+		{
+			
+			mapped.LastModified = DateTime.Now;
+			mapped.LastModifiedBy = CurrentUser.FullName;
+			
+			var journal = MakeServiceCall(() => _journalService.VoidVendorInvoice(mapped, CurrentUser.FullName, new Guid(CurrentUser.UserId)), string.Format("void vendor invoice for company={0}", mapped.CompanyId));
+			return journal;
 		}
 
 		[HttpPost]

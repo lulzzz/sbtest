@@ -31,6 +31,7 @@ namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
 		public Guid CompanyId { get; set; }
 		public int CompanyIntId { get; set; }
 		public string PayeeName { get; set; }
+		public string Contact { get; set; }
 		public int MainAccountId { get; set; }
 		public Guid DocumentId { get; set; }
 		public bool PEOASOCoCheck { get; set; }

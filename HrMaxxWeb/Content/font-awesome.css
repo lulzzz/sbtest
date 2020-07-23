@@ -820,6 +820,9 @@
 .fa-lightbulb-o:before {
   content: "\f0eb";
 }
+.fa-lightbulb:before {
+    content: "\f0eb"
+}
 .fa-exchange:before {
   content: "\f0ec";
 }

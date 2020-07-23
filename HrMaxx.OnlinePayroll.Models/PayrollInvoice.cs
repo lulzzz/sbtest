@@ -94,7 +94,8 @@ namespace HrMaxx.OnlinePayroll.Models
 			PayrollId = payroll.Id;
 			GrossWages = payroll.TotalGrossWage;
 			payroll.PayChecks.Where(pc => !pc.IsVoid).ToList().ForEach(pc => AddTaxes(pc.Taxes));
-			payroll.PayChecks.Where(pc => !pc.IsVoid).ToList().ForEach(pc => AddWorkerCompensation(pc.WorkerCompensation, company));
+			if(company.Contract.InvoiceSetup.ApplyWCCharge)
+				payroll.PayChecks.Where(pc => !pc.IsVoid).ToList().ForEach(pc => AddWorkerCompensation(pc.WorkerCompensation, company));
 			ApplyWCMinWage();
 
 			NetPay = payroll.PayChecks.Where(pc => !pc.IsVoid).Sum(pc => pc.NetWage);
@@ -109,7 +110,7 @@ namespace HrMaxx.OnlinePayroll.Models
 			CalculateAdminFee(payroll);
 
 			CalculateRecurringCharges(payroll, company);
-			HandleVoidedChecks(voidedPayChecks);
+			HandleVoidedChecks(voidedPayChecks, company);
 			CalculateCASUTA(company, payroll.PayDay.Year);
 
 			EmployeeContribution = EmployeeTaxes.Sum(pc=>pc.Amount) + Deductions.Sum(d=>d.Amount);
@@ -171,13 +172,47 @@ namespace HrMaxx.OnlinePayroll.Models
 			});
 		}
 
-		private void HandleVoidedChecks(List<VoidedPayCheckInvoiceCredit> voidedPayChecks)
+		private void HandleVoidedChecks(List<VoidedPayCheckInvoiceCredit> voidedPayChecks, Company company)
 		{
 			voidedPayChecks.ForEach(vpc =>
 			{
 				
 					if (vpc.Balance <= 0)
 					{
+					//suta management into credit
+					
+						vpc.EmployerTaxList.Where(t => t.Tax.StateId == 1).ToList().ForEach(t =>
+						{
+							var taxableWage = vpc.InvoiceSetup.ApplyStatuaryLimits ? t.TaxableWage : vpc.GrossWage;
+							var rate = t.Tax.Rate;
+							if (t.Tax.IsCompanySpecific && company.CompanyTaxRates.Any(ct => ct.TaxYear == vpc.PayDay.Year && ct.TaxCode.Equals(t.Tax.Code)))
+							{
+								rate = company.CompanyTaxRates.First(ct => ct.TaxYear == vpc.PayDay.Year && ct.TaxCode.Equals(t.Tax.Code)).Rate;
+							}
+							if (!t.Tax.Code.Equals("ETT"))
+							{
+								rate = rate + vpc.InvoiceSetup.SUIManagement;
+							}
+
+							t.Amount = Math.Round((decimal)(taxableWage * rate / 100), 2, MidpointRounding.AwayFromZero);
+							t.TaxableWage = taxableWage;
+
+						});
+						vpc.EmployerTaxList.Where(t => !t.Tax.StateId.HasValue && t.Tax.Code.Equals("FUTA")).ToList().ForEach(t =>
+						{
+							var taxableWage = vpc.InvoiceSetup.ApplyStatuaryLimits ? t.TaxableWage : vpc.GrossWage;
+							var rate = t.Tax.Rate;
+							if (t.Tax.IsCompanySpecific && company.CompanyTaxRates.Any(ct => ct.TaxYear == vpc.PayDay.Year && ct.TaxCode.Equals(t.Tax.Code)))
+							{
+								rate = company.CompanyTaxRates.First(ct => ct.TaxYear == vpc.PayDay.Year && ct.TaxCode.Equals(t.Tax.Code)).Rate;
+							}
+
+							t.Amount = Math.Round((decimal)(taxableWage * rate / 100), 2, MidpointRounding.AwayFromZero);
+							t.TaxableWage = taxableWage;
+
+						});
+					
+						//end suta management into credit
 						var pcCredit = new MiscFee
 						{
 							PayCheckId = vpc.Id,

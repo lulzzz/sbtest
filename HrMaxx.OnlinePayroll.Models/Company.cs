@@ -52,6 +52,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public DateTime? LastPayrollDate { get; set; }
 		public CompanyCheckPrintOrder CompanyCheckPrintOrder { get; set; }
 		public bool IsRestaurant { get; set; }
+		public decimal SalesTaxRate { get; set; }
 		public string InsuranceClientNo { get; set; }
 		public InsuranceGroupDto InsuranceGroup { get; set; }
 		public Contact Contact { get; set; }
@@ -65,6 +66,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public List<CompanyTaxRate> CompanyTaxRates { get; set; }
 		public List<CompanyPayCode> PayCodes { get; set; }
 		public List<CompanyRenewal> CompanyRenewals { get; set; }
+		public List<CompanyProject> CompanyProjects { get; set; }
 		public DateTime Created { get; set; }
 		public Guid? ParentId { get; set; }
 		public bool HasLocations { get; set; }
@@ -127,8 +129,17 @@ namespace HrMaxx.OnlinePayroll.Models
 		public decimal InvoiceCharge { get; set; }
 		public int Method { get; set; }
 		public InvoiceSetup InvoiceSetup { get; set; }
+		public bool DirectDeposit { get; set; }
+		public bool ProfitStarsPayer { get; set; }
+		public bool Timesheets { get; set; }
+		public bool CertifiedPayrolls { get; set; }
+		public bool RestaurantPayrolls { get; set; }
+		public bool Payrolls { get; set; }
+		public bool Bookkeeping { get; set; }
+		public bool Invoicing { get; set; }
+		public bool Taxation { get; set; }
 	}
-
+	
 	public class CreditCard
 	{
 		public int? CardType { get; set; }
@@ -149,7 +160,22 @@ namespace HrMaxx.OnlinePayroll.Models
 		public string Description { get; set; }
 		public decimal? MinGrossWage { get; set; }
 	}
+	public class CompanyProject
+	{
+		public int Id { get; set; }
+		public Guid CompanyId { get; set; }
+		public string ProjectId { get; set; }
+		public string ProjectName { get; set; }
+		public string AwardingBody { get; set; }
+		public string RegistrationNo { get; set; }
+		public string LicenseNo { get; set; }
+		public string LicenseType { get; set; }
+		public string PolicyNo { get; set; }
+		public string Classification { get; set; }
+		public string LastModifiedBy { get; set; }
+		public DateTime LastModified { get; set; }
 
+	}
 	public class CompanyDeduction
 	{
 		public int Id { get; set; }

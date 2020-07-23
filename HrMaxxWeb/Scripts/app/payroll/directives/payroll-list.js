@@ -1,7 +1,7 @@
 ﻿'use strict';
 
-common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version','$q',
-	function (zionAPI, $timeout, $window, version, $q) {
+common.directive('payrollList', ['$uibModal', 'zionAPI', '$timeout', '$window', 'version','$q',
+	function ($modal, zionAPI, $timeout, $window, version, $q) {
 		return {
 			restrict: 'E',
 			replace: true,
@@ -70,7 +70,52 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version','$q
 						}
 
 					}
+					$scope.newAccount = function () {
+						var account = {
+							companyId: $scope.mainData.selectedCompany.id,
+							type: 1,
+							subType: 2,
+							name: null,
+							taxCode: null,
+							openingBalance: 0,
+							templateId: null,
+							bankAccount: null,
+							useInPayroll: true,
+							usedInInvoiceDeposit: false,
+							isBank: function () {
+								if (type === 1 && subType === 2)
+									return true;
+								return false;
+							}
 
+						};
+						$scope.showaccount(account);
+					}
+					$scope.showaccount = function (account) {
+						var modalInstance = $modal.open({
+							templateUrl: 'popover/coa.html',
+							controller: 'coaCtrl',
+							size: 'md',
+							windowClass: 'my-modal-popup',
+							backdrop: true,
+							keyboard: true,
+							backdropClick: true,
+							resolve: {
+								account: function () {
+									return account;
+								},
+								mainData: function () {
+									return $scope.mainData;
+								}
+
+							}
+						});
+						modalInstance.result.then(function (result) {
+							dataSvc.payrollAccount = result;
+						}, function () {
+							return false;
+						});
+					}
 					var addNew = function() {
 						var selected = {
 							company: $scope.mainData.selectedCompany,
@@ -79,7 +124,12 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version','$q
 							payDay: null,
 							payChecks: [],
 							startingCheckNumber: dataSvc.startingCheckNumber,
-							status: 1
+							status: 1,
+							isHistory: false,
+							isCertified: false,
+							approvedOnly: false,
+							project: null,
+							loadFromTimesheets: false
 						};
 						$.each(dataSvc.employees, function (index, employee) {
 							
@@ -190,7 +240,43 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version','$q
 							if ($scope.canRunPayroll2()) {
 								$timeout(function() {
 									var selected = addNew();
-									$scope.set(selected);
+									var modalInstance = $modal.open({
+										templateUrl: 'popover/newpayroll.html',
+										controller: 'newPayrollCtrl',
+										size: 'sm',
+										windowClass: 'my-modal-popup',
+										backdrop: 'static',
+										keyboard: true,
+										backdropClick: false,
+										resolve: {
+											payroll: function () {
+												return selected;
+											},
+											company: function () {
+												return $scope.mainData.selectedCompany;
+											},
+											$filter: function () {
+												return $filter;
+											},
+											minPayDate: function () {
+												return $scope.minPayDate;
+											},
+											payrollRepository: function () {
+												return payrollRepository;
+											},
+											mainData: function () {
+												return $scope.mainData;
+                                            }
+										}
+									});
+									modalInstance.result.then(function (scope) {
+										$scope.set(scope.item);
+										
+
+									}, function () {
+										return false;
+									});
+									
 
 								}, 1);
 							} else {
@@ -212,17 +298,7 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version','$q
 						}, function (error) {
 							deferred.reject(error);
 						});
-						//getCompanyPayrollMetaData(companyId).then(function () {
-						//	getEmployees(companyId).then(function () {
-						//		deferred.resolve();
-						//	}, function (error) {
-						//		deferred.reject(error);
-						//	});
-						//}, function (error) {
-						//	deferred.reject(error);
-						//});
 						
-
 						return deferred.promise;
 					}
 					$scope.copyPayroll = function (event, payroll) {
@@ -873,10 +949,7 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version','$q
 					$scope.$watch('mainData.selectedCompany.id',
 						 function (newValue, oldValue) {
 						 	if (newValue !== oldValue && $scope.mainData.selectedCompany) {
-						 		//getCompanyPayrollMetaData($scope.mainData.selectedCompany.id);
-						 		//getEmployees($scope.mainData.selectedCompany.id);
-						 		//getPayrolls($scope.mainData.selectedCompany.id);
-						 		// $scope.getPayrollList();
+						 		
 						 		dataSvc.employeesLoaded = false;
 						 		dataSvc.metaDataLoaded = false;
 								 data.isBodyOpen = true;
@@ -1054,5 +1127,60 @@ common.controller('confirmCopyDialogCtrl', function ($scope, $uibModalInstance, 
 		$uibModalInstance.close(option);
 	};
 
+
+});
+common.controller('newPayrollCtrl', function ($scope, $uibModalInstance, $filter, payroll, company, minPayDate, mainData, payrollRepository) {
+	$scope.original = payroll;
+	$scope.item = angular.copy(payroll);
+	$scope.company = company;
+	$scope.minPayDate = minPayDate;
+	$scope.mainData = mainData;
+	
+	$scope.cancel = function () {
+		$uibModalInstance.dismiss();
+	};
+	$scope.isPayrollValid = function () {
+		var returnVal = false;
+		if (moment($scope.item.endDate) < moment($scope.item.startDate) || moment($scope.item.payDay) < $scope.minPayDate)
+			returnVal = false;
+		else if ($scope.item.startDate && $scope.item.endDate && $scope.item.payDay && $scope.item.startingCheckNumber && (!$scope.item.isCertified || ($scope.item.project)))
+			returnVal = true;
+
+		else
+			returnVal = false;
+
+		return returnVal;
+    }
+	$scope.go = function () {
+		if ($scope.item.loadFromTimesheets) {
+			$scope.item.startDate = moment($scope.item.startDate).format("MM/DD/YYYY");
+			$scope.item.endDate = moment($scope.item.endDate).format("MM/DD/YYYY");
+			$scope.item.payDay = moment($scope.item.payDay).format("MM/DD/YYYY");
+			$scope.item.taxPayDay = $scope.item.payDay;
+			payrollRepository.getPayrollTimesheets($scope.item).then(function (data) {
+				$scope.item = angular.copy(data);
+				$scope.item.startDate = moment($scope.item.startDate).toDate();
+				$scope.item.endDate = moment($scope.item.endDate).toDate();
+				$scope.item.payDay = moment($scope.item.payDay).toDate();
+				$scope.item.taxPayDay = moment($scope.item.taxPayDay).toDate();
+				$.each($scope.item.payChecks, function (i, pc) {
+					pc.name = pc.employee.name;
+					pc.department = pc.employee.department;
+					pc.companyEmployeeNo = pc.employee.companyEmployeeNo;
+					pc.employeeNo = pc.employee.employeeNo ? parseInt(pc.employee.employeeNo) : pc.employee.employeeNo;
+					pc.paymentMethod = pc.employee.paymentMethod;
+				});
+				$uibModalInstance.close($scope);
+			}, function (error) {
+
+				$scope.mainData.showMessage('error loading timesheets for Payroll ' + error, 'danger');
+			});
+		}
+		else {
+			$uibModalInstance.close($scope);
+        }
+		
+	};
+	
 
 });

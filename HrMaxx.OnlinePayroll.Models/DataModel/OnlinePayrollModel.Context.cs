@@ -68,5 +68,6 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
         public virtual DbSet<EmployeeACA> EmployeeACAs { get; set; }
         public virtual DbSet<PayrollInvoiceCommission> PayrollInvoiceCommissions { get; set; }
         public virtual DbSet<CompanyRenewal> CompanyRenewals { get; set; }
+        public virtual DbSet<CompanyProject> CompanyProjects { get; set; }
     }
 }

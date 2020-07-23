@@ -29,7 +29,8 @@ namespace HrMaxx.OnlinePayroll.Models
 		public bool IsVendor1099 { get; set; }
 		public bool IsAgency { get; set; }
 		public bool IsTaxDepartment { get; set; }
-
+		public decimal OpenBalance { get; set; }
+		public EntityTypeEnum EntityType { get { return IsVendor ? EntityTypeEnum.Vendor : EntityTypeEnum.Customer; } }
 		public void SetVendorCustomer(Guid id, Guid companyId, string name, bool isVendor, string lastModifiedBy)
 		{
 			Id = id;

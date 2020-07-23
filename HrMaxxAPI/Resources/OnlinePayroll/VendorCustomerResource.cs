@@ -32,7 +32,7 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 		public bool IsVendor1099 { get; set; }
 		public bool IsTaxDepartment { get; set; }
 		public bool IsAgency { get; set; }
-
+		public decimal OpenBalance { get; set; }
 		public string StatusText => StatusId.GetDbName();
 		public string VendorTypeText => IsTaxDepartment ? "Tax Department" : (IsAgency ? "Garnishment Agency" : (IsVendor ? "Vendor" : "Customer"));
 	}

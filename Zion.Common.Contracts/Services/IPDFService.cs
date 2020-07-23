@@ -11,11 +11,11 @@ namespace HrMaxx.Common.Contracts.Services
 		FileDto Print(string fileName, List<PDFModel> models);
 		FileDto Print(PDFModel model);
 		FileDto AppendAllDocuments(Guid name, string fileName, List<Guid> documents, byte[] data);
-		FileDto PrintReport(ReportTransformed pdfModels, bool saveToDisk = false);
+		FileDto PrintReport(ReportTransformed pdfModels, bool saveToDisk = false, string path = "");
 		FileDto GetTemplateFile(string baseFile, int year, string w4);
 		FileDto PrintHtml(Report report);
 		FileDto PrintHtmls(List<Report> reports, bool saveToDisk, string path);
-		FileDto AppendAllDocuments(Guid name, string fileName, List<FileDto> documents);
+		FileDto AppendAllDocuments(Guid name, string fileName, List<FileDto> documents, bool saveToDisk = false, string path = "");
 		void PrintPayrollPack(string dir, List<PDFModel> models);
 	}
 }

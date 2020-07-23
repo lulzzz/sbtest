@@ -62,7 +62,8 @@
             @Html.Partial("_Navigation")
             <div id="content" class="content">
 
-                <script type="text/javascript" src="https://www.google.com/jsapi?autoload={'modules':[{'name':'visualization','version':'1.1','packages':['corechart']}]}"></script>
+                @*<script type="text/javascript" src="https://www.google.com/jsapi?autoload={'modules':[{'name':'visualization','version':'1.1','packages':['corechart']}]}"></script>*@
+                <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
                 <script type="text/ng-template" id="popover/messages.html">
                     <div class="modal-header">
                         <h4 class="modal-title" ng-if="alerts[0].type==='danger'">
@@ -309,8 +310,21 @@
                         <div class="row" ng-if="sourceTypeId===11">
                             <payroll-invoice invoice="memento.object" datasvc="dataSvc" host="mainData.selectedHost" main-data="mainData" show-controls="false" />
                         </div>
+                        <div class="row" ng-if="sourceTypeId===23">
+                            <vendor-invoice item="memento.object" datasvc="dataSvc" company="mainData.selectedCompany" show-controls="false" />
+                        </div>
 
                     </div>
+                </script>
+                <script type="text/ng-template" id="popover/vendorcustomer.html">
+                    <vendor-customer vendor="vendor" show-controls="true" is-vendor="vendor.isVendor" is-global="vendor.isGlobal" main-data="mainData" is-popup="true" />
+
+
+                </script>
+                <script type="text/ng-template" id="popover/coa.html">
+                    <account selected="account" main-data="mainData" selected-type="selectedType" selected-sub-type="selectedSubType" is-popup="true" />
+
+
                 </script>
                 <script type="text/ng-template" id="popover/company.html">
                     <company company="company" main-data="mainData" is-popup="true" show-controls="true" />
@@ -358,6 +372,445 @@
 
                     </div>
 
+
+                </script>
+                <script type="text/ng-template" id="popover/project.html">
+                    <div class="panel panel-inverse overflow-hidden">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">
+                                {{ project.id ? project.projectName : 'New Project'}} - {{company.name}}
+                            </h3>
+                        </div>
+                        <div class="panel-body">
+                            <form name="compform" data-parsley-validate="true">
+                                <div class="form-group row m-b-15">
+                                    <label class="col-md-4 col-sm-4 col-form-label" for="projectid">Project ID * :</label>
+                                    <div class="col-md-8 col-sm-8">
+                                        <input class="form-control" type="text" id="projectid" name="projectid" placeholder="Project ID" data-parsley-required="true" ng-model="project.projectId" />
+                                    </div>
+                                </div>
+                                <div class="form-group row m-b-15">
+                                    <label class="col-md-4 col-sm-4 col-form-label" for="name">Project Name * :</label>
+                                    <div class="col-md-8 col-sm-8">
+                                        <input class="form-control" type="text" id="name" name="name" placeholder="Project Name" data-parsley-required="true" ng-model="project.projectName" />
+                                    </div>
+                                </div>
+                                <div class="form-group row m-b-15">
+                                    <label class="col-md-4 col-sm-4 col-form-label" for="award">Awarding Body *:</label>
+                                    <div class="col-md-8 col-sm-8">
+                                        <input class="form-control" type="text" id="award" name="award" data-parsley-required="true" placeholder="Awarding Body" ng-model="project.awardingBody" />
+                                    </div>
+                                </div>
+                                <div class="form-group row m-b-15">
+                                    <label class="col-md-4 col-sm-4 col-form-label" for="reg">Registration No * :</label>
+                                    <div class="col-md-8 col-sm-8">
+                                        <input class="form-control" type="text" id="reg" name="reg" data-parsley-required="true" placeholder="Registration No" ng-model="project.registrationNo" />
+                                    </div>
+                                </div>
+                                <div class="form-group row m-b-15">
+                                    <label class="col-md-4 col-sm-4 col-form-label" for="lic">License No * :</label>
+                                    <div class="col-md-8 col-sm-8">
+                                        <input class="form-control" type="text" id="lic" name="lic" data-parsley-required="true" placeholder="License No" ng-model="project.licenseNo" />
+                                    </div>
+                                </div>
+                                <div class="form-group row m-b-15">
+                                    <label class="col-md-4 col-sm-4 col-form-label" for="lictype">License Type * :</label>
+                                    <div class="col-md-8 col-sm-8">
+                                        <input class="form-control" type="text" id="lictype" name="lictype" data-parsley-required="true" placeholder="License Type" ng-model="project.licenseType" />
+                                    </div>
+                                </div>
+                                <div class="form-group row m-b-15">
+                                    <label class="col-md-4 col-sm-4 col-form-label" for="wc">WC Policy No * :</label>
+                                    <div class="col-md-8 col-sm-8">
+                                        <input class="form-control" type="text" id="wc" name="wc" data-parsley-required="true" placeholder="Workers Compensation Policy Number" ng-model="project.policyNo" />
+                                    </div>
+                                </div>
+                                <div class="form-group row m-b-15">
+                                    <label class="col-md-4 col-sm-4 col-form-label" for="cl">Classification * :</label>
+                                    <div class="col-md-8 col-sm-8">
+                                        <input class="form-control" type="text" id="cl" name="cl" data-parsley-required="true" placeholder="Classification" ng-model=project.classification />
+                                    </div>
+                                </div>
+
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <div class="col-sm-12">
+                                <button type="button" class="btn btn-white  pull-right" ng-click="cancel()">close</button>
+                                <button type="button" class="btn btn-success   pull-right" ng-click="save()" ng-disabled="!isProjectValid()">save</button>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </script>
+                <script type="text/ng-template" id="popover/product.html">
+                    <div class="panel panel-inverse overflow-hidden">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">
+                                {{ product.id ? product.name : 'New Product'}} - {{company.name}}
+                            </h3>
+                        </div>
+                        <div class="panel-body">
+                            <form name="compform" data-parsley-validate="true">
+                                <div class="form-group row m-b-15">
+                                    <label class="col-md-4 col-sm-4 col-form-label" for="projectid">Serial No :</label>
+                                    <div class="col-md-8 col-sm-8">
+                                        <input class="form-control" type="text" id="serialno" name="serialno" placeholder="Serial No" data-parsley-required="true" ng-model="product.serialNo" />
+                                    </div>
+                                </div>
+                                <div class="form-group row m-b-15">
+                                    <label class="col-md-4 col-sm-4 col-form-label" for="name">Name * :</label>
+                                    <div class="col-md-8 col-sm-8">
+                                        <input class="form-control" type="text" id="name" name="name" placeholder="Product Name" data-parsley-required="true" ng-model="product.name" />
+                                    </div>
+                                </div>
+                                <div class="form-group row m-b-15">
+                                    <label class="col-md-4 col-sm-4 col-form-label" for="award">Type *:</label>
+                                    <div class="col-md-8 col-sm-8">
+                                        <select ng-model="product.type" name="ty" class="form-control" convert-to-number>
+                                            <option>Select Type</option>
+                                            <option value="1">Product</option>
+                                            <option value="2">Service</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group row m-b-15">
+                                    <label class="col-md-4 col-sm-4 col-form-label" for="reg">Cost Price * :</label>
+                                    <div class="col-md-8 col-sm-8">
+                                        <input class="form-control" type="number" id="cost" name="cost" data-parsley-required="true" placeholder="Cost Price" ng-model="product.costPrice"  />
+                                    </div>
+                                </div>
+                                <div class="form-group row m-b-15">
+                                    <label class="col-md-4 col-sm-4 col-form-label" for="reg">Sale Price * :</label>
+                                    <div class="col-md-8 col-sm-8">
+                                        <input class="form-control" type="number" id="sale" name="sale" data-parsley-required="true" placeholder="Sale Price" ng-model="product.salePrice"  />
+                                    </div>
+                                </div>
+                                <div class="form-group row m-b-15">
+                                    <label class="col-md-4 col-sm-4 col-form-label">Taxable?</label>
+                                    <div class="col-md-8 col-sm-8">
+                                        <label for="ishistory" class="switch">
+                                            <input id="ishistory" type="checkbox" ng-model="product.isTaxable" /><i></i>
+                                        </label>
+                                    </div>
+                                </div>
+
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <div class="col-sm-12">
+                                <button type="button" class="btn btn-white  pull-right" ng-click="cancel()">close</button>
+                                <button type="button" class="btn btn-success   pull-right" ng-click="save()" ng-disabled="!hasChanges() || !isProductValid()">save</button>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </script>
+                <script type="text/ng-template" id="popover/newpayroll.html">
+                    <div class="panel panel-primary overflow-hidden">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">
+                                New Payroll
+                            </h3>
+                        </div>
+                        <div class="panel-body">
+                            <form name="compform" data-parsley-validate="true">
+                                <div class="row">
+                                    <div class="col-sm-6 form-group">
+                                        <div class="form-group">
+                                            <label class="control-label">Start Date <span class="text-danger">*</span></label>
+                                            <date-ctrl name="startdate" required="true" model="item.startDate" disabled="false" />
+                                        </div>
+                                        <div class="form-group" ng-show="item.startDate">
+                                            <label class="control-label">End Date <span class="text-danger">*</span></label>
+                                            <date-ctrl name="enddate" required="true" model="item.endDate" min="item.startDate" />
+
+
+                                        </div>
+
+                                    </div>
+                                    <div class="col-sm-6 form-group">
+
+
+                                        <div class="form-group">
+                                            <label class="control-label">Starting Check Number <span class="text-danger">*</span></label>
+                                            <input type="number" ng-model="item.startingCheckNumber" class="form-control input-sm" required data-parsley-pattern="/^[1-9][0-9]{2,9}$/" data-parsley-type="number" step="1" />
+
+                                        </div>
+                                        <div class="form-group" ng-show="item.startDate && item.endDate">
+                                            <label class="control-label">Check Date <span class="text-danger">*</span></label>
+                                            <date-ctrl name="payday" required="true" model="item.payDay" min="minPayDate" />
+
+                                        </div>
+
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-group col-sm-6 m-b-15">
+                                        <label class="col-md-4 col-sm-4 col-form-label">History</label>
+                                        <div class="col-md-8 col-sm-8">
+                                            <label for="ishistory" class="switch">
+                                                <input id="ishistory" type="checkbox" ng-model="item.isHistory" ng-disabled="company.fileUnderHost"  ng-show="mainData.userRole==='SuperUser' || mainData.userRole==='Master'" /><i></i>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="form-group col-sm-6 m-b-15" ng-show="company.contract.timesheets">
+                                        <label class="col-md-4 col-sm-4 col-form-label">Load Timesheet</label>
+                                        <div class="col-md-8 col-sm-8">
+                                            <label for="fromtts" class="switch">
+                                                <input id="fromtts" type="checkbox" ng-model="item.loadFromTimesheets" /><i></i>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row" ng-show="company.contract.certifiedPayrolls">
+                                    <div class="form-group col-sm-6 m-b-15">
+                                        <label class="col-md-4 col-sm-4 col-form-label">Certified</label>
+                                        <div class="col-md-8 col-sm-8">
+                                            <label for="iscertified" class="switch">
+                                                <input id="iscertified" type="checkbox" ng-model="item.isCertified" ng-disabled="company.companyProjects.length===0 || !item.loadFromTimesheets" /><i></i>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="form-group col-sm-6" ng-show="item.isCertified">
+                                        <label class="col-form-label" for="projectid">Project <span class="text-danger">*</span></label>
+                                        <select id="project" class="form-control" ng-model="item.project" ng-options="e.projectName for e in company.companyProjects | orderBy:'projectId' track by e.id">
+                                            <option value="">Select Project</option>
+                                        </select>
+
+                                    </div>
+
+                                </div>
+                                <div class="row" ng-show="item.loadFromTimesheets">
+                                    <div class="form-group col-sm-6 m-b-15">
+                                        <label class="col-md-4 col-sm-4 col-form-label">Approved</label>
+                                        <div class="col-md-8 col-sm-8">
+                                            <label for="approvedOnly" class="switch">
+                                                <input id="approvedOnly" type="checkbox" ng-model="item.approvedOnly" /><i></i>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <span ng-show="company.contract.certifiedPayrolls && !item.loadFromTimesheets"><h6><i>* Certified Payrolls require data from timesheets</i></h6></span>
+                                    <span ng-show="item.isCertified && !item.project"><h6><i>* Certified Payrolls require a govt project</i></h6></span>
+                                </div>
+
+
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <div class="col-sm-12">
+                                <button type="button" class="btn btn-white  pull-right" ng-click="cancel()">close</button>
+                                <button type="button" class="btn btn-success   pull-right" ng-click="go()" ng-disabled="!isPayrollValid()">Go</button>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </script>
+                <script type="text/ng-template" id="popover/timesheetentry.html">
+                    <div class="panel overflow-hidden" ng-class="{'panel-success':entry.isPaid, 'panel-info':!entry.isPaid && entry.isApproved, 'panel-warning':(!entry.isPaid && !entry.isApproved)}">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">
+                                {{entry.entryDate | date:'MM/dd/yyyy'}}
+                            </h3>
+                        </div>
+                        <div class="panel-body">
+                            <form name="compform" data-parsley-validate="true">
+                                <div class="form-group row m-b-15">
+                                    <label class="col-md-4 col-sm-4 col-form-label" for="projectid">Employee :</label>
+                                    <div class="col-md-8 col-sm-8">
+                                        <h4>{{entry.name}}</h4>
+                                    </div>
+                                </div>
+                                <div class="form-group row m-b-15">
+                                    <label class="col-md-4 col-sm-4 col-form-label" for="projectid">Project :</label>
+                                    <div class="col-md-8 col-sm-8">
+                                        <select id="project" class="form-control" ng-model="selectedProject" ng-options="e.projectName for e in projects | orderBy:'projectId' track by e.id">
+                                            <option value="">Select Project</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group row m-b-15">
+                                    <label class="col-md-4 col-sm-4 col-form-label" for="hours">Hours * :</label>
+                                    <div class="col-md-8 col-sm-8">
+                                        <input class="form-control" type="number" id="hours" name="hours" placeholder="Hours" data-parsley-required="true" ng-model="entry.hours" />
+                                    </div>
+                                </div>
+                                <div class="form-group row m-b-15">
+                                    <label class="col-md-4 col-sm-4 col-form-label" for="ot">Overtime *:</label>
+                                    <div class="col-md-8 col-sm-8">
+                                        <input class="form-control" type="number" id="ot" name="ot" data-parsley-required="true" placeholder="Overtime" ng-model="entry.overtime" />
+
+                                    </div>
+                                </div>
+                                <div class="form-group row m-b-15">
+                                    <label class="col-md-4 col-sm-4 col-form-label" for="desc">Description :</label>
+                                    <div class="col-md-8 col-sm-8">
+                                        <textarea class="form-control" id="desc" name="desc" rows="4" ng-model="entry.description" data-parsley-range="[0,200]" placeholder="Description between 0 - 200 characters"></textarea>
+                                    </div>
+                                </div>
+
+
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <div class="col-sm-12">
+                                <button type="button" class="btn btn-danger  pull-left" ng-show="!entry.isApproved && !entry.isPaid" ng-click="delete()">delete</button>
+                                <button type="button" class="btn btn-white  pull-right" ng-click="cancel()">close</button>
+                                <button type="button" class="btn btn-success   pull-right" ng-click="save()" ng-disabled="!isEntryValid() || entry.isApproved || entry.isPaid">save</button>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </script>
+                <script type="text/ng-template" id="popover/timesheetimport.html">
+
+                    <div class="panel panel-inverse overflow-hidden">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">
+                                Import Timesheets for Employees setup
+                            </h3>
+                        </div>
+                        <div class="panel-body">
+
+                            <div class="row alert alert-danger" ng-show="alerts.length>0" ng-bind-html="alerts[0].message">
+
+                            </div>
+                            <div class="row" ng-show="showTable()">
+                                <div class="col-sm-6 form-group">
+                                    <label>Select File (csv or xlsx or txt (comma separated values) )</label><br />
+                                    <label ng-show="files.length===1">File Name  = {{files[0].doc.file.name}}</label>
+                                    <button ng-show="files.length===0" class="btn btn-lg btn-success  btn-lg btn-icon btn-circle attach-button pull-right" id="attachments" ng-file-select="onFileSelect($files)" data-multiple="false" title="select file" onclick="this.value = null" style="position: relative;">
+                                        <i class="fa fa-upload"></i>
+                                    </button>
+                                    <button ng-show="files.length===1" class="btn btn-sm btn-primary  btn-lg " id="uploade" ng-click="uploadDocument()">
+                                        upload
+                                    </button>
+                                </div>
+                                <div class="col-sm-2 form-group">
+                                    <label>First Row</label>
+                                    <input class="form-control"
+                                           type="number"
+                                           ng-model="importMap.startingRow" required data-parsley-pattern="/^[0-9]{1,5}?$/" data-parsley-min="1" />
+                                </div>
+                                <div class="col-sm-2 form-group">
+                                    <label>Last Row</label>
+                                    <input class="form-control"
+                                           type="number"
+                                           ng-model="importMap.lastRow" data-parsley-pattern="/^[0-9]{1,5}?$/" data-parsley-min="1" />
+                                    <label ng-show="importMap.lastRow">Number of Checks: {{importMap.lastRow - importMap.startingRow + 1}}</label>
+                                </div>
+                                <div class="col-sm-2 form-group">
+                                    <label># of Columns</label>
+                                    <input class="form-control"
+                                           type="number"
+                                           ng-model="importMap.columnCount" required data-parsley-pattern="/^[0-9]{1,4}?$/" data-parsley-min="1" />
+                                </div>
+                            </div>
+
+                            <div class="row" ng-show="showTable()">
+                                <div class="col-sm-4">
+                                    <table class="table table-header table-bordered table-condensed form-controls input-sm">
+                                        <thead>
+                                            <tr>
+                                                <td class="col-sm-6">Field</td>
+                                                <td class="col-sm-3">Position/Column #</td>
+                                                <td>
+                                                    <button class="btn  btn-lg btn-icon btn-circle btn-primary" ng-click="add()" ng-show="availableColumns(-1).length>0 && !selected"><i class="fa fa-plus"></i></button>
+                                                </td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr ng-repeat="f in importMap.columnMap track by $index">
+
+                                                <td>
+                                                    <!-- editable tesltra worktype (select-local) -->
+                                                    <span e-ng-change="f.key = $data;" editable-select="f.key" e-name="key" e-form="rowform" e-ng-options="field for field in availableColumns($index)">
+                                                        {{ f.key }}
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <span editable-number="f.value" e-name="fvalue" e-form="rowform" e-ng-change="f.value = $data" e-ng-pattern="/^[0-9]+?$/" e-step="1" e-style="width:10em;" e-ng-min="1" e-ng-max="importMap.columnCount">
+                                                        {{ f.value }}
+                                                    </span>
+                                                </td>
+                                                <td style="white-space: nowrap">
+                                                    <!-- form -->
+                                                    <form editable-form id="rowform" name="rowform" onbeforesave="saveSelected(f)" class="form-buttons form-inline" shown="selected===f">
+                                                        <button type="button" ng-show="!rowform.$visible" class="btn btn-primary btn-lg btn-icon btn-circle" ng-click="rowform.$show();setSelected($index)">
+                                                            <i class="fa fa-pencil"></i>
+                                                        </button>
+                                                        <button type="button" ng-show="!rowform.$visible" class="btn btn-danger btn-lg btn-icon btn-circle" ng-click="delete($index)">
+                                                            <i class="fa fa-remove"></i>
+                                                        </button>
+                                                        <button type="submit" ng-disabled="rowform.$waiting || !isItemValid(f)" ng-show="rowform.$visible" class="btn btn-success btn-lg btn-icon btn-circle">
+                                                            <i class="fa fa-save"></i>
+                                                        </button>
+                                                        <button type="button" ng-disabled="rowform.$waiting" ng-show="rowform.$visible" ng-click="rowform.$cancel();cancelSelected(f, $index)" class="btn btn-white btn-lg btn-icon btn-circle">
+                                                            <i class="fa fa-undo"></i>
+                                                        </button>
+                                                    </form>
+                                                </td>
+
+                                            </tr>
+                                            <tr ng-show="!selected">
+                                                <td colspan="3">
+                                                    <span ng-show="importMap.columnMap.length===0">No mappings found</span>
+                                                </td>
+
+                                            </tr>
+
+                                        </tbody>
+                                    </table>
+                                </div>
+
+
+
+                            </div>
+                            <div class="row" ng-show="timesheets.length>0">
+                                <table ng-table="tableParams" class="table table-condensed table-responsive" show-filter="true" template-pagination="custom/nopager">
+                                    <tr ng-repeat="listitem in tableData track by $index" class="mouse-over-pointer">
+
+                                        <td data-title=" 'Employee' " filter="{ 'name': 'text' }" sortable=" 'name' " class="col-sm-1">
+                                            {{listitem.name}}
+                                        </td>
+                                        <td data-title=" 'entryDate' " sortable=" 'entryDate' " class="col-sm-1">
+                                            {{listitem.entryDateStr | date:'MM/dd/yyyy'}}
+                                        </td>
+                                        <td data-title=" 'Project' " filter="{ 'projectName': 'text' }" sortable=" 'projectName' " class="col-sm-1">
+                                            {{listitem.projectName}}
+                                        </td>
+                                        <td data-title=" 'Hours' " sortable=" 'hours' " class="col-sm-1">
+                                            {{listitem.hours | currency:''}}
+                                        </td>
+                                        <td data-title=" 'Overtime' " sortable=" 'overtime' " class="col-sm-1">
+                                            {{listitem.overtime | currency:''}}
+                                        </td>
+                                        <td data-title=" 'Description' " sortable=" 'description' " class="col-sm-1">
+                                            {{listitem.description}}
+                                        </td>
+
+                                    </tr>
+
+                                </table>
+                            </div>
+
+                        </div>
+                        <div class="modal-footer">
+                            <div class="col-sm-12" ng-show="timesheets.length>0">
+                                <button type="button" class="btn btn-white  pull-right" ng-click="cancel()">close</button>
+                                <button type="button" class="btn btn-success   pull-right" ng-disabled="!ready()" ng-click="saveImportedTimesheets()">save</button>
+                            </div>
+
+                        </div>
+                    </div>
+                </script>
+                <script type="text/ng-template" id="custom/nopager">
 
                 </script>
                 <script type="text/ng-template" id="popover/updatecomps1.html">
@@ -518,136 +971,165 @@
                 </script>
                 <script type="text/ng-template" id="popover/importtimesheet.html">
 
-                    <div class="modal-header">
-                        <h2 class="modal-title">Import Timesheet setup </h2>
-                    </div>
-
-                    <div class="modal-body">
-
-                        <div class="row alert alert-danger" ng-show="alerts.length>0" ng-bind-html="alerts[0].message">
-
+                    <div class="panel panel-inverse overflow-hidden">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">
+                                Import Payroll Setup
+                            </h3>
                         </div>
-                        <div class="row">
-                            <div class="col-sm-6 form-group">
-                                <label>Select File (csv or xlsx or txt (comma separated values) )</label><br />
-                                <label ng-show="files.length===1">File Name  = {{files[0].doc.file.name}}</label>
-                                <button class="btn btn-lg btn-success  btn-lg btn-icon btn-circle attach-button pull-right" id="attachments" ng-file-select="onFileSelect($files)" data-multiple="false" title="select file" onclick="this.value = null" style="position: relative;">
-                                    <i class="fa fa-upload"></i>
-                                </button>
+                        <div class="panel-body">
+
+                            <div class="row alert alert-danger" ng-show="alerts.length>0" ng-bind-html="alerts[0].message">
+
                             </div>
-                            <div class="col-sm-2 form-group">
-                                <label>First Row</label>
-                                <input class="form-control"
-                                       type="number"
-                                       ng-model="importMap.startingRow" required data-parsley-pattern="/^[0-9]{1,5}?$/" data-parsley-min="1" />
-                            </div>
-                            <div class="col-sm-2 form-group">
-                                <label>Last Row</label>
-                                <input class="form-control"
-                                       type="number"
-                                       ng-model="importMap.lastRow" data-parsley-pattern="/^[0-9]{1,5}?$/" data-parsley-min="1" />
-                                <label ng-show="importMap.lastRow">Number of Checks: {{importMap.lastRow - importMap.startingRow + 1}}</label>
-                            </div>
-                            <div class="col-sm-2 form-group">
-                                <label># of Columns</label>
-                                <input class="form-control"
-                                       type="number"
-                                       ng-model="importMap.columnCount" required data-parsley-pattern="/^[0-9]{1,4}?$/" data-parsley-min="1" />
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-sm-6 form-group">
-                                <label></label>
-                                <div>
-                                    <label for="jchas" class="switch">
-                                        File has Job Cost Data?
-                                        <input id="jchas" type="checkbox" ng-model="importMap.hasJobCost" ng-change="changeHasJobCost()" /><i></i>
-                                    </label>
+                            <div class="row">
+                                <div class="col-sm-6 form-group">
+                                    <label>Select File (csv or xlsx or txt (comma separated values) )</label><br />
+                                    <label ng-show="files.length===1">File Name  = {{files[0].doc.file.name}}</label>
+                                    <button class="btn btn-lg btn-success  btn-lg btn-icon btn-circle attach-button pull-right" id="attachments" ng-file-select="onFileSelect($files)" data-multiple="false" title="select file" onclick="this.value = null" style="position: relative;">
+                                        <i class="fa fa-upload"></i>
+                                    </button>
+                                </div>
+                                <div class="col-sm-2 form-group">
+                                    <label>First Row</label>
+                                    <input class="form-control"
+                                           type="number"
+                                           ng-model="importMap.startingRow" required data-parsley-pattern="/^[0-9]{1,5}?$/" data-parsley-min="1" />
+                                </div>
+                                <div class="col-sm-2 form-group">
+                                    <label>Last Row</label>
+                                    <input class="form-control"
+                                           type="number"
+                                           ng-model="importMap.lastRow" data-parsley-pattern="/^[0-9]{1,5}?$/" data-parsley-min="1" />
+                                    <label ng-show="importMap.lastRow">Number of Checks: {{importMap.lastRow - importMap.startingRow + 1}}</label>
+                                </div>
+                                <div class="col-sm-2 form-group">
+                                    <label># of Columns</label>
+                                    <input class="form-control"
+                                           type="number"
+                                           ng-model="importMap.columnCount" required data-parsley-pattern="/^[0-9]{1,4}?$/" data-parsley-min="1" />
                                 </div>
                             </div>
-                            <div class="col-sm-3" ng-if="importMap.hasJobCost">
-                                <label>Starting Column</label>
-                                <input class="form-control"
-                                       type="number"
-                                       ng-model="importMap.jobCostStartingColumn" ng-required="importMap.hasJobCost" data-parsley-pattern="/^[0-9]+?$/" data-parsley-min="1" />
-                            </div>
-                            <div class="col-sm-3" ng-if="importMap.hasJobCost && importMap.jobCostStartingColumn>0">
-                                <label># of Job Cost Columns</label>
-                                <input class="form-control"
-                                       type="number"
-                                       ng-model="importMap.jobCostColumnCount" ng-required="importMap.hasJobCost && importMap.jobCostStartingColumn>0" data-parsley-pattern="/^[0-9]?$/" data-parsley-min="3" data-parsley-max="4" ng-change="setJobCost()" />
-                            </div>
-                        </div>
-
-                        <div class="row" ng-show="showTable()">
-                            <div class="col-sm-4">
-                                <table class="table table-header table-bordered table-condensed form-controls input-sm">
-                                    <thead>
-                                        <tr>
-                                            <td class="col-sm-6">Field</td>
-                                            <td class="col-sm-3">Position/Column #</td>
-                                            <td>
-                                                <button class="btn  btn-lg btn-icon btn-circle btn-success" ng-click="add()" ng-show="availableColumns(-1).length>0 && !selected">add</button>
-                                            </td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr ng-repeat="f in importMap.columnMap track by $index">
-
-                                            <td>
-                                                <!-- editable tesltra worktype (select-local) -->
-                                                <span e-ng-change="f.key = $data;" editable-select="f.key" e-name="key" e-form="rowform" e-ng-options="field for field in availableColumns($index)">
-                                                    {{ f.key }}
-                                                </span>
-                                            </td>
-                                            <td>
-                                                <span editable-number="f.value" e-name="fvalue" e-form="rowform" e-ng-change="f.value = $data" e-ng-pattern="/^[0-9]+?$/" e-step="1" e-style="width:10em;" e-ng-min="1" e-ng-max="importMap.columnCount">
-                                                    {{ f.value }}
-                                                </span>
-                                            </td>
-                                            <td style="white-space: nowrap">
-                                                <!-- form -->
-                                                <form editable-form id="rowform" name="rowform" onbeforesave="saveSelected(f)" class="form-buttons form-inline" shown="selected===f">
-                                                    <button type="button" ng-show="!rowform.$visible" class="btn btn-success btn-lg btn-icon btn-circle" ng-click="rowform.$show();setSelected($index)">
-                                                        <i class="fa fa-edit"></i>
-                                                    </button>
-                                                    <button type="button" ng-show="!rowform.$visible" class="btn btn-danger btn-lg btn-icon btn-circle" ng-click="delete($index)">
-                                                        <i class="fa fa-trash"></i>
-                                                    </button>
-                                                    <button type="submit" ng-disabled="rowform.$waiting || !isItemValid(f)" ng-show="rowform.$visible" class="btn btn-success btn-lg btn-icon btn-circle">
-                                                        <i class="fa fa-save"></i>
-                                                    </button>
-                                                    <button type="button" ng-disabled="rowform.$waiting" ng-show="rowform.$visible" ng-click="rowform.$cancel();cancelSelected(f, $index)" class="btn btn-white btn-lg btn-icon btn-circle">
-                                                        <i class="fa fa-remove"></i>
-                                                    </button>
-                                                </form>
-                                            </td>
-
-                                        </tr>
-                                        <tr ng-show="!selected">
-                                            <td colspan="3">
-                                                <span ng-show="importMap.columnMap.length===0">No mappings found</span>
-                                            </td>
-
-                                        </tr>
-
-                                    </tbody>
-                                </table>
-                            </div>
-                            <div class="col-sm-4" ng-if="importMap.selfManagedPayTypes.length>0">
-                                <div class="col-sm-12" ng-repeat="apt in importMap.selfManagedPayTypes track by $index">
-                                    <div class="row alert alert-success">
-                                        {{apt.payType.description}}
+                            <div class="row">
+                                <div class="col-sm-6 form-group">
+                                    <label></label>
+                                    <div>
+                                        <label for="jchas" class="switch">
+                                            File has Job Cost Data?
+                                            <input id="jchas" type="checkbox" ng-model="importMap.hasJobCost" ng-change="changeHasJobCost()" /><i></i>
+                                        </label>
                                     </div>
+                                </div>
+                                <div class="col-sm-3" ng-if="importMap.hasJobCost">
+                                    <label>Starting Column</label>
+                                    <input class="form-control"
+                                           type="number"
+                                           ng-model="importMap.jobCostStartingColumn" ng-required="importMap.hasJobCost" data-parsley-pattern="/^[0-9]+?$/" data-parsley-min="1" />
+                                </div>
+                                <div class="col-sm-3" ng-if="importMap.hasJobCost && importMap.jobCostStartingColumn>0">
+                                    <label># of Job Cost Columns</label>
+                                    <input class="form-control"
+                                           type="number"
+                                           ng-model="importMap.jobCostColumnCount" ng-required="importMap.hasJobCost && importMap.jobCostStartingColumn>0" data-parsley-pattern="/^[0-9]?$/" data-parsley-min="3" data-parsley-max="4" ng-change="setJobCost()" />
+                                </div>
+                            </div>
+
+                            <div class="row" ng-show="showTable()">
+                                <div class="col-sm-4">
                                     <table class="table table-header table-bordered table-condensed form-controls input-sm">
                                         <thead>
                                             <tr>
                                                 <td class="col-sm-6">Field</td>
-                                                <td class="col-sm-3">Position</td>
+                                                <td class="col-sm-3">Position/Column #</td>
+                                                <td>
+                                                    <button class="btn btn-icon btn-circle btn-primary" ng-click="add()" ng-show="availableColumns(-1).length>0 && !selected">><i class="fa fa-plus"></i></button>
+                                                </td>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <tr ng-repeat="f in apt.importMap track by $index">
+                                            <tr ng-repeat="f in importMap.columnMap track by $index">
+
+                                                <td>
+                                                    <!-- editable tesltra worktype (select-local) -->
+                                                    <span e-ng-change="f.key = $data;" editable-select="f.key" e-name="key" e-form="rowform" e-ng-options="field for field in availableColumns($index)">
+                                                        {{ f.key }}
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <span editable-number="f.value" e-name="fvalue" e-form="rowform" e-ng-change="f.value = $data" e-ng-pattern="/^[0-9]+?$/" e-step="1" e-style="width:10em;" e-ng-min="1" e-ng-max="importMap.columnCount">
+                                                        {{ f.value }}
+                                                    </span>
+                                                </td>
+                                                <td style="white-space: nowrap">
+                                                    <!-- form -->
+                                                    <form editable-form id="rowform" name="rowform" onbeforesave="saveSelected(f)" class="form-buttons form-inline" shown="selected===f">
+                                                        <button type="button" ng-show="!rowform.$visible" class="btn btn-primary btn-icon btn-circle" ng-click="rowform.$show();setSelected($index)">
+                                                            <i class="fa fa-pencil"></i>
+                                                        </button>
+                                                        <button type="button" ng-show="!rowform.$visible" class="btn btn-danger btn-icon btn-circle" ng-click="delete($index)">
+                                                            <i class="fa fa-remove"></i>
+                                                        </button>
+                                                        <button type="submit" ng-disabled="rowform.$waiting || !isItemValid(f)" ng-show="rowform.$visible" class="btn btn-success btn-icon btn-circle">
+                                                            <i class="fa fa-save"></i>
+                                                        </button>
+                                                        <button type="button" ng-disabled="rowform.$waiting" ng-show="rowform.$visible" ng-click="rowform.$cancel();cancelSelected(f, $index)" class="btn btn-white btn-icon btn-circle">
+                                                            <i class="fa fa-undo"></i>
+                                                        </button>
+                                                    </form>
+                                                </td>
+
+                                            </tr>
+                                            <tr ng-show="!selected">
+                                                <td colspan="3">
+                                                    <span ng-show="importMap.columnMap.length===0">No mappings found</span>
+                                                </td>
+
+                                            </tr>
+
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="col-sm-4" ng-if="importMap.selfManagedPayTypes.length>0">
+                                    <div class="col-sm-12" ng-repeat="apt in importMap.selfManagedPayTypes track by $index">
+                                        <div class="row alert alert-success">
+                                            {{apt.payType.description}}
+                                        </div>
+                                        <table class="table table-header table-bordered table-condensed form-controls input-sm">
+                                            <thead>
+                                                <tr>
+                                                    <td class="col-sm-6">Field</td>
+                                                    <td class="col-sm-3">Position</td>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr ng-repeat="f in apt.importMap track by $index">
+                                                    <td>
+                                                        {{ f.key }}
+                                                    </td>
+                                                    <td>
+                                                        <input class="form-control" type="number" ng-model="f.value" required data-parsley-pattern="/^[0-9]?$/" />
+                                                    </td>
+                                                </tr>
+
+
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="col-sm-4" ng-if="importMap.hasJobCost && importMap.jobCostStartingColumn>0 && importMap.jobCostColumnCount>0">
+                                    <table class="table table-header table-bordered table-condensed form-controls input-sm">
+                                        <thead>
+                                            <tr>
+                                                <td colspan="2">Job Cost Setup</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="col-sm-6">Field</td>
+                                                <td class="col-sm-3">Position</td>
+
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr ng-repeat="f in importMap.jobCostMap track by $index">
                                                 <td>
                                                     {{ f.key }}
                                                 </td>
@@ -660,46 +1142,20 @@
                                         </tbody>
                                     </table>
                                 </div>
-                            </div>
-                            <div class="col-sm-4" ng-if="importMap.hasJobCost && importMap.jobCostStartingColumn>0 && importMap.jobCostColumnCount>0">
-                                <table class="table table-header table-bordered table-condensed form-controls input-sm">
-                                    <thead>
-                                        <tr>
-                                            <td colspan="2">Job Cost Setup</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="col-sm-6">Field</td>
-                                            <td class="col-sm-3">Position</td>
-
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr ng-repeat="f in importMap.jobCostMap track by $index">
-                                            <td>
-                                                {{ f.key }}
-                                            </td>
-                                            <td>
-                                                <input class="form-control" type="number" ng-model="f.value" required data-parsley-pattern="/^[0-9]?$/" />
-                                            </td>
-                                        </tr>
 
 
-                                    </tbody>
-                                </table>
                             </div>
 
 
                         </div>
+                        <div class="modal-footer">
+                            <div class="col-sm-12">
+                                <button type="button" class="btn btn-white  pull-right" ng-click="cancel()">close</button>
+                                <button type="button" class="btn btn-success   pull-right" ng-disabled="!ready()" ng-click="uploadDocument()">save</button>
 
+                            </div>
 
-                    </div>
-                    <div class="modal-footer">
-                        <div class="col-sm-12">
-                            <button type="button" class="btn btn-white btn-lg btn-icon btn-circle pull-right" ng-click="cancel()"><i class="fa fa-remove"></i></button>
-                            <button type="button" class="btn btn-success btn-lg btn-icon btn-circle pull-right" ng-disabled="!ready()" ng-click="uploadDocument()"><i class="fa fa-save"></i></button>
                         </div>
-
-                    </div>
 
                 </script>
                 <script type="text/ng-template" id="popover/user.html">

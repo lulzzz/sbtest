@@ -16,13 +16,17 @@ namespace HrMaxx.OnlinePayroll.Models
 		public DateTime? VoidedOn { get; set; }
 		public decimal GrossWage { get; set; }
 		public decimal EmployeeTaxes { get; set; }
-		public decimal EmployerTaxes { get; set; }
+		public decimal EmployerTaxes { get { return EmployerTaxList.Sum(t => t.Amount); } }
 		public List<PayrollDeduction> Deductions { get; set; }
 		public InvoiceSetup InvoiceSetup { get; set; }
 		public Guid InvoiceId { get; set; }
 		public decimal Balance { get; set; }
 		public int InvoiceNumber { get; set; }
 		public List<MiscFee> MiscCharges { get; set; }
+
+		public List<PayrollTax> Taxes { get; set; }
+		public DateTime PayDay { get; set; }
+		public List<PayrollTax> EmployerTaxList { get { return Taxes.Where(t => !t.IsEmployeeTax).ToList(); } }
 
 	}
 

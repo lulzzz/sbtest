@@ -156,15 +156,7 @@
                                                         <input type="text" name="minwage" class="form-control" data-parsley-group="wizard-step-2" data-parsley-type="number" min="{{getApplicableMinimumWage()}}" ng-model="selectedCompany.minWage" step="0.01" />
 
                                                     </div>
-                                                    <div class="form-group">
-                                                        <label></label>
-                                                        <div>
-                                                            <label for="isrestaurant" class="switch">
-                                                                Restarurant Payroll?
-                                                                <input id="isrestaurant" type="checkbox" ng-model="selectedCompany.isRestaurant" /><i></i>
-                                                            </label>
-                                                        </div>
-                                                    </div>
+                                                   
                                                 </div>
                                                 <div class="col-sm-4">
                                                     <div class="form-group">
@@ -228,26 +220,9 @@
                                                 <div class="col-sm-4">
                                                     <div class="form-group">
                                                         <label>Insurance Client No</label>
-                                                        <input type="text" name="cno" class="form-control" data-parsley-group="wizard-step-2" ng-model="selectedCompany.insuranceClientNo" ng-required="selectedCompany.insuranceGroup" />
+                                                        <input type="text" name="cno" class="form-control" data-parsley-group="wizard-step-2" ng-model="selectedCompany.insuranceClientNo" ng-required="selectedCompany.insuranceGroup && selectedCompany.insuranceGroup.id>0" />
                                                     </div>
-                                                    <div class="form-group">
-                                                        <label></label>
-                                                        <div>
-                                                            <label for="directdebitpayer" class="switch">
-                                                                Pay by Direct Deposit
-                                                                <input id="directdebitpayer" type="checkbox" ng-model="selectedCompany.directDebitPayer" ng-disabled="!mainData.selectedHost.isHostAllowsDirectDebit" /><i></i>
-                                                            </label>
-                                                        </div>
-                                                    </div>
-                                                    <div class="form-group">
-                                                        <label></label>
-                                                        <div>
-                                                            <label for="profitstarspayer" class="switch">
-                                                                Pay by ProfitStars
-                                                                <input id="profitstarspayer" type="checkbox" ng-model="selectedCompany.profitStarsPayer" ng-disabled="!mainData.selectedHost.isHostAllowsDirectDebit" /><i></i>
-                                                            </label>
-                                                        </div>
-                                                    </div>
+                                                   
                                                     <div class="form-group">
                                                         <label>Invoice Note</label>
                                                         <input type="text" name="notes" class="form-control" data-parsley-group="wizard-step-2" ng-model="selectedCompany.notes" />
@@ -303,6 +278,26 @@
                                             <div class="row">
                                                 <div class="col-sm-3">
                                                     <div class="form-group">
+                                                        <label>Control Id</label>
+                                                        <div>
+                                                            <input type="text" ng-model="selectedCompany.controlId" class="form-control" data-parsley-group="wizard-step-3" ng-disabled="selectedCompany.isLocation" />
+                                                        </div>
+                                                    </div>
+
+                                                </div>
+                                                <div class="col-sm-3">
+                                                    <div class="form-group">
+                                                        <label>Sales Tax Rate</label>
+                                                        <div>
+                                                            <input type="text" ng-model="selectedCompany.salesTaxRate" class="form-control" data-parsley-group="wizard-step-3" convert-to-decimal ng-disabled="selectedCompany.isLocation" />
+                                                        </div>
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-sm-3">
+                                                    <div class="form-group">
                                                         <label></label>
                                                         <div>
                                                             <label for="taxpayments" class="switch">
@@ -340,7 +335,7 @@
                                                     <div class="form-group">
                                                         <label>Federal Tax PIN</label>
                                                         <div>
-                                                            <input type="text" ng-model="selectedCompany.federalPin" class="form-control" ng-required="selectedCompany.allowEFileFormFiling" data-parsley-group="wizard-step-3" ui-mask="9999" ng-disabled="selectedCompany.isLocation" />
+                                                            <input type="text" ng-model="selectedCompany.federalPin" class="form-control" ng-required="selectedCompany.allowTaxPayments" data-parsley-group="wizard-step-3" ui-mask="9999" ng-disabled="selectedCompany.isLocation" />
                                                         </div>
                                                     </div>
 
@@ -371,15 +366,7 @@
                                                 </div>
                                             </div>
                                             <div class="row">
-                                                <div class="col-sm-3">
-                                                    <div class="form-group">
-                                                        <label>Control Id</label>
-                                                        <div>
-                                                            <input type="text" ng-model="selectedCompany.controlId" class="form-control" data-parsley-group="wizard-step-3" ng-disabled="selectedCompany.isLocation" />
-                                                        </div>
-                                                    </div>
-
-                                                </div>
+                                                
                                                 <div class="col-sm-3">
                                                     <div class="form-group">
                                                         <label></label>
@@ -422,7 +409,7 @@
                                                     <div class="form-group">
                                                         <label>State Tax PIN</label>
                                                         <div>
-                                                            <input type="text" ng-model="state.statePin" class="form-control" ng-required="selectedCompany.allowEFileFormFiling" data-parsley-group="wizard-step-3" ui-mask="9999" ng-disabled="selectedCompany.isLocation" />
+                                                            <input type="text" ng-model="state.statePin" class="form-control" ng-required="selectedCompany.allowTaxPayments" data-parsley-group="wizard-step-3" ui-mask="9999" ng-disabled="selectedCompany.isLocation" />
 
                                                         </div>
                                                     </div>
@@ -467,12 +454,13 @@
                                     </div>
                                     <!-- end wizard step-3 -->
                                     <div class="wizard-step-4" ng-if="data.viewContract">
+
                                         <fieldset>
                                             <legend class="width-full">Contract <span class="show-red" ng-show="selectedCompany.contract.invoiceSetup.notSaved">Invoice configurations are not saved</span></legend>
                                             <!-- begin row -->
                                             <div class="row">
                                                 <!-- begin col-4 -->
-                                                <div class="col-sm-4">
+                                                <div class="col-sm-3">
                                                     <div class="form-group block1">
                                                         <label>Type</label>
                                                         <select ng-model="selectedCompany.contract.contractOption" ng-change="contractOptionChanged()" name="contracttype" class="form-control" convert-to-number>
@@ -499,9 +487,10 @@
                                                             <option value="3" ng-if="selectedCompany.contract.contractOption===2">Invoice</option>
                                                         </select>
                                                     </div>
+                                                    
 
                                                 </div>
-                                                <div class="col-sm-4" ng-if="selectedCompany.contract.billingOption===1">
+                                                <div class="col-sm-3" ng-if="selectedCompany.contract.billingOption===1">
 
                                                     <div class="form-group">
                                                         <label>Credit Card Type</label>
@@ -567,7 +556,7 @@
                                                     </div>
                                                 </div>
 
-                                                <div class="col-sm-4" ng-if="selectedCompany.contract.billingOption===2">
+                                                <div class="col-sm-3" ng-if="selectedCompany.contract.billingOption===2">
 
                                                     <div class="form-group">
                                                         <label>Bank Name</label>
@@ -601,7 +590,7 @@
                                                     </div>
 
                                                 </div>
-                                                <div class="col-sm-4" ng-if="selectedCompany.contract.billingOption===3">
+                                                <div class="col-sm-3" ng-if="selectedCompany.contract.billingOption===3">
                                                     <div class="form-group">
                                                         <label>Invoice Type</label>
                                                         <select ng-model="selectedCompany.contract.invoiceSetup.invoiceType" name="invtype" class="form-control" convert-to-number>
@@ -624,14 +613,14 @@
                                                         <input class="form-control" name="adminfee" ng-model="selectedCompany.contract.invoiceSetup.adminFee" required data-parsley-group="wizard-step-4" data-parsley-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" data-parsley-min="0" data-parsley-trigger="blur" step="0.01">
                                                     </div>
                                                     <div class="form-group col-sm-4">
-                                                        <label>Admin Fee Method</label>
+                                                        <label>Method</label>
                                                         <select ng-model="selectedCompany.contract.invoiceSetup.adminFeeMethod" name="adminfeemethod" class="form-control" convert-to-number>
                                                             <option value="1">Amount (per payroll)</option>
                                                             <option value="2">Percentage</option>
                                                         </select>
                                                     </div>
                                                     <div class="form-group col-sm-4">
-                                                        <label>Fee Threshold</label>
+                                                        <label>Threshold</label>
                                                         <input class="form-control" name="threshold" ng-model="selectedCompany.contract.invoiceSetup.adminFeeThreshold" data-parsley-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" data-parsley-min="0" data-parsley-trigger="blur" step="0.01">
                                                     </div>
 
@@ -646,7 +635,7 @@
 
 
                                                 </div>
-                                                <div class="col-sm-4" ng-if="selectedCompany.contract.billingOption===3">
+                                                <div class="col-sm-3" ng-if="selectedCompany.contract.billingOption===3">
 
                                                     <ul class="list-group">
                                                         <li class="list-group-item no-border"><i class="fa fa-lg" ng-class="{'fa-check-circle':selectedCompany.contract.invoiceSetup.invoiceType===1, 'fa-times-circle':selectedCompany.contract.invoiceSetup.invoiceType!==1}" ng-style="(selectedCompany.contract.invoiceSetup.invoiceType===1 && {'color':'green'}) || (selectedCompany.contract.invoiceSetup.invoiceType!==1 && {'color':'red'})"></i> Gross Wages</li>
@@ -659,6 +648,66 @@
                                                     </ul>
 
 
+                                                </div>
+                                                <div class="col-sm-3">
+                                                    <div class="note note-warning note-with-right-icon">
+
+                                                        <div class="note-content text-left">
+                                                            <h4><b>Options!</b></h4>
+                                                            
+                                                            <div class="col-sm-12">
+                                                                <div class="col-sm-12 m-b-2"><i class="fa fa-lg" ng-class="{'fa-plus-square': data.viewOption!==1, 'fa-minus-square': data.viewOption===1}" ng-click="data.viewOption = (data.viewOption!==1? 1 : null)" /> Payrolls <i class="fa fa-lg" ng-class="{'fa-check-circle':selectedCompany.contract.payrolls, 'fa-times-circle':!selectedCompany.contract.payrolls}" ng-style="(selectedCompany.contract.payrolls && {'color':'green'}) || (!selectedCompany.contract.payrolls && {'color':'red'})"></i></div>
+                                                                <div class="col-sm-10 col-sm-offset-1" ng-show="data.viewOption===1">
+                                                                    <ul class="list-group list-unstyled">
+                                                                        <li class="widget-list-item"><input type="checkbox" class="checkbox-warning checkbox-css" ng-model="selectedCompany.contract.payrolls" /> Payrolls</li>
+                                                                        <li class="widget-list-item"><input type="checkbox" class="checkbox-warning checkbox-css" ng-model="selectedCompany.contract.directDeposit" /> Pay by Direct Deposit</li>
+                                                                        <li class="widget-list-item"><input type="checkbox" class="checkbox-warning checkbox-css" ng-model="selectedCompany.contract.profitStarsPayer" /> Pay by ProfitStars</li>
+                                                                        <li class="widget-list-item"><input type="checkbox" class="checkbox-warning checkbox-css" ng-model="selectedCompany.contract.timesheets" /> Timesheets</li>
+                                                                        <li class="widget-list-item"><input type="checkbox" class="checkbox-warning checkbox-css" ng-model="selectedCompany.contract.certifiedPayrolls" /> Certified Payrolls</li>
+                                                                        <li class="widget-list-item"><input type="checkbox" class="checkbox-warning checkbox-css" ng-model="selectedCompany.contract.restaurantPayrolls" /> Restaurant Payrolls</li>
+                                                                    </ul>
+
+
+                                                                </div>
+
+                                                                <div class="col-sm-12 m-b-2"><i class="fa fa-lg" ng-class="{'fa-plus-square': data.viewOption!==2, 'fa-minus-square': data.viewOption===2}" ng-click="data.viewOption = (data.viewOption!==2 ? 2 : null)" /> Boookkeeping <i class="fa fa-lg" ng-class="{'fa-check-circle':selectedCompany.contract.bookkeeping, 'fa-times-circle':!selectedCompany.contract.bookkeeping}" ng-style="(selectedCompany.contract.bookkeeping && {'color':'green'}) || (!selectedCompany.contract.bookkeeping && {'color':'red'})"></i></div>
+                                                                <div class="col-sm-10 col-sm-offset-1" ng-show="data.viewOption===2">
+                                                                    <ul class="list-group list-unstyled">
+                                                                        <li class="widget-list-item"><input type="checkbox" class="checkbox-warning checkbox-css" ng-model="selectedCompany.contract.bookkeeping" /> Bookkeeping</li>
+
+                                                                    </ul>
+
+
+                                                                </div>
+                                                                <div class="col-sm-12"><i class="fa fa-lg" ng-class="{'fa-plus-square': data.viewOption!==3, 'fa-minus-square': data.viewOption===3}" ng-click="data.viewOption = (data.viewOption!==3 ? 3 : null)" /> Invoicing <i class="fa fa-lg" ng-class="{'fa-check-circle':selectedCompany.contract.invoicing, 'fa-times-circle':!selectedCompany.contract.invoicing}" ng-style="(selectedCompany.contract.invoicing && {'color':'green'}) || (!selectedCompany.contract.invoicing && {'color':'red'})"></i></div>
+                                                                <div class="col-sm-10 col-sm-offset-1" ng-show="data.viewOption===3">
+                                                                    <ul class="list-group list-unstyled">
+                                                                        <li class="widget-list-item"><input type="checkbox" class="checkbox-warning checkbox-css" ng-model="selectedCompany.contract.invoicing" /> Invoicing</li>
+
+                                                                    </ul>
+
+
+                                                                </div>
+                                                                <div class="col-sm-12"><i class="fa fa-lg" ng-class="{'fa-plus-square': data.viewOption!==4, 'fa-minus-square': data.viewOption===4}" ng-click="data.viewOption = (data.viewOption!==4 ? 4 : null)" /> Taxation <i class="fa fa-lg" ng-class="{'fa-check-circle':selectedCompany.contract.taxation, 'fa-times-circle':!selectedCompany.contract.taxation}" ng-style="(selectedCompany.contract.taxation && {'color':'green'}) || (!selectedCompany.contract.taxation && {'color':'red'})"></i></div>
+                                                                <div class="col-sm-10 col-sm-offset-1" ng-show="data.viewOption===4">
+                                                                    <ul class="list-group list-unstyled">
+                                                                        <li class="widget-list-item"><input type="checkbox" class="checkbox-warning checkbox-css" ng-model="selectedCompany.contract.taxation" /> Taxation</li>
+
+                                                                    </ul>
+
+
+                                                                </div>
+
+                                                            </div>
+                                                            
+                                                           
+                                                            
+                                                            
+                                                            
+                                                        </div>
+                                                        <div class="note-icon"><i class="fa fa-lightbulb"></i></div>
+                                                    </div>
+                                                    
                                                 </div>
                                             </div>
                                             <div class="row" ng-if="selectedCompany.contract.billingOption===3">
@@ -908,6 +957,21 @@
             <div id="collapseEight" class="panel-collapse collapse">
                 <div class="panel-body">
                     <renewal-date-list list="selectedCompany.companyRenewals" company-id="selectedCompany.id" main-data="mainData" show-controls="showControls" />
+                </div>
+            </div>
+        </div>
+        <div class="panel overflow-hidden" ng-if="selectedCompany.id && selectedCompany.contract.certifiedPayrolls" ng-class="{'panel-inverse':!isPopup, 'panel-info' : isPopup}">
+            <div class="panel-heading">
+                <h3 class="panel-title">
+                    <a class="accordion-toggle accordion-toggle-styled collapsed" data-toggle="collapse" data-parent="#accordion" data-target="#collapseNine">
+                        <i class="fa fa-plus-circle pull-right"></i>
+                        Govt Projects
+                    </a>
+                </h3>
+            </div>
+            <div id="collapseNine" class="panel-collapse collapse">
+                <div class="panel-body">
+                    <project-list list="selectedCompany.companyProjects" company-id="selectedCompany.id" main-data="mainData" show-controls="showControls" />
                 </div>
             </div>
         </div>
