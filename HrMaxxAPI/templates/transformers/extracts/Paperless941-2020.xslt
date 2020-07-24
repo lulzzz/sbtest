@@ -1724,7 +1724,221 @@
                 <ProtectScenarios>False</ProtectScenarios>
             </WorksheetOptions>
  </Worksheet>
- 
+    <Worksheet ss:Name="Schedule R Information (V4)">
+  <Table>
+   <Column ss:AutoFitWidth="0" ss:Width="72.75"/>
+   <Column ss:AutoFitWidth="0" ss:Width="72"/>
+   <Column ss:StyleID="s96" ss:AutoFitWidth="0" ss:Width="72"/>
+   <Column ss:AutoFitWidth="0" ss:Width="70.5"/>
+   <Column ss:AutoFitWidth="0" ss:Width="68.25"/>
+   <Column ss:AutoFitWidth="0" ss:Width="71.25"/>
+   <Column ss:StyleID="s109" ss:AutoFitWidth="0" ss:Width="71.25" ss:Span="1"/>
+   <Column ss:Index="9" ss:AutoFitWidth="0" ss:Width="79.5"/>
+   <Column ss:AutoFitWidth="0" ss:Width="62.25"/>
+   <Column ss:AutoFitWidth="0" ss:Width="69"/>
+   <Column ss:AutoFitWidth="0" ss:Width="170.25"/>
+   <Column ss:AutoFitWidth="0" ss:Width="120"/>
+   <Column ss:AutoFitWidth="0" ss:Width="83.25"/>
+   <Column ss:AutoFitWidth="0" ss:Width="90"/>
+   <Column ss:AutoFitWidth="0" ss:Width="119.25" ss:Span="1"/>
+   <Column ss:Index="18" ss:AutoFitWidth="0" ss:Width="174.75"/>
+   <Column ss:AutoFitWidth="0" ss:Width="108.75"/>
+   <Column ss:StyleID="s109" ss:AutoFitWidth="0" ss:Width="154.5"/>
+   <Column ss:StyleID="s109" ss:AutoFitWidth="0" ss:Width="174"/>
+   <Column ss:StyleID="s109" ss:AutoFitWidth="0" ss:Width="156.75"/>
+   <Column ss:StyleID="s109" ss:AutoFitWidth="0" ss:Width="177"/>
+   <Column ss:StyleID="s109" ss:AutoFitWidth="0" ss:Width="158.25"/>
+   <Column ss:StyleID="s109" ss:AutoFitWidth="0" ss:Width="171"/>
+   <Column ss:StyleID="s109" ss:AutoFitWidth="0" ss:Width="124.5"/>
+   <Column ss:StyleID="s109" ss:AutoFitWidth="0" ss:Width="187.5" ss:Span="1"/>
+   <Column ss:Index="29" ss:StyleID="s109" ss:AutoFitWidth="0" ss:Width="62.25"/>
+   <Column ss:StyleID="s109" ss:Width="63"/>
+   <Column ss:StyleID="s109" ss:AutoFitWidth="0" ss:Span="2"/>
+   <Row ss:AutoFitHeight="0" ss:Height="51.5625">
+    <Cell ss:StyleID="s107"><Data ss:Type="String">Client EIN (A)</Data></Cell>
+    <Cell ss:StyleID="s107"><Data ss:Type="String">Type of Wages (B)</Data></Cell>
+    <Cell ss:StyleID="s107"><Data ss:Type="String">Employee Count (C)</Data></Cell>
+    <Cell ss:StyleID="s108"><Data ss:Type="String">Wages (D-2)</Data></Cell>
+    <Cell ss:StyleID="s108"><Data ss:Type="String">Total Income Tax (E-3)</Data></Cell>
+    <Cell ss:StyleID="s108"><Data ss:Type="String">Line 5a Col 1</Data></Cell>
+    <Cell ss:StyleID="s123"><Data ss:Type="String">Line 5a (I) (F)</Data></Cell>
+    <Cell ss:StyleID="s123"><Data ss:Type="String">Line 5A (II) (G) </Data></Cell>
+    <Cell ss:StyleID="s108"><Data ss:Type="String">Line 5b Col 1</Data></Cell>
+    <Cell ss:StyleID="s108"><Data ss:Type="String">Line 5c Col 1</Data></Cell>
+    <Cell ss:StyleID="s108"><Data ss:Type="String">Line 5d Col 1</Data></Cell>
+    <Cell ss:StyleID="s108"><Data ss:Type="String">Line 5e - If provided, the software will ignore Lines 5a, 5b, 5c and 5d (5H)</Data></Cell>
+    <Cell ss:StyleID="s108"><Data ss:Type="String">Section 3121 (I)</Data></Cell>
+    <Cell ss:StyleID="s108"><Data ss:Type="String">Adjustment for Fractions of Cents</Data></Cell>
+    <Cell ss:StyleID="s108"><Data ss:Type="String">Adjustments for 3rd Party Sick</Data></Cell>
+    <Cell ss:StyleID="s108"><Data ss:Type="String">Adjustments for Tips and Group Term Life Insurance</Data></Cell>
+    <Cell ss:StyleID="s108"><Data ss:Type="String">Qualified Small Business Payroll Credit (J)</Data></Cell>
+    <Cell ss:StyleID="s108"><Data ss:Type="String">Total Tax Amount (M-12)</Data></Cell>
+    <Cell ss:StyleID="s108"><Data ss:Type="String">Total Tax Deposits (N-13a)</Data></Cell>
+    <Cell ss:StyleID="s123"><Data ss:Type="String">Deferred Amount of Employer Share of Social Security Tax (0-13b)</Data></Cell>
+    <Cell ss:StyleID="s148"><Data ss:Type="String">Total Advanced received from filing forms 7200 for the quarter (R-13F)</Data></Cell>
+    <Cell ss:StyleID="s148"><Data ss:Type="String">Qualified Heath Plan Expenses  allocable to qualified sick leave wages (S-19)</Data></Cell>
+    <Cell ss:StyleID="s148"><Data ss:Type="String">Qualified health plan expenses allocable to qualified family leave plans (T-20)</Data></Cell>
+    <Cell ss:StyleID="s148"><Data ss:Type="String">Qualified wages for the employee retention credit (U-21)</Data></Cell>
+    <Cell ss:StyleID="s148"><Data ss:Type="String">Qualified health plan expenses allocable to wages reported on Line 21 (V-22)</Data></Cell>
+    <Cell ss:StyleID="s148"><Data ss:Type="String">Form 941, lines 5a and 5b col 2 total</Data></Cell>
+    <Cell ss:StyleID="s148"><Data ss:Type="String">Qualified Wages paid from 3-13|3-31 for employee retention credit (Q2 Only) (X-24)</Data></Cell>
+    <Cell ss:StyleID="s148"><Data ss:Type="String">Qualified health plan expenses allocable to wages reported on Line 24 (Q2 Only) (Y-25)</Data></Cell>
+    <Cell ss:StyleID="s149"><Data ss:Type="String">Worksheet 1e</Data></Cell>
+    <Cell ss:StyleID="s150"><Data ss:Type="String">Worksheet 1g</Data></Cell>
+    <Cell ss:StyleID="s150"><Data ss:Type="String">Worksheet 1j</Data></Cell>
+    <Cell ss:StyleID="s150"><Data ss:Type="String">Worksheet 2a (i)</Data></Cell>
+    <Cell ss:StyleID="s150"><Data ss:Type="String">Worksheet 2e (i)</Data></Cell>
+    <Cell ss:StyleID="s111"/>
+   </Row>
+    <Row></Row>
+    <Row></Row>
+    <xsl:apply-templates select="Hosts/ExtractHost" mode="ScheduleR">
+      <xsl:sort select="HostCompany/TaxFilingName"/>
+    </xsl:apply-templates>
+  </Table>
+  <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
+   <PageSetup>
+    <Header x:Margin="0.3"/>
+    <Footer x:Margin="0.3"/>
+    <PageMargins x:Bottom="0.75" x:Left="0.7" x:Right="0.7" x:Top="0.75"/>
+   </PageSetup>
+   <Print>
+    <ValidPrinterInfo/>
+    <HorizontalResolution>600</HorizontalResolution>
+    <VerticalResolution>600</VerticalResolution>
+   </Print>
+   <Selected/>
+   <LeftColumnVisible>26</LeftColumnVisible>
+   <Panes>
+    <Pane>
+     <Number>3</Number>
+     <ActiveRow>3</ActiveRow>
+     <ActiveCol>11</ActiveCol>
+    </Pane>
+   </Panes>
+   <ProtectObjects>False</ProtectObjects>
+   <ProtectScenarios>False</ProtectScenarios>
+  </WorksheetOptions>
+ </Worksheet>
+ <Worksheet ss:Name="Form 8974 Information (V4)">
+  <Table>
+   <Column ss:AutoFitWidth="0" ss:Width="72"/>
+   <Column ss:AutoFitWidth="0" ss:Width="56.25"/>
+   <Column ss:AutoFitWidth="0" ss:Width="61.5"/>
+   <Column ss:AutoFitWidth="0" ss:Width="71.25"/>
+   <Column ss:AutoFitWidth="0" ss:Width="60"/>
+   <Column ss:Index="7" ss:AutoFitWidth="0" ss:Width="72.75"/>
+   <Column ss:AutoFitWidth="0" ss:Width="53.25"/>
+   <Column ss:AutoFitWidth="0" ss:Width="54"/>
+   <Column ss:AutoFitWidth="0" ss:Width="75"/>
+   <Column ss:AutoFitWidth="0" ss:Width="70.5"/>
+   <Column ss:AutoFitWidth="0" ss:Width="76.5"/>
+   <Column ss:Index="14" ss:AutoFitWidth="0" ss:Width="95.25"/>
+   <Column ss:AutoFitWidth="0" ss:Width="63"/>
+   <Column ss:Index="17" ss:AutoFitWidth="0" ss:Width="75"/>
+   <Column ss:AutoFitWidth="0" ss:Width="69.75"/>
+   <Column ss:Index="20" ss:AutoFitWidth="0" ss:Width="62.25"/>
+   <Column ss:AutoFitWidth="0" ss:Width="96.75"/>
+   <Column ss:AutoFitWidth="0" ss:Width="80.25"/>
+   <Column ss:Index="24" ss:AutoFitWidth="0" ss:Width="72"/>
+   <Column ss:AutoFitWidth="0" ss:Width="65.25"/>
+   <Column ss:AutoFitWidth="0" ss:Width="63.75"/>
+   <Column ss:Index="28" ss:AutoFitWidth="0" ss:Width="78"/>
+   <Column ss:AutoFitWidth="0" ss:Width="69"/>
+   <Column ss:Index="32" ss:AutoFitWidth="0" ss:Width="68.25"/>
+   <Column ss:AutoFitWidth="0" ss:Width="81"/>
+   <Column ss:Index="35" ss:AutoFitWidth="0" ss:Width="98.25"/>
+   <Column ss:AutoFitWidth="0" ss:Width="78"/>
+   <Column ss:AutoFitWidth="0" ss:Width="74.25"/>
+   <Column ss:Index="41" ss:AutoFitWidth="0" ss:Width="64.5"/>
+   <Column ss:AutoFitWidth="0" ss:Width="61.5"/>
+   <Column ss:AutoFitWidth="0" ss:Width="60.75"/>
+   <Row ss:AutoFitHeight="0" ss:Height="66.75">
+    <Cell ss:StyleID="s152"><Data ss:Type="String">EIN</Data></Cell>
+    <Cell ss:StyleID="s152"><Data ss:Type="String">Entity name</Data></Cell>
+    <Cell ss:StyleID="s153"><Data ss:Type="String">Income tax form</Data></Cell>
+    <Cell ss:StyleID="s154"><Data ss:Type="String">For income tax year ended</Data></Cell>
+    <Cell ss:StyleID="s153"><Data ss:Type="String">Date income tax return filed</Data></Cell>
+    <Cell ss:StyleID="s153"><Data ss:Type="String">EIN on Form 6765</Data></Cell>
+    <Cell ss:StyleID="s153"><Data ss:Type="String">Total credit available for the income tax year</Data></Cell>
+    <Cell ss:StyleID="s153"><Data ss:Type="String">Credit already claimed from annual total</Data></Cell>
+    <Cell ss:StyleID="s153"><Data ss:Type="String">Remaining credit</Data></Cell>
+    <Cell ss:StyleID="s152"><Data ss:Type="String">Income tax form</Data></Cell>
+    <Cell ss:StyleID="s152"><Data ss:Type="String">For income tax year ended</Data></Cell>
+    <Cell ss:StyleID="s152"><Data ss:Type="String">Date income tax return filed</Data></Cell>
+    <Cell ss:StyleID="s152"><Data ss:Type="String">EIN on Form 6765</Data></Cell>
+    <Cell ss:StyleID="s155"><Data ss:Type="String">Total credit available for the income tax year</Data></Cell>
+    <Cell ss:StyleID="s155"><Data ss:Type="String">Credit already claimed from annual total</Data></Cell>
+    <Cell ss:StyleID="s152"><Data ss:Type="String">Remaining credit</Data></Cell>
+    <Cell ss:StyleID="s153"><Data ss:Type="String">Income tax form</Data></Cell>
+    <Cell ss:StyleID="s153"><Data ss:Type="String">For income tax year ended</Data></Cell>
+    <Cell ss:StyleID="s153"><Data ss:Type="String">Date income tax return filed</Data></Cell>
+    <Cell ss:StyleID="s153"><Data ss:Type="String">EIN on Form 6765</Data></Cell>
+    <Cell ss:StyleID="s153"><Data ss:Type="String">Total credit available for the income tax year</Data></Cell>
+    <Cell ss:StyleID="s153"><Data ss:Type="String">Credit already claimed from annual total</Data></Cell>
+    <Cell ss:StyleID="s153"><Data ss:Type="String">Remaining credit</Data></Cell>
+    <Cell ss:StyleID="s156"><Data ss:Type="String">Income tax form</Data></Cell>
+    <Cell ss:StyleID="s156"><Data ss:Type="String">For income tax year ended</Data></Cell>
+    <Cell ss:StyleID="s156"><Data ss:Type="String">Date income tax return filed</Data></Cell>
+    <Cell ss:StyleID="s156"><Data ss:Type="String">EIN on Form 6765</Data></Cell>
+    <Cell ss:StyleID="s156"><Data ss:Type="String">Total credit available for the income tax year</Data></Cell>
+    <Cell ss:StyleID="s156"><Data ss:Type="String">Credit already claimed from annual total</Data></Cell>
+    <Cell ss:StyleID="s156"><Data ss:Type="String">Remaining credit</Data></Cell>
+    <Cell ss:StyleID="s153"><Data ss:Type="String">Income tax form</Data></Cell>
+    <Cell ss:StyleID="s153"><Data ss:Type="String">For income tax year ended</Data></Cell>
+    <Cell ss:StyleID="s153"><Data ss:Type="String">Date income tax return filed</Data></Cell>
+    <Cell ss:StyleID="s153"><Data ss:Type="String">EIN on Form 6765</Data></Cell>
+    <Cell ss:StyleID="s153"><Data ss:Type="String">Total credit available for the income tax year</Data></Cell>
+    <Cell ss:StyleID="s153"><Data ss:Type="String">Credit already claimed from annual total</Data></Cell>
+    <Cell ss:StyleID="s152"><Data ss:Type="String">Remaining credit</Data></Cell>
+    <Cell ss:StyleID="s131"/>
+   </Row>
+   <Row ss:AutoFitHeight="0" ss:Height="27.375">
+    <Cell ss:StyleID="s136"><Data ss:Type="String">V4.X</Data></Cell>
+    <Cell ss:StyleID="s128"/>
+    <Cell ss:StyleID="s127"><Data ss:Type="String">(b)</Data></Cell>
+    <Cell ss:StyleID="s129"><Data ss:Type="String">(a)</Data></Cell>
+    <Cell ss:StyleID="s128"><Data ss:Type="String">(c)</Data></Cell>
+    <Cell ss:StyleID="s128"/>
+    <Cell ss:StyleID="s130"><Data ss:Type="String">(e)</Data></Cell>
+    <Cell ss:StyleID="s130"><Data ss:Type="String">(f)</Data></Cell>
+    <Cell ss:StyleID="s128"><Data ss:Type="String">(g)</Data></Cell>
+    <Cell ss:StyleID="s128"/>
+    <Cell ss:StyleID="s128"><Data ss:Type="String">Line 6</Data></Cell>
+    <Cell ss:StyleID="s128"><Data ss:Type="String">Line 7</Data></Cell>
+    <Cell ss:StyleID="s128"><Data ss:Type="String">Line 8</Data></Cell>
+    <Cell ss:StyleID="s128"><Data ss:Type="String">Line 9</Data></Cell>
+    <Cell ss:StyleID="s128"><Data ss:Type="String">Line 10</Data></Cell>
+    <Cell ss:StyleID="s128"><Data ss:Type="String">Line 11</Data></Cell>
+    <Cell ss:StyleID="s128"><Data ss:Type="String">Line 12</Data></Cell>
+   </Row>
+    <Row></Row>
+    <xsl:apply-templates select="Hosts/ExtractHost" mode="Fed8974">
+      <xsl:sort select="HostCompany/TaxFilingName"/>
+    </xsl:apply-templates>
+  </Table>
+  <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
+   <PageSetup>
+    <Header x:Margin="0.3"/>
+    <Footer x:Margin="0.3"/>
+    <PageMargins x:Bottom="0.75" x:Left="0.7" x:Right="0.7" x:Top="0.75"/>
+   </PageSetup>
+   <Print>
+    <ValidPrinterInfo/>
+    <HorizontalResolution>1200</HorizontalResolution>
+    <VerticalResolution>1200</VerticalResolution>
+   </Print>
+   <Panes>
+    <Pane>
+     <Number>3</Number>
+     <ActiveRow>4</ActiveRow>
+     <ActiveCol>3</ActiveCol>
+    </Pane>
+   </Panes>
+   <ProtectObjects>False</ProtectObjects>
+   <ProtectScenarios>False</ProtectScenarios>
+  </WorksheetOptions>
+ </Worksheet> 
 
 	</xsl:template>
 
@@ -1970,7 +2184,34 @@
 			</Row>
 		
 	</xsl:template>
-	
+  <xsl:template match="ExtractHost" mode="ScheduleR">
+
+    <Row>
+      <Cell>
+        <Data ss:Type="String">
+          <xsl:value-of select="concat(substring(HostCompany/FederalEIN,1,2),'-',substring(HostCompany/FederalEIN,3,7))"/>
+        </Data>
+      </Cell>
+      
+    </Row>
+
+  </xsl:template>
+  <xsl:template match="ExtractHost" mode="Fed8974">
+
+    <Row>
+      <Cell>
+        <Data ss:Type="String">
+          <xsl:value-of select="concat(substring(HostCompany/FederalEIN,1,2),'-',substring(HostCompany/FederalEIN,3,7))"/>
+        </Data>
+      </Cell>
+      <Cell>
+        <Data ss:Type="String">
+          <xsl:value-of select="translate(HostCompany/TaxFilingName, $smallcase, $uppercase)"/>
+        </Data>
+      </Cell>
+    </Row>
+
+  </xsl:template>
 
 
 
