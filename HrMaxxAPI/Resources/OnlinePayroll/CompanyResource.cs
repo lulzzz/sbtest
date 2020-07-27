@@ -181,6 +181,7 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 		public DateTime? EndDate { get; set; }
 		public decimal EmployeeWithheld { get; set; }
         public decimal EmployerWithheld { get; set; }
+		public int Mode { get; set; }
     }
 
 	public class AccumulatedPayTypeResource

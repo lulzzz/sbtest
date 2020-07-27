@@ -562,10 +562,21 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				if ((d.Deduction.FloorPerCheck.HasValue && localGrossWage >= d.Deduction.FloorPerCheck) ||
 					!d.Deduction.FloorPerCheck.HasValue)
 				{
-					if (d.Method == DeductionMethod.Amount)
-						d.Amount = d.Rate;
+					if ((DeductionMode)d.Deduction.Mode == DeductionMode.GrossWage)
+					{
+						if (d.Method == DeductionMethod.Amount)
+							d.Amount = d.Rate;
+						else
+							d.Amount = localGrossWage * d.Rate / 100;
+						
+					}
 					else
-						d.Amount = localGrossWage * d.Rate / 100;
+					{
+						if (d.Method == DeductionMethod.Amount)
+							d.Amount = d.Rate * payCheck.HoursWorked;
+						else
+							d.Amount = payCheck.HoursWorked * d.Rate / 100;
+					}
 					d.Amount = d.Amount > localGrossWage ? localGrossWage : d.Amount;
 
 					if (d.EmployeeDeduction.CeilingPerCheck.HasValue && d.Amount > (d.EmployeeDeduction.CeilingMethod == DeductionMethod.Amount ? d.EmployeeDeduction.CeilingPerCheck.Value : (d.EmployeeDeduction.CeilingPerCheck * localGrossWage / 100)))
@@ -1080,7 +1091,8 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 								Amount = t.Amount,
 								Wage = t.Wage,
                                 EmployerAmount = t.EmployerAmount,
-                                EmployerRate = t.EmployerRate
+                                EmployerRate = t.EmployerRate,
+								Mode = (int)t.Deduction.Mode
 							};
 							ptdeds.Add(pt);
 						});
@@ -1280,7 +1292,8 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 								Rate = t.Rate,
 								AnnualMax = t.AnnualMax,
 								Amount = t.Amount,
-								Wage = t.Wage
+								Wage = t.Wage,
+								Mode = (int)t.Deduction.Mode
 							};
 							ptdeds.Add(pt);
 						});
@@ -1506,7 +1519,8 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 								Rate = t.Rate,
 								AnnualMax = t.AnnualMax,
 								Amount = t.Amount,
-								Wage = t.Wage
+								Wage = t.Wage,
+								Mode = (int)t.Deduction.Mode
 							};
 							ptdeds.Add(pt);
 						});

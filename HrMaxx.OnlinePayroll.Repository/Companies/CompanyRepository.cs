@@ -232,6 +232,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 					dbdeduction.ApplyInvoiceCredit = mappeddeduction.ApplyInvoiceCredit;
 					dbdeduction.StartDate = mappeddeduction.StartDate;
 					dbdeduction.EndDate = mappeddeduction.EndDate;
+					dbdeduction.Mode = mappeddeduction.Mode;
 				}
 			}
 			_dbContext.SaveChanges();

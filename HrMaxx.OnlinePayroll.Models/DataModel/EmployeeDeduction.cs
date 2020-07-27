@@ -17,7 +17,7 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
         public int Id { get; set; }
         public System.Guid EmployeeId { get; set; }
         public int Method { get; set; }
-        public decimal Rate { get; set; }
+        public Nullable<decimal> Rate { get; set; }
         public Nullable<decimal> AnnualMax { get; set; }
         public int CompanyDeductionId { get; set; }
         public Nullable<decimal> CeilingPerCheck { get; set; }

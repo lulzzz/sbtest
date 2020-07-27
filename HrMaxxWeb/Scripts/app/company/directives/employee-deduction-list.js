@@ -73,7 +73,7 @@ common.directive('employeeDeductionList', ['$uibModal', 'zionAPI', 'version',
 					}
 				}
 				var addAlert = function (error, type) {
-					$scope.$parent.$parent.addAlert(error, type);
+					$scope.mainData.showMessage(error, type);
 				};
 					$scope.selected = null;
 					$scope.selectedIndex = null;

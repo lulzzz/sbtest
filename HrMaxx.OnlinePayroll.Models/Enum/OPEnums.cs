@@ -38,6 +38,13 @@ namespace HrMaxx.OnlinePayroll.Models.Enum
 		[HrMaxxSecurity(DbId = 3, DbName = "Other")]
 		Other=4
 	}
+	public enum DeductionMode
+	{
+		[HrMaxxSecurity(DbId = 1, DbName = "By Gross Wage")]
+		GrossWage =1,
+		[HrMaxxSecurity(DbId = 2, DbName = "By Hours")]
+		Hours =2
+	}
 	public enum PayCheckStock
 	{
 		[HrMaxxSecurity(HrMaxxName = "MICRPayCheck.pdf")]

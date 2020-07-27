@@ -74,6 +74,7 @@ namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
 			get { return !string.IsNullOrWhiteSpace(EmployeeDeductionFlat) ? JsonConvert.DeserializeObject<Models.EmployeeDeduction>(EmployeeDeductionFlat) : default(Models.EmployeeDeduction); }
 		}
         public List<PayCheckSummaryByType> PayChecks { get; set; }
+		public int Mode { get; set; }
 	}
 	
 	public class PayCheckPayCode
