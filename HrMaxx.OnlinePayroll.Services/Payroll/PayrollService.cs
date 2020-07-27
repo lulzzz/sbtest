@@ -539,6 +539,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 		{
 			employeeAccumulation.Deductions = employeeAccumulation.Deductions ?? new List<PayCheckDeduction>();
 			var localGrossWage = grossWage;
+			var otherDeductions = (decimal)0;
 			var eeApplied = false;
 
 			payCheck.Deductions = payCheck.Deductions.Where(d => d.IsApplicable(payCheck.PayDay))
@@ -549,12 +550,16 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 			payCheck.Deductions.ForEach(d =>
 			{
 				var companyDeduction = company.Deductions.First(d1 => d1.Id == d.Deduction.Id);
-				if ((d.Deduction.Type.Category == DeductionCategory.Other ||
-					d.Deduction.Type.Category == DeductionCategory.PostTaxDeduction) && !eeApplied)
+				if (d.Deduction.Type.Category == DeductionCategory.PostTaxDeduction)
 				{
-					localGrossWage -= payCheck.EmployeeTaxes;
-					eeApplied = true;
+					localGrossWage = grossWage;
 				}
+				else if (d.Deduction.Type.Category == DeductionCategory.Other)
+				{
+					localGrossWage = grossWage - payCheck.EmployeeTaxes - otherDeductions;
+					
+				}
+				
 				d.Amount = 0;
 				var ytdVal = employeeAccumulation.Deductions.Where(d1 => d1.CompanyDeductionId == d.Deduction.Id).Sum(d1 => d1.YTD);
 				var ytdWage = employeeAccumulation.Deductions.Where(d1 => d1.CompanyDeductionId == d.Deduction.Id).Sum(d1 => d1.YTDWage);
@@ -616,7 +621,8 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				d.YTD = Math.Round(ytdVal + d.Amount, 2, MidpointRounding.AwayFromZero);
 				d.YTDWage = Math.Round(ytdWage + d.Wage, 2, MidpointRounding.AwayFromZero);
 				d.YTDEmployer = Math.Round(ytdEmployer + (d.EmployerAmount ?? 0), 2, MidpointRounding.AwayFromZero);
-				localGrossWage -= d.Amount;
+				if(d.Deduction.Type.Category==DeductionCategory.Other)
+					otherDeductions += d.Amount;
 			});
 
 			return payCheck.Deductions.Where(d => d.Rate != 0).ToList();
