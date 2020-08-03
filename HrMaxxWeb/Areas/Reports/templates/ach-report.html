@@ -128,16 +128,16 @@
 												<input name="toggle" type="checkbox" ng-model="selectedHost.toggleState" ng-change="toggleAll()"/>
 											</th>
 											<th class="col-sm-1">Type</th>
-											<th class="col-sm-1">Date</th>
+											<th class="col-sm-1" ng-click="sort('transactionDate')">Date  <i class="fa" ng-show="data.sortField==='transactionDate'" ng-class="{'fa-arrow-up': !data.sortDirection, 'fa-arrow-down': data.sortDirection}"></i></th>
 											<th class="col-sm-1">Description</th>
-											<th class="col-sm-1">Amount</th>
+											<th class="col-sm-1" ng-click="sort('amount')">Amount  <i class="fa" ng-show="data.sortField==='amount'" ng-class="{'fa-arrow-up': !data.sortDirection, 'fa-arrow-down': data.sortDirection}"></i></th>
 											<th class="col-sm-2">Name</th>
-											<th class="col-sm-2">Company Name</th>
-											<th class="col-sm-1">Id</th>
+											<th class="col-sm-2" ng-click="sort('companyName')">Company Name  <i class="fa" ng-show="data.sortField==='companyName'" ng-class="{'fa-arrow-up': !data.sortDirection, 'fa-arrow-down': data.sortDirection}"></i></th>
+											<th class="col-sm-1" ng-click="sort('id')">Id  <i class="fa" ng-show="data.sortField==='id'" ng-class="{'fa-arrow-up': !data.sortDirection, 'fa-arrow-down': data.sortDirection}"></i></th>
 											<th class="col-sm-2"></th>
 										</tr>
 									</thead>
-									<tr ng-repeat-start="ach in selectedHost.achTransactions track by $index" ng-class="{'success': ach.transactionType===2, 'danger':ach.transactionType===1}">
+									<tr ng-repeat-start="ach in selectedHost.achTransactions | orderBy:data.sortField:data.sortDirection track by $index" ng-class="{'success': ach.transactionType===2, 'danger':ach.transactionType===1}">
 										<td ng-hide="data.extractFiled">
 											<input name="inc{{$index}}" type="checkbox" ng-model="ach.included">
 										</td>

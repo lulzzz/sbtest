@@ -17,9 +17,21 @@ common.directive('achReport', ['zionAPI', '$timeout', '$window', 'version', '$ui
 						postingDate: moment().toDate(),
 						extract: null,
 						extractFiled: false,
-						isBodyOpen: true
+						isBodyOpen: true,
+						sortField: 'id',
+						sortDirection: false
 					}
-					
+					$scope.showFieldSorted = function(field){
+						if (dataSvc.sortField === field)
+							return true;
+						else
+							return false;
+					}
+					$scope.sort = function (field) {
+						dataSvc.sortField = field;
+						dataSvc.sortDirection = !dataSvc.sortDirection;
+
+                    }
 					$scope.list = [];
 					$scope.selected = null;
 					$scope.toggleAll = function() {
