@@ -2211,7 +2211,13 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 		{
 			try
 			{
-				var data = _reportRepository.GetACHReport(request);
+				var data = new ACHResponse();
+				using(var txn = TransactionScopeHelper.Transaction())
+				{
+					data = _reportRepository.GetACHReport(request);
+					txn.Complete();
+				}
+				
 				if(data.Hosts.All(h=>!h.ACHTransactions.Any()))
 					throw new Exception(NoData);
 				data.Hosts.ForEach(h =>
