@@ -26,10 +26,11 @@
                 <div class="panel-body">
                     <div class="panel-body tab-content">
                         <div class="tab-pane fade in" id="info" ng-class="{'active':tab===1}">
-                            <form data-parsley-validate="true" name="form-wizard">
+                            <form data-parsley-validate="true" data-parsley-errors-container="#parsley-errors" name="form-wizard">
                                 <div class="alert alert-info" ng-show="selectedCompany.isHostCompany">
                                     This company is the Host's own.
                                 </div>
+                                <div id="parsley-errors"></div>
                                 <div id="wizard">
                                     <ol>
                                         <li>
@@ -156,7 +157,7 @@
                                                         <input type="text" name="minwage" class="form-control" data-parsley-group="wizard-step-2" data-parsley-type="number" min="{{getApplicableMinimumWage()}}" ng-model="selectedCompany.minWage" step="0.01" />
 
                                                     </div>
-                                                   
+
                                                 </div>
                                                 <div class="col-sm-4">
                                                     <div class="form-group">
@@ -222,7 +223,7 @@
                                                         <label>Insurance Client No</label>
                                                         <input type="text" name="cno" class="form-control" data-parsley-group="wizard-step-2" ng-model="selectedCompany.insuranceClientNo" ng-required="selectedCompany.insuranceGroup && selectedCompany.insuranceGroup.id>0" />
                                                     </div>
-                                                   
+
                                                     <div class="form-group">
                                                         <label>Invoice Note</label>
                                                         <input type="text" name="notes" class="form-control" data-parsley-group="wizard-step-2" ng-model="selectedCompany.notes" />
@@ -366,7 +367,7 @@
                                                 </div>
                                             </div>
                                             <div class="row">
-                                                
+
                                                 <div class="col-sm-3">
                                                     <div class="form-group">
                                                         <label></label>
@@ -487,7 +488,7 @@
                                                             <option value="3" ng-if="selectedCompany.contract.contractOption===2">Invoice</option>
                                                         </select>
                                                     </div>
-                                                    
+
 
                                                 </div>
                                                 <div class="col-sm-3" ng-if="selectedCompany.contract.billingOption===1">
@@ -654,7 +655,7 @@
 
                                                         <div class="note-content text-left">
                                                             <h4><b>Options!</b></h4>
-                                                            
+
                                                             <div class="col-sm-12">
                                                                 <div class="col-sm-12 m-b-2"><i class="fa fa-lg" ng-class="{'fa-plus-square': data.viewOption!==1, 'fa-minus-square': data.viewOption===1}" ng-click="data.viewOption = (data.viewOption!==1? 1 : null)" /> Payrolls <i class="fa fa-lg" ng-class="{'fa-check-circle':selectedCompany.contract.payrolls, 'fa-times-circle':!selectedCompany.contract.payrolls}" ng-style="(selectedCompany.contract.payrolls && {'color':'green'}) || (!selectedCompany.contract.payrolls && {'color':'red'})"></i></div>
                                                                 <div class="col-sm-10 col-sm-offset-1" ng-show="data.viewOption===1">
@@ -699,15 +700,15 @@
                                                                 </div>
 
                                                             </div>
-                                                            
-                                                           
-                                                            
-                                                            
-                                                            
+
+
+
+
+
                                                         </div>
                                                         <div class="note-icon"><i class="fa fa-lightbulb"></i></div>
                                                     </div>
-                                                    
+
                                                 </div>
                                             </div>
                                             <div class="row" ng-if="selectedCompany.contract.billingOption===3">
@@ -820,13 +821,13 @@
                                                                 </tr>
                                                                 <tr ng-repeat="salesRep in selectedCompany.contract.invoiceSetup.salesReps track by $index">
                                                                     <td>
-                                                                        <select ng-model="salesRep.user" name="user{{$index}}" class="form-control" data-parsley-group="wizard-step-4" required ng-options="(u.firstName + ' ' + u.lastName) for u in mainData.users | filter: greaterThan(39) | orderBy:'firstName' track by u.userId">
+                                                                        <select ng-model="salesRep.user" name="user{{$index}}" class="form-control" required ng-options="(u.firstName + ' ' + u.lastName) for u in mainData.users | filter: greaterThan(39) | orderBy:'firstName' track by u.userId">
                                                                             <option value="">Select User</option>
 
                                                                         </select>
                                                                     </td>
                                                                     <td>
-                                                                        <select ng-model="salesRep.method" name="methoid{{$index}}" class="form-control" data-parsley-group="wizard-step-4" required convert-to-number>
+                                                                        <select ng-model="salesRep.method" name="methoid{{$index}}" class="form-control" required convert-to-number>
                                                                             <option value="1">Percentage</option>
                                                                             <option value="2">Fixed Amount (per invoice)</option>
 
