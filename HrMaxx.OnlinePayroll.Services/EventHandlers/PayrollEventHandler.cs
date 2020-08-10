@@ -106,7 +106,7 @@ namespace HrMaxx.OnlinePayroll.Services.EventHandlers
 		{
 			try
 			{
-				var users = _userService.GetUsers(event1.SavedObject.Company.HostId, null).Select(u => u.UserId).ToList();
+				var users = _userService.GetUsers(event1.SavedObject.Company.HostId, null).Where(u=>u.Role.RoleId==(int)RoleTypeEnum.Host || u.Role.RoleId == (int)RoleTypeEnum.HostStaff).Select(u => u.UserId).ToList();
 				var adminUsers = _userService.GetUsersByRoleAndId(new List<RoleTypeEnum>() { RoleTypeEnum.CorpStaff, RoleTypeEnum.Master, RoleTypeEnum.SuperUser }, null);
 				users.AddRange(adminUsers);
 				Bus.Publish<Notification>(new Notification

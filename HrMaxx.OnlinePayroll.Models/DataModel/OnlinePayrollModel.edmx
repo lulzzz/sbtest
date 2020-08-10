@@ -230,6 +230,7 @@
           <Property Name="ApplyInvoiceCredit" Type="bit" Nullable="false" />
           <Property Name="StartDate" Type="datetime" />
           <Property Name="EndDate" Type="datetime" />
+          <Property Name="Mode" Type="int" Nullable="false" />
         </EntityType>
         <EntityType Name="CompanyPayCode">
           <Key>
@@ -423,7 +424,7 @@
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="EmployeeId" Type="uniqueidentifier" Nullable="false" />
           <Property Name="Method" Type="int" Nullable="false" />
-          <Property Name="Rate" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="Rate" Type="decimal" Precision="18" Scale="6" />
           <Property Name="AnnualMax" Type="decimal" Precision="18" Scale="2" />
           <Property Name="CompanyDeductionId" Type="int" Nullable="false" />
           <Property Name="CeilingPerCheck" Type="decimal" Precision="18" Scale="2" />
@@ -2240,6 +2241,7 @@
           <Property Name="ApplyInvoiceCredit" Type="Boolean" Nullable="false" />
           <Property Name="StartDate" Type="DateTime" Precision="3" />
           <Property Name="EndDate" Type="DateTime" Precision="3" />
+          <Property Name="Mode" Type="Int32" Nullable="false" />
         </EntityType>
         <Association Name="FK_CompanyDeduction_Company">
           <End Type="HrMaxxModel.Company" Role="Company" Multiplicity="1" />
@@ -2584,7 +2586,7 @@
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="EmployeeId" Type="Guid" Nullable="false" />
           <Property Name="Method" Type="Int32" Nullable="false" />
-          <Property Name="Rate" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
+          <Property Name="Rate" Type="Decimal" Precision="18" Scale="6" />
           <Property Name="AnnualMax" Type="Decimal" Precision="18" Scale="2" />
           <Property Name="CompanyDeductionId" Type="Int32" Nullable="false" />
           <NavigationProperty Name="CompanyDeduction" Relationship="HrMaxxModel.FK_EmployeeDeduction_CompanyDeduction" FromRole="EmployeeDeduction" ToRole="CompanyDeduction" />
@@ -3654,6 +3656,7 @@
           <EntitySetMapping Name="CompanyDeductions">
             <EntityTypeMapping TypeName="HrMaxxModel.CompanyDeduction">
               <MappingFragment StoreEntitySet="CompanyDeduction">
+                <ScalarProperty Name="Mode" ColumnName="Mode" />
                 <ScalarProperty Name="EndDate" ColumnName="EndDate" />
                 <ScalarProperty Name="StartDate" ColumnName="StartDate" />
                 <ScalarProperty Name="ApplyInvoiceCredit" ColumnName="ApplyInvoiceCredit" />

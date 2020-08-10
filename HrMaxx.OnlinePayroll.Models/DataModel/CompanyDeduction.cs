@@ -30,6 +30,7 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
         public bool ApplyInvoiceCredit { get; set; }
         public Nullable<System.DateTime> StartDate { get; set; }
         public Nullable<System.DateTime> EndDate { get; set; }
+        public int Mode { get; set; }
     
         public virtual Company Company { get; set; }
         public virtual DeductionType DeductionType { get; set; }

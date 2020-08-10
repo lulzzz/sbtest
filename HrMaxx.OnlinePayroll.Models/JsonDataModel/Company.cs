@@ -158,7 +158,7 @@ namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
 		public bool Invoicing { get; set; }
 		public bool Taxation { get; set; }
 	}
-	
+
 	public class CompanyDeduction
 	{
 		public int Id { get; set; }
@@ -174,7 +174,9 @@ namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
 		public DateTime? StartDate { get; set; }
 		public DateTime? EndDate { get; set; }
 		public decimal EmployeeWithheld { get; set; }
-        public decimal EmployerWithheld { get; set; }
+		public decimal EmployerWithheld { get; set; }
+		public int Mode { get; set; }
+		
     }
 	
 	public class DeductionType

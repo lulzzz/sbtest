@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -163,7 +164,8 @@ namespace HrMaxx.OnlinePayroll.ReadServices.Mappers
 				.ForMember(dest => dest.Taxes,
 					opt => opt.MapFrom(src => JsonConvert.DeserializeObject<List<PayrollTax>>(src.Taxes)))
 				.ForMember(dest => dest.MiscCharges,
-					opt => opt.MapFrom(src => JsonConvert.DeserializeObject<List<MiscFee>>(src.MiscCharges)));
+					opt => opt.MapFrom(src => JsonConvert.DeserializeObject<List<MiscFee>>(src.MiscCharges)))
+				.ForMember(dest=>dest.EmployerTaxList, opt=>opt.Ignore());
 
 
 			CreateMap<Models.JsonDataModel.PayrollJson, Models.Payroll>()

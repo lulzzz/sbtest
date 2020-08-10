@@ -257,7 +257,23 @@ namespace HrMaxx.OnlinePayroll.Models
 		{
 			get { return PayCodes.Sum(p => p.OvertimeHours); }
 		}
-		
+		public decimal HoursWorked { get 
+			{ 
+				if (Employee.PayType == EmployeeType.Hourly) 
+					return PayCodes.Sum(pc => pc.Hours + pc.OvertimeHours); 
+				else 
+				{
+					if (Employee.PayrollSchedule == PayrollSchedule.Weekly)
+						return (40);
+					else if (Employee.PayrollSchedule == PayrollSchedule.BiWeekly)
+						return 26 / (40 * 52);
+					else if (Employee.PayrollSchedule == PayrollSchedule.SemiMonthly)
+						return 24 / (40 * 52);
+					else if (Employee.PayrollSchedule == PayrollSchedule.Monthly)
+						return 12 / (40 * 52);
+					else return 0;
+				}
+			} }
 		public void ResetYTD()
 		{
 			YTDSalary = Salary;

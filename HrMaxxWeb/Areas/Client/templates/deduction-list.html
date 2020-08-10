@@ -34,6 +34,7 @@
                     </div>
 
                     <div class="stats-number" ng-show="item.id>0">{{item.employeeWithheld | currency}}, Employer: {{item.employerWithheld | currency}}</div>
+                    <div class="stats-desc" ng-show="item.id>0 && (!selected || selected.id!==item.id)"><i>{{item.mode ===1 ? 'By Gross Wage' : 'By Hours Worked'}}</i></div>
                     <div class="stats-desc" ng-show="item.id>0 && (!selected || selected.id!==item.id)">Annual Max: {{item.annualMax ? item.annualMax : 'n.a'}}, Floor per check: {{item.floorPerCheck ? item.floorPerCheck : 'n.a'}}, InvoiceCredit?: <i class="fa fa-lg" ng-class="{'fa-check-circle': item.applyInvoiceCredit, 'fa-times-circle': !item.applyInvoiceCredit}" /></div>
                     <div class="stats-progress progress">
                         <div class="progress-bar" style="width: 100%;"></div>
@@ -49,6 +50,18 @@
                 </div>
                 <div class="panel-body m-t-0" ng-class="getWidgetSubClass(item)" ng-show="selected && selected.id===item.id">
                     <div class="row">
+                        <div class="form-group row">
+                            <label class="control-label col-md-4 col-sm-4" for="rate">Mode :</label>
+                            <div class="col-md-4 col-sm-4">
+                                <input type="radio" name="radio_css_inline" id="modegross" ng-model="selected.mode" value="1" checked />
+                                <label for="modegross">Gross Wage</label>
+                            </div>
+                            <div class="col-md-4 col-sm-4">
+                                <input type="radio" name="radio_css_inline" id="modehours" ng-model="selected.mode" value="2" />
+                                <label for="modehours">Hours Worked</label>
+                            </div>
+
+                        </div>
                         <div class="form-group row">
                             <label class="control-label col-md-6 col-sm-6" for="rate">Annual Max :</label>
                             <div class="col-md-6 col-sm-6">
@@ -88,7 +101,7 @@
 
                     </div>
                 </div>
-            </form>
+</form>
         </div>
 
     </div>

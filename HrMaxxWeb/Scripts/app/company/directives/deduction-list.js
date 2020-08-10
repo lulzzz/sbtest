@@ -32,7 +32,8 @@ common.directive('deductionList', ['zionAPI', 'version',
 							annualMax: null,
 							floorPerCheck: null,
 							startDate: null,
-							endDate: null
+							endDate: null,
+							mode: 1
 						};
 						$scope.original = angular.copy($scope.selected);
 						$scope.list.push($scope.selected);
